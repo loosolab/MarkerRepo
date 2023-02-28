@@ -116,58 +116,31 @@ def searchDB(REPO_LISTS_PATH, keywords):
     pandas.DataFrame :
         Dataframe containing all the hits
     """
-    hits = []
-    filtered_files = [os.path.join(root, name) for root, dirs, files in os.walk(REPO_LISTS_PATH) for name in files]
-
-    # Filter title
-    if keywords['Title']:
-        filtered_files = [file for file in filtered_files if keywords['Title'] in file.split("/")[-1]]
-        
-    # Filter list_type
-    if keywords['List type']:
-        filtered_files = [file for file in filtered_files if keywords['List type'] in file.split("/")[-2]]
-        
-    # Filter year
-    if keywords['Year']:
-        filtered_files = [file for file in filtered_files if keywords['Year'] in file.split("/")[-3]]
-        
-    # Filter tissue
-    if keywords['Tissue']:
-        filtered_files = [file for file in filtered_files if keywords['Tissue'] in file.split("/")[-4]]
-        
-    # Filter organism
-    if keywords['Organism']:
-        filtered_files = [file for file in filtered_files if keywords['Organism'] in file.split("/")[-5]]
-        
-    # Filter kind
-    if keywords['Kind']:
-        filtered_files = [file for file in filtered_files if keywords['Kind'] in file.split("/")[-6]]
-
-    count = len(filtered_files)
-    if count > 0:
-        print(f"{str(count)} lists have been found:")
-    else:
-        print("Unfortunately there was no hit. Maybe try fewer keywords.")
-        
-    for file in filtered_files:
-        hit = file.split("lists/")[1]
-        hits.append(hit)
-        print(hit)
-
+    files = [os.path.join(root, name) for root, dirs, files in os.walk(REPO_LISTS_PATH) for name in files]
     kinds, organisms, tissues, years, ltypes, titles = ([] for i in range(6))
-    for hit in hits:
-        kind, organism, tissue, year, ltype, title = hit.split("/")
+    filters = {}
+    for key in keywords:
+        if keywords[key]:
+            filters[key] = keywords[key]
+
+    for file in files:
+        file = file.split("lists/")[1]
+        kind, organism, tissue, year, ltype, title = file.split("/")
         kinds.append(kind)
         organisms.append(organism)
         tissues.append(tissue)
         years.append(year)
         ltypes.append(ltype)
         titles.append(title)
-        
+
     list_dict = {"Kind": kinds, "Organism": organisms, "Tissue": tissues, 
                 "Year": years, "List type": ltypes, "Title": titles}
 
     df = pd.DataFrame(list_dict)
+
+    # filter dataframe
+    for key in filters:
+        df = df[df[key].str.contains(filters[key])]
     
     return(df)
 
