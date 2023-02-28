@@ -165,6 +165,19 @@ def getDB(REPO_LISTS_PATH):
     return df
 
 
+def getPaths(REPO_LISTS_PATH, df):
+    paths = []
+    rows = df.to_string(header=False, index=False, index_names=False).split('\n')
+    files = ['/'.join(row.split()) for row in rows]
+
+    for file in files:
+        path = f"{REPO_LISTS_PATH}/{file}"
+        paths.append(path)
+        print(path)
+    
+    return paths
+
+
 def convertList():
     pass
 
