@@ -98,7 +98,7 @@ def addList(REPO_LISTS_PATH, LIST_PATH, metadata):
         shutil.copyfile(LIST_PATH, f"{folder}/{metadata['Title']}")
         print(f"Copied list to {folder}.")
 
-    return(f"{folder}/{metadata['Title']}")
+    return f"{folder}/{metadata['Title']}"
 
 def searchDB(REPO_LISTS_PATH, keywords):
     """
@@ -116,12 +116,36 @@ def searchDB(REPO_LISTS_PATH, keywords):
     pandas.DataFrame :
         Dataframe containing all the hits
     """
-    files = [os.path.join(root, name) for root, dirs, files in os.walk(REPO_LISTS_PATH) for name in files]
-    kinds, organisms, tissues, years, ltypes, titles = ([] for i in range(6))
     filters = {}
     for key in keywords:
         if keywords[key]:
             filters[key] = keywords[key]
+
+    df = pd.DataFrame(getDB(REPO_LISTS_PATH))
+
+    # filter dataframe
+    for key in filters:
+        df = df[df[key].str.contains(filters[key])]
+    
+    return df
+
+
+def getDB(REPO_LISTS_PATH):
+    """
+    Get the database of the Marker Repo as dataframe.
+
+    Parameters
+    ----------
+    REPO_LISTS_PATH : string
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+
+    Returns
+    --------
+    pandas.DataFrame :
+        Dataframe containing all lists
+    """
+    files = [os.path.join(root, name) for root, dirs, files in os.walk(REPO_LISTS_PATH) for name in files]
+    kinds, organisms, tissues, years, ltypes, titles = ([] for i in range(6))
 
     for file in files:
         file = file.split("lists/")[1]
@@ -138,11 +162,7 @@ def searchDB(REPO_LISTS_PATH, keywords):
 
     df = pd.DataFrame(list_dict)
 
-    # filter dataframe
-    for key in filters:
-        df = df[df[key].str.contains(filters[key])]
-    
-    return(df)
+    return df
 
 
 def convertList():
