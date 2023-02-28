@@ -3,7 +3,7 @@ import shutil
 import pandas as pd
 
 
-def check_input_files(LIST_PATH, METADATA_PATH, list_type):
+def checkFiles(LIST_PATH, METADATA_PATH, list_type):
     """
     Checks the input files: does the list and - if not None - the metadata file exist? 
     Checks the format of the list: correct amount of columns? Separation correct?
@@ -54,6 +54,7 @@ def check_input_files(LIST_PATH, METADATA_PATH, list_type):
                     print("This column should contain gene names.")
                     correct = False
                     break
+        # TODO: blacklist
         if correct:
             print("The format of the list seems correct.")
             return True
@@ -166,6 +167,21 @@ def getDB(REPO_LISTS_PATH):
 
 
 def getPaths(REPO_LISTS_PATH, df):
+    """
+    Converts the dataframe of the Marker Repo DB to paths.
+
+    Parameters
+    ----------
+    REPO_LISTS_PATH : string
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    df : pandas.DataFrame
+        The dataframe containing lists of the Marker Repo.
+    Returns
+    --------
+    array of strings :
+        The paths of the lists inside the dataframe.
+    """
+
     paths = []
     rows = df.to_string(header=False, index=False, index_names=False).split('\n')
     files = ['/'.join(row.split()) for row in rows]
@@ -176,6 +192,42 @@ def getPaths(REPO_LISTS_PATH, df):
         print(path)
     
     return paths
+
+
+def combineLists(paths, file_name="custom_list"):
+    """
+    Combine multiple lists to one custom list.
+
+    Parameters
+    ----------
+    paths : array of strings
+        The paths of the lists which will be combined.
+    file_name : string
+        The file name of the combined list.
+    Returns
+    --------
+    array of strings :
+        The paths of the lists inside the dataframe.
+    """
+    ltype_dict = {"celltype": ["Cell type", "Marker"], "cellcycle": ["Marker", "Phase"], "mito": "Marker",
+                "gender": "Marker", "blacklist": ["Chr", "Start", "Stop"]}
+    list_type = "celltype"
+    header = ltype_dict[list_type]
+
+    dfs = []
+    for file in paths:
+        df = pd.read_csv(file, sep='\t', names=header)
+        dfs.append(df)
+        
+    # outer join
+    combined_df = pd.concat(dfs).reset_index(drop=True)
+
+    # TODO: inner join, etc ...
+
+    # save custom list
+    combined_df.to_csv(file_name, sep="\t", index=False)
+
+    return os.path.abspath(file_name)
 
 
 def convertList():
