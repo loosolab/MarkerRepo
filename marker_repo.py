@@ -1,6 +1,8 @@
 import os
 import shutil
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def checkFiles(LIST_PATH, METADATA_PATH, list_type):
@@ -250,6 +252,36 @@ def combineLists(paths, file_name="custom_list"):
     print(f"Combined list saved: {os.path.abspath(file_name)}")
 
     return combined_df
+
+
+def showStatistics(REPO_LISTS_PATH, metadata, dpi=120):
+    """
+    Shows content of whole Marker Repo.
+
+    Parameters
+    ----------
+    REPO_LISTS_PATH : string
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    metadata : dictionary
+        The dictionary containing the metadata information.
+    """
+
+    # TODO tissue plot - show count only
+
+    sns.set_style("darkgrid")
+    sns.set(rc={"figure.dpi": dpi, "savefig.dpi": dpi})
+    fig, axes = plt.subplots(2, 3)
+    axes_arr = [(0,0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
+
+    # Load all lists
+    df = getDB(REPO_LISTS_PATH)
+
+    # Plot statistics
+    for count, key in enumerate(metadata):
+        stat_df = df[key].value_counts()
+        stat_df.plot(kind='bar', title=key, ax=axes[axes_arr[count]])
+    
+    plt.show()
 
 
 def convertList():
