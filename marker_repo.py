@@ -22,6 +22,7 @@ def checkFiles(LIST_PATH, METADATA_PATH, list_type):
     boolean :
         True if the file(s) exist and the input format seems to be correct, False else 
     """
+
     # Checking path(s) of input files
     files = [LIST_PATH]
     if METADATA_PATH:
@@ -32,7 +33,7 @@ def checkFiles(LIST_PATH, METADATA_PATH, list_type):
         else:
             print(f"Please make sure that your input is correct. {file} does not exist.")
             return False
-            
+     
     # Checking format of input list
     correct = True
     with open(f"{LIST_PATH}", "r") as list_file:
@@ -81,6 +82,7 @@ def addList(REPO_LISTS_PATH, LIST_PATH, metadata):
         The path of the newly added list
     """
 
+    # create folder(s) and get path of new list
     folder = f"{REPO_LISTS_PATH}/{metadata['Kind']}/{metadata['Organism']}/{metadata['Tissue']}/{metadata['Year']}/{metadata['List type']}"
     new_file_path = f"{folder}/{metadata['Title']}"
 
@@ -88,47 +90,56 @@ def addList(REPO_LISTS_PATH, LIST_PATH, metadata):
         os.makedirs(folder)
         print(f"Folder {folder} created.")
 
+    # check whether list already exists
     if os.path.isfile(new_file_path):
-        go_on = input(f"The file {new_file_path} already exists. Do you want to override the existing file?\
+        go_on = input(f"The file {new_file_path} already exists.\nDo you want to override the existing file?\
         Enter yes or no: ")
         override = True if go_on == "yes" else False
+        # override existing file
         if override:
             shutil.copyfile(LIST_PATH, f"{folder}/{metadata['Title']}")
             print(f"Replaced list in folder {folder}.")
     else:
+        # copy list to Marker Repo
         shutil.copyfile(LIST_PATH, f"{folder}/{metadata['Title']}")
         print(f"Copied list to {folder}.")
 
     return f"{folder}/{metadata['Title']}"
 
-def searchDB(REPO_LISTS_PATH, keywords):
+
+def searchDB(df, keywords, exact=False):
     """
     Search for specific lists of the Marker Gene Repo.
 
     Parameters
     ----------
-    REPO_LISTS_PATH : string
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    df : pandas.DataFrame
+        The dataframe which contains the data to be searched.
     keywords : dictionary
         The dictionary containing the keywords for filtering.
-
+    exact : boolean
+        If True perform an exact search, otherwise use "contains".
+    
     Returns
     --------
     pandas.DataFrame :
         Dataframe containing all the hits
     """
+
+    # keep values which are not None
     filters = {}
     for key in keywords:
         if keywords[key]:
             filters[key] = keywords[key]
 
-    df = pd.DataFrame(getDB(REPO_LISTS_PATH))
-
     # filter dataframe
     for key in filters:
-        df = df[df[key].str.contains(filters[key])]
+        if exact:
+            df = df[df[key] == filters[key]]
+        else:
+            df = df[df[key].str.contains(filters[key])]
     
-    return df
+    return df.reset_index(drop=True)
 
 
 def getDB(REPO_LISTS_PATH):
@@ -145,9 +156,12 @@ def getDB(REPO_LISTS_PATH):
     pandas.DataFrame :
         Dataframe containing all lists
     """
+
+    # get all paths of lists of the Marker Repo
     files = [os.path.join(root, name) for root, dirs, files in os.walk(REPO_LISTS_PATH) for name in files]
     kinds, organisms, tissues, years, ltypes, titles = ([] for i in range(6))
 
+    # create dataframe of paths
     for file in files:
         file = file.split("lists/")[1]
         kind, organism, tissue, year, ltype, title = file.split("/")
@@ -182,10 +196,12 @@ def getPaths(REPO_LISTS_PATH, df):
         The paths of the lists inside the dataframe.
     """
 
+    # read dataframe, convert rows to strings
     paths = []
     rows = df.to_string(header=False, index=False, index_names=False).split('\n')
-    files = ['/'.join(row.split()) for row in rows]
 
+    # convert strings to paths
+    files = ['/'.join(row.split()) for row in rows]
     for file in files:
         path = f"{REPO_LISTS_PATH}/{file}"
         paths.append(path)
@@ -209,31 +225,32 @@ def combineLists(paths, file_name="custom_list"):
     array of strings :
         The paths of the lists inside the dataframe.
     """
+
+    # create dictionary containing headers of different list types
+    # TODO use whitelist instead
     ltype_dict = {"celltype": ["Cell type", "Marker"], "cellcycle": ["Marker", "Phase"], "mito": "Marker",
                 "gender": "Marker", "blacklist": ["Chr", "Start", "Stop"]}
     list_type = "celltype"
     header = ltype_dict[list_type]
 
+    # read lists which are going to be combined
     dfs = []
     for file in paths:
         df = pd.read_csv(file, sep='\t', names=header)
         dfs.append(df)
         
-    # outer join
+    # perform outer join
     combined_df = pd.concat(dfs).reset_index(drop=True)
+    display(combined_df)
 
     # TODO: inner join, etc ...
 
     # save custom list
     combined_df.to_csv(file_name, sep="\t", index=False)
+    print(f"Combined list saved: {os.path.abspath(file_name)}")
 
-    return os.path.abspath(file_name)
+    return combined_df
 
 
 def convertList():
     pass
-
-
-def mergeLists():
-    pass
-
