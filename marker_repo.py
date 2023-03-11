@@ -119,7 +119,7 @@ def searchDB(df, keywords, exact=False):
         The dataframe which contains the data to be searched.
     keywords : dictionary
         The dictionary containing the keywords for filtering.
-    exact : boolean
+    exact : boolean, default False
         If True perform an exact search, otherwise use "contains".
     
     Returns
@@ -212,7 +212,35 @@ def getPaths(REPO_LISTS_PATH, df):
     return paths
 
 
-def combineLists(paths, file_name="custom_list"):
+def getList(path, list_type):
+    """
+    Checks the input files: does the list and - if not None - the metadata file exist? 
+    Checks the format of the list: correct amount of columns? Separation correct?
+
+    Parameters
+    ----------
+    path : string
+        The path where the list is stored.
+    list_type : string
+        The type of the list (gene/region).
+
+    Returns
+    --------
+    pandas.DataFrame :
+        Dataframe containing the list
+    """
+
+    # create dictionary containing headers of different list types
+    # TODO use whitelist instead
+    ltype_dict = {"celltype": ["Cell type", "Marker"], "cellcycle": ["Marker", "Phase"], "mito": "Marker", "gender": "Marker", "blacklist": ["Chr", "Start", "Stop"]}
+    header = ltype_dict[list_type]
+
+    df = pd.read_csv(path, sep='\t', names=header)
+
+    return df
+
+
+def combineLists(paths, list_type, file_name="custom_list"):
     """
     Combine multiple lists to one custom list.
 
@@ -220,26 +248,18 @@ def combineLists(paths, file_name="custom_list"):
     ----------
     paths : array of strings
         The paths of the lists which will be combined.
-    file_name : string
+    file_name : string, default "custom_list"
         The file name of the combined list.
     Returns
     --------
-    array of strings :
-        The paths of the lists inside the dataframe.
+    pandas.DataFrame :
+        Dataframe containing the combinend list
     """
-
-    # create dictionary containing headers of different list types
-    # TODO use whitelist instead
-    ltype_dict = {"celltype": ["Cell type", "Marker"], "cellcycle": ["Marker", "Phase"], "mito": "Marker",
-                "gender": "Marker", "blacklist": ["Chr", "Start", "Stop"]}
-    list_type = "celltype"
-    header = ltype_dict[list_type]
 
     # read lists which are going to be combined
     dfs = []
-    for file in paths:
-        df = pd.read_csv(file, sep='\t', names=header)
-        dfs.append(df)
+    for path in paths:
+        dfs.append(getList(path, list_type))
         
     # perform outer join
     combined_df = pd.concat(dfs).reset_index(drop=True)
@@ -264,6 +284,7 @@ def showStatistics(REPO_LISTS_PATH, metadata, dpi=120):
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     metadata : dictionary
         The dictionary containing the metadata information.
+    dpi : integer, default 120
     """
 
     # TODO tissue plot - show count only
@@ -276,8 +297,14 @@ def showStatistics(REPO_LISTS_PATH, metadata, dpi=120):
     # Load all lists
     df = getDB(REPO_LISTS_PATH)
 
+    # Keep values which are not None
+    filters = {}
+    for key in metadata:
+        if metadata[key]:
+            filters[key] = metadata[key]
+
     # Plot statistics
-    for count, key in enumerate(metadata):
+    for count, key in enumerate(filters):
         stat_df = df[key].value_counts()
         stat_df.plot(kind='bar', title=key, ax=axes[axes_arr[count]])
     
