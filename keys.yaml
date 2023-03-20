@@ -1,1 +1,107 @@
+metadata:
+  mandatory: True
+  list: False
+  desc: 'This part contains the metadata of the list.'
+  value:
+    id:
+      mandatory: True
+      list: False
+      desc: 'Unique identifier of list.'
+      value: null
+      whitelist: False
+      input_type: short_text
+    list_name:
+      mandatory: True
+      list: False
+      desc: 'Name of the list.'
+      value: null
+      whitelist: False
+      input_type: short_text
+    date:
+      mandatory: True
+      list: False
+      desc: 'The date when the content of the list was published. Format dd.mm.yyyy.'
+      value: null
+      whitelist: False
+      input_type: date
+    source:
+      mandatory: True
+      list: False
+      desc: 'The source of the list.'
+      value: null
+      whitelist: False
+      input_type: short_text
+    tags:
+      mandatory: False # discuss
+      list: True
+      desc: 'Tags which describe the list.'
+      value: null
+      whitelist: False # discuss 
+      input_type: short_text
+    organism: # merge needed? simplify organism?
+      mandatory: True
+      list: False
+      desc: 'The organism identifier is composed of the organism name and the Taxonomy ID.'
+      special_case:
+        merge: organism_name
+      value:
+        organism_name:
+          mandatory: True
+          list: False
+          desc: ''
+          value: null
+          whitelist: True
+          input_type: select
+        taxonomy_id:
+          mandatory: True
+          list: False
+          desc: ''
+          value: null
+          whitelist: True
+          input_type: select
+    submitter:
+      mandatory: True
+      list: False
+      desc: 'The one who submitted the list to the repository.'
+      value:
+        name:
+          mandatory: True
+          list: False
+          desc: "The name should be entered in the format 'Last name, First name'."
+          value: null
+          whitelist: False
+          input_type: short_text
+        email:
+          mandatory: True # do we need this?
+          list: False
+          desc: 'The email adress of the submitter.'
+          value: null
+          whitelist: False
+          input_type: short_text
 
+marker_list:
+  mandatory: True
+  list: True
+  desc: 'The marker list you wish to add.'
+  value:
+    tissue:
+      mandatory: False
+      list: True
+      desc: ''
+      value: null
+      whitelist: True
+      input_type: select
+    type: # cell type markers, blacklists, mito genes, etc....
+      mandatory: True
+      list: False
+      desc: ''
+      value: null
+      whitelist: True
+      input_type: select
+    path:
+      mandatory: True
+      list: False
+      desc: 'The path were the list is located.'
+      value: null
+      whitelist: False
+      input_type: short_text # maybe path?
