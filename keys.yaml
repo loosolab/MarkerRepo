@@ -82,26 +82,40 @@ metadata:
 marker_list:
   mandatory: True
   list: True
-  desc: 'The marker list you wish to add.'
+  desc: 'Summary description of the marker lists you wish to add.'
   value:
-    tissue:
-      mandatory: False
-      list: True
-      desc: ''
-      value: null
-      whitelist: True
-      input_type: select
-    type: # cell type markers, blacklists, mito genes, etc....
+    name: # name of sublist
       mandatory: True
       list: False
       desc: ''
-      value: null
-      whitelist: True
-      input_type: select
-    path:
-      mandatory: True
-      list: False
-      desc: 'The path were the list is located.'
       value: null
       whitelist: False
-      input_type: short_text # maybe path?
+      input_type: short_text
+    type: # region or gene
+      mandatory: True
+      list: False
+      desc: ''
+      value: null
+      whitelist: True
+      input_type: select
+    markers: # marker list itself
+      mandatory: True
+      list: True
+      special_case:
+        merge: gene_name
+      value:
+        gene_name: # marker name
+          mandatory: True
+          list: False
+          desc: ''
+          value: null
+          whitelist: True
+          input_type: select
+        ensembl_id: # ensembl ID
+          mandatory: True
+          list: False
+          desc: ''
+          value: null
+          whitelist: True
+          input_type: select
+
