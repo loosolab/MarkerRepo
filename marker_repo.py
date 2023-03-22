@@ -3,6 +3,7 @@ import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import git
 
 
 def checkFiles(LIST_PATH, METADATA_PATH, list_type):
@@ -309,6 +310,40 @@ def showStatistics(REPO_LISTS_PATH, metadata, dpi=120):
         stat_df.plot(kind='bar', title=key, ax=axes[axes_arr[count]])
     
     plt.show()
+
+
+def getWhitelists():
+    # Based on https://gitlab.gwdg.de/loosolab/software/metadata-organizer/-/blob/main/metaTools.py
+    print('Fetching whitelists...\n')
+    if not os.path.exists('metadata_whitelists'):
+        repo = git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git/', 'metadata_whitelists')
+    else:
+        repo = git.Repo('metadata_whitelists')
+        o = repo.remotes.origin
+        o.pull()
+    print("Done!")
+
+
+# TODO - not finished yet
+def inputMetadata():
+    # read in structure file
+    key_yaml = utils.read_in_yaml(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
+                     'keys.yaml'))
+
+    print("Please enter the following metadata information.")
+    list_name = input("Name of the list: ")
+    date = input("The date when the content of the list was published. Format dd.mm.yyyy: ")
+    source = input("The source of the list: ")
+
+    addTags = input("Do you want to add tags? Enter yes or no: ")
+    addTags = True if addTags == "yes" else False
+    tags = []
+    while addTags:
+        tag = input("Tag: ")
+        tags.append(tag)
+        addTags = input("Do you want to add another tag? Enter yes or no: ")
+        addTags = True if addTags == "yes" else False
 
 
 def convertList():
