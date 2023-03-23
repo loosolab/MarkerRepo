@@ -1,10 +1,12 @@
 metadata:
   mandatory: True
+  display_name: ''
   list: False
   desc: 'This part contains the metadata of the list.'
   value:
     id:
       mandatory: True
+      display_name: ''
       list: False
       desc: 'Unique identifier of list.'
       value: null
@@ -12,6 +14,7 @@ metadata:
       input_type: short_text
     list_name:
       mandatory: True
+      display_name: ''
       list: False
       desc: 'Name of the list.'
       value: null
@@ -19,6 +22,7 @@ metadata:
       input_type: short_text
     date:
       mandatory: True
+      display_name: ''
       list: False
       desc: 'The date when the content of the list was published. Format dd.mm.yyyy.'
       value: null
@@ -26,6 +30,7 @@ metadata:
       input_type: date
     source:
       mandatory: True
+      display_name: ''
       list: False
       desc: 'The source of the list.'
       value: null
@@ -33,6 +38,7 @@ metadata:
       input_type: short_text
     tags:
       mandatory: False # discuss
+      display_name: ''
       list: True
       desc: 'Tags which describe the list.'
       value: null
@@ -40,6 +46,7 @@ metadata:
       input_type: short_text
     organism: # merge needed? simplify organism?
       mandatory: True
+      display_name: ''
       list: False
       desc: 'The organism identifier is composed of the organism name and the Taxonomy ID.'
       special_case:
@@ -47,6 +54,7 @@ metadata:
       value:
         organism_name:
           mandatory: True
+          display_name: ''
           list: False
           desc: ''
           value: null
@@ -54,6 +62,7 @@ metadata:
           input_type: select
         taxonomy_id:
           mandatory: True
+          display_name: ''
           list: False
           desc: ''
           value: null
@@ -61,11 +70,13 @@ metadata:
           input_type: select
     submitter:
       mandatory: True
+      display_name: ''
       list: False
       desc: 'The one who submitted the list to the repository.'
       value:
         name:
           mandatory: True
+          display_name: ''
           list: False
           desc: "The name should be entered in the format 'Last name, First name'."
           value: null
@@ -73,6 +84,7 @@ metadata:
           input_type: short_text
         email:
           mandatory: True # do we need this?
+          display_name: ''
           list: False
           desc: 'The email adress of the submitter.'
           value: null
@@ -81,11 +93,13 @@ metadata:
 
 marker_list:
   mandatory: True
+  display_name: ''
   list: True
   desc: 'Summary description of the marker lists you wish to add.'
   value:
     name: # name of sublist
       mandatory: True
+      display_name: ''
       list: False
       desc: ''
       value: null
@@ -93,6 +107,7 @@ marker_list:
       input_type: short_text
     type: # region or gene
       mandatory: True
+      display_name: ''
       list: False
       desc: ''
       value: null
@@ -100,12 +115,14 @@ marker_list:
       input_type: select
     markers: # marker list itself
       mandatory: True
+      display_name: ''
       list: True
       special_case:
         merge: gene_name
       value:
         gene_name: # marker name
           mandatory: True
+          display_name: ''
           list: False
           desc: ''
           value: null
@@ -113,6 +130,7 @@ marker_list:
           input_type: select
         ensembl_id: # ensembl ID
           mandatory: True
+          display_name: ''
           list: False
           desc: ''
           value: null
