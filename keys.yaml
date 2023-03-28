@@ -28,6 +28,14 @@ metadata:
       value: null
       whitelist: False
       input_type: date
+    type: # region or gene
+      mandatory: True
+      display_name: 'Type'
+      list: False
+      desc: ''
+      value: null
+      whitelist: True
+      input_type: select
     source:
       mandatory: False
       display_name: 'Source'
@@ -105,14 +113,6 @@ marker_list:
       value: null
       whitelist: False
       input_type: short_text
-    type: # region or gene
-      mandatory: True
-      display_name: 'Type'
-      list: False
-      desc: ''
-      value: null
-      whitelist: True
-      input_type: select
 
     # wouldn't it be easier to outsource the  markers itself? by just checking correct spelling by using the whitelists?
     markers: # marker list itself
