@@ -28,6 +28,14 @@ metadata:
       value: null
       whitelist: False
       input_type: date
+    type: # region or gene
+      mandatory: True
+      display_name: 'Type'
+      list: False
+      desc: 'The type of the list (genomic region or gene).'
+      value: null
+      whitelist: True
+      input_type: select
     source:
       mandatory: False
       display_name: 'Source'
@@ -101,41 +109,17 @@ marker_list:
       mandatory: True
       display_name: 'Name'
       list: False
-      desc: ''
+      desc: 'The name of the sublist.'
       value: null
       whitelist: False
       input_type: short_text
-    type: # region or gene
-      mandatory: True
-      display_name: 'Type'
-      list: False
-      desc: ''
-      value: null
-      whitelist: True
-      input_type: select
 
     # wouldn't it be easier to outsource the  markers itself? by just checking correct spelling by using the whitelists?
     markers: # marker list itself
       mandatory: True
       display_name: 'Markers'
       list: True
-      special_case:
-        merge: gene_name
-      value:
-        gene_name: # marker name
-          mandatory: True
-          display_name: 'Marker name'
-          list: False
-          desc: ''
-          value: null
-          whitelist: True
-          input_type: select
-        ensembl_id: # ensembl ID
-          mandatory: True
-          display_name: 'Ensembl ID'
-          list: False
-          desc: ''
-          value: null
-          whitelist: True
-          input_type: select
-
+      desc: 'List of markers'
+      value: null
+      whitelist: False
+      input_type: short_text
