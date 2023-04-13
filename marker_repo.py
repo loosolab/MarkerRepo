@@ -313,6 +313,9 @@ def showStatistics(REPO_LISTS_PATH, metadata, dpi=120):
 
 
 def getWhitelists():
+    """
+    Fetches whitelists of the metadata_whitelist repository.
+    """
     # Based on https://gitlab.gwdg.de/loosolab/software/metadata-organizer/-/blob/main/metaTools.py
     print('Fetching whitelists...\n')
     if not os.path.exists('metadata_whitelists'):
@@ -324,27 +327,30 @@ def getWhitelists():
     print("Done!")
 
 
-# TODO - not finished yet
-def inputMetadata():
-    # read in structure file
-    key_yaml = utils.read_in_yaml(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-                     'keys.yaml'))
+def dataframe_to_dict(df, info_col=0, marker_col=1):
+    """
+    Converts dataframe of marker list to dictionary,
+    using info_col as keys and marker_col as values.
 
-    print("Please enter the following metadata information.")
-    list_name = input("Name of the list: ")
-    date = input("The date when the content of the list was published. Format dd.mm.yyyy: ")
-    source = input("The source of the list: ")
+    # TODO only marker column available
 
-    addTags = input("Do you want to add tags? Enter yes or no: ")
-    addTags = True if addTags == "yes" else False
-    tags = []
-    while addTags:
-        tag = input("Tag: ")
-        tags.append(tag)
-        addTags = input("Do you want to add another tag? Enter yes or no: ")
-        addTags = True if addTags == "yes" else False
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The dataframe containing the marker list.
+    Returns
+    --------
+    dictionary :
+        The dictionary containing markers and corresponding information
+    """
+    result = {}
+    for index, row in df.iterrows():
+        key = row[info_col]
+        value = row[marker_col]
+        
+        if key in result:
+            result[key].append(value)
+        else:
+            result[key] = [value]
 
-
-def convertList():
-    pass
+    return result

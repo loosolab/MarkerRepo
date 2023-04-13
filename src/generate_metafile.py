@@ -8,10 +8,7 @@ import readline
 import re
 import copy
 
-try:
-    size = os.get_terminal_size()
-except OSError:
-    size = 80
+size = 100 # size of screen
 factor = []
 not_editable = ['id', 'project_name', 'sample_name', 'pooled', 'donor_count',
                 'technical_replicates']
@@ -33,23 +30,24 @@ class WhitelistCompleter:
 
 # ---------------------------------GENERATE-------------------------------------
 
-def generate_file(path, input_id, name, mandatory_mode):
+def generate_file(path, input_id, mandatory_mode, marker_list):
     """
     This function is used to generate metadata by calling functions to compute
     user input. It writes the metadata into a yaml file after validating it.
     :param path: the path to the folder the metadata file should be saved to
     :param input_id: the ID of the experiment
-    :param name: the name of the experiment
     :param mandatory_mode: if True only mandatory files are filled out
     """
 
     global id
     id = input_id
 
-    # test if metadata for give id already exists
+    file_name = f'{input_id}.yaml'
+
+    # test if list already exists
     if os.path.exists(
-            os.path.join(path, f'{input_id}_metadata.yaml')) or os.path.exists(
-            os.path.join(path, f'{input_id}_metadata.yml')):
+            os.path.join(path, file_name)) or os.path.exists(
+            os.path.join(path, file_name)):
         print(f'The metadata file for ID {input_id} already exists.')
         overwrite = parse_list_choose_one(['True ', 'False '],
                               f'\nDo you want to overwrite the file?')
@@ -66,7 +64,10 @@ def generate_file(path, input_id, name, mandatory_mode):
 
     # parse through metadata structure and fill it for every key
     for item in key_yaml:
-        if item in result_dict:
+        if item == 'marker_list':
+            result_dict['marker_list'] = marker_list
+
+        elif item in result_dict:
             result_dict[item] = {**result_dict[item],
                                  **get_redo_value(key_yaml[item], item, False,
                                                   mandatory_mode, result_dict,
@@ -125,8 +126,9 @@ def generate_file(path, input_id, name, mandatory_mode):
     # else:
     #     print(f'Validation complete. No errors found.\n')
 
-    utils.save_as_yaml(result_dict,
-                           os.path.join(path, f'{input_id}_metadata.yaml'))
+    list_path = os.path.join(path, file_name)
+    utils.save_as_yaml(result_dict, list_path)
+    print(f'Marker list saved:\n{list_path}')
     
     # not needed for marker repo
     # print_sample_names(result_dict, input_id, path)
@@ -284,7 +286,7 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
     This function calls other functions to fill in metadata information for a
     key depending on its type.
     :param node: a part of the keys.yaml that contains the key to be filled
-    :param key: tha name of the key to be filled
+    :param key: the name of the key to be filled
     :param return_dict: a dictionary that contains all filled in information
     :param optional: a bool that states if a key is optional
     :param mandatory_mode: a bool that states if mandatory mode is active
@@ -327,36 +329,15 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
                 # parameter to declare if a key is optional, False per default
                 optional = False
 
-                # if the key is 'experimental_factors', call a function to
-                # choose the analyzed experimental factors and their respective
-                # values and save them into the metadata dictionary
-                if item == 'experimental_factors':
-                    if 'organism' not in return_dict and 'organism' in result_dict:
-                        return_dict['organism'] = result_dict['organism']
-                    return_dict[item] = get_experimental_factors(node,
-                                                                 return_dict)
-
-                # if the key is 'conditions', call a function to create and
-                # choose the analyzed conditions from the entered experimental
-                # factors  and save them into the metadata dictionary
-                elif item == 'conditions':
-                    if 'organism' not in return_dict and 'organism' in result_dict:
-                        return_dict['organism'] = result_dict['organism']
-                    if 'experimental_factors' not in return_dict and 'experimental_factors' in result_dict:
-                        return_dict['experimental_factors'] = result_dict['experimental_factors']
-                    return_dict[item] = get_conditions(
-                        copy.deepcopy(return_dict['experimental_factors']),
-                        node[item]['value'],
-                        mandatory_mode, return_dict)
-
                 # test if the key is editable
-                elif item not in not_editable:
+                if item not in not_editable:
 
                     # TODO: specify function
                     # if the key is mandatory, call the ... function on it
 
                     # Debugging:
                     # print(item)
+                    # print(node)
                     # print(node[item])
                     
                     if node[item]['mandatory']:
@@ -643,517 +624,6 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
     return return_dict
 
 
-# --------------------------EXPERIMENTAL SETTING-------------------------------
-
-
-def get_experimental_factors(node, result_dict):
-    """
-    This function prompts the user to specify the examined experimental
-    factors, as well as the analyzed values for each selected factor.
-    :param node: a part of the keys.yaml
-    :param result_dict: a dictionary that contains all the information already
-                        specified by the user
-    :return: experimental_factors: a list containing a dictionary for every
-             selected experimental factor with the factor and its values
-    """
-
-    # read in experimental factors from the factor whitelist
-    factor_list = utils.get_whitelist('factor', result_dict)['whitelist']
-
-    # ask the user to choose experimental factors and parse the user input
-    print(
-        f'\nPlease select the analyzed experimental factors '
-        f'(1-{len(factor_list)}) divided by comma:\n')
-    print_option_list(factor_list, False)
-    used_factors = parse_input_list(factor_list, False)
-
-    # create a list to store experimental factors with their selected values
-    experimental_factors = []
-
-    # iterate through all user chosen experimental factors
-    for fac in used_factors:
-
-        # search for the structure of the factor in the metadata structure and
-        # save it
-        fac_node = list(utils.find_keys(node, fac))[0]
-
-        # call the get_redo_value function to fill in the values for the
-        # experimental factor
-        used_values = get_redo_value(fac_node, fac, False, False, result_dict,
-                                     False, True, True)
-
-        # if the experimental factor contains a dictionary as value and the
-        # structure of the factor contains a group key than add the group key
-        # to the values as ident_key
-        # TODO: what is ident key for?
-        if isinstance(
-                fac_node['value'], dict) and not \
-                set(['mandatory', 'list', 'desc', 'display_name', 'value']) \
-                <= set(fac_node['value'].keys()) and 'special_case' in \
-                fac_node:
-            if 'group' in fac_node['special_case']:
-                used_values['ident_key'] = fac_node['special_case']['group']
-            #elif 'merge' in fac_node['special_case']:
-            #    used_values['ident_key'] = fac_node['special_case']['merge']
-
-        # add a dictionary containing the experimental factor, its values and
-        # if it contains a list to the experimental_factors list
-
-        experimental_factors.append({'factor': fac,
-                                     'values': used_values,
-                                     'is_list': fac_node['list']})
-        global list_def
-        if {'factor': fac, 'values': used_values, 'is_list': fac_node['list']} not in list_def:
-            list_def.append({'factor': fac,
-                                         'values': copy.deepcopy(used_values),
-                                         'is_list': fac_node['list']})
-
-    # set the global parameter factor to the user chosen experimental factors
-    global factor
-    factor = used_factors
-    # return all chosen experimental factors with their values
-    return experimental_factors
-
-
-def get_conditions(factors, node, mandatory_mode, result_dict):
-    """
-    This function generates all combinations of the specified experimental
-    factors and their values and lets the user choose which of those he likes
-    to use as conditions.
-    :param factors: a dictionary containing the entered experimental factors
-                    and their values
-    :param node: a part of the keys.yaml
-    :param mandatory_mode: a bool that states if mandatory mode is active
-    :param result_dict: a dictionary containing all already filled information
-    :return: conditions: the analyzed conditions chosen by the user
-    """
-
-    # list to save all experimental factors that contain a dictionary
-    is_dict = []
-
-    # iterate through experimental_factors
-    for i in range(len(factors)):
-
-        # if the values of the experimental factor are in a dictionary or the
-        # factor contains a list (so the factor can occur multiple times in a
-        # condition) than call the function get_combinations to create all
-        # possible combinations of this factor with its values
-        if (isinstance(factors[i]['values'], dict) and
-                'value' not in factors[i]['values']
-                and 'unit' not in factors[i]['values']) \
-                or ('is_list' in factors[i] and factors[i]['is_list']):
-
-            # overwrite the values with the combinations
-            factors[i]['values'] = get_combinations(factors[i]['values'],
-                                                    factors[i]['factor'])
-            is_dict.append(f'{factors[i]["values"]}')
-
-            # remove ident_key from result dictionary
-            if 'ident_key' in result_dict['experimental_factors'][i]['values']:
-                result_dict['experimental_factors'][i]['values'].pop(
-                    'ident_key')
-
-        # if the values of the experimental factors are a list and a list
-        # elements contain dictionary and are not of type value_unit than
-        # combine all keys and their values to a single string value
-        elif isinstance(factors[i]['values'], list) and (
-                any(isinstance(elem, dict) and 'value' not in elem and 'unit'
-                    not in elem for elem in factors[i]['values'])):
-
-            # iterate through the values
-            for k in range(len(factors[i]['values'])):
-
-                # test if the value is a dictionary
-                if isinstance(factors[i]['values'][k], dict):
-
-                    # create a new value by chaining the keys and their values
-                    # in the following way:
-                    # factor:{key1:value1|key2:value2|...}
-                    val = factors[i]['values'][k]
-                    new_val = f'{factors[i]["factor"]}:{"{"}'
-                    for j in range(len(list(factors[i]['values'][k].keys()))):
-                        new_val = f'{new_val}{"|" if j > 0 else ""}' \
-                                  f'{list(val.keys())[j]}:' \
-                                  f'\"{val[list(val.keys())[j]]}\"'
-                    new_val = f'{new_val}{"}"}'
-
-                    # overwrite the value
-                    factors[i]['values'][k] = new_val
-
-                    # add the factor to is_dict
-                    is_dict.append(f'{factors[i]["factor"]}:{factors[i]["values"][k]}')
-
-        # remove is_list key from result dictionary
-        if 'is_list' in result_dict['experimental_factors'][i]:
-            result_dict['experimental_factors'][i].pop('is_list')
-
-    # parameter to declare if there are multiple conditions, default True
-    multi_conditions = True
-
-    # call get_condition_combinations to create all conditions
-    combinations = get_condition_combinations(factors)
-
-    # if there is only one experimental factor and the combinations match
-    # the values for the factor than set multi_combinations to False and apply
-    # the combinations as the used_combinations (= chosen by user)
-    if len(factors) == 1 and combinations == factors[0]['values']:
-        multi_conditions = False
-        used_combinations = combinations
-
-    # iterate through all factors
-    for fac in factors:
-
-        # create a list to store the dictionaries that represent the value
-        # of the experimental factors
-        vals = []
-
-        # iterate through the values of the factor, split them into
-        # a list of tuples containing factor and values and save the values
-        # in vals
-        for cond in fac['values']:
-            if f'{fac["factor"]}:{cond}' in is_dict:
-                val = ([x[1] for x in split_cond(cond)])
-                for y in val:
-                    vals.append(y)
-
-        # remove duplicates in vals
-        if len(vals) > 0:
-            vals = [dict(t) for t in {tuple(d.items()) for d in vals}]
-
-            # TODO: if value_unit
-            for elem in vals:
-                for key in elem:
-                    if key == 'treatment_duration':
-                        unit = elem[key].lstrip('0123456789')
-                        value = elem[key][:len(elem[key]) - len(unit)]
-                        elem[key] = {'unit': unit, 'value': int(value)}
-
-    # if there are multiple conditions, prompt the user to choose the ones he
-    # analyzed and parse the user input
-    if multi_conditions:
-        print(
-            f'\nPlease select the analyzed combinations of experimental '
-            f'factors (1-{len(combinations)}) divided by comma:\n')
-        print_option_list(combinations, False)
-        used_combinations = parse_input_list(combinations, False)
-
-    # call get_replicate_count to fill in information for every condition
-    conditions = get_replicate_count(used_combinations, node, mandatory_mode,
-                                     result_dict)
-
-    # return the filled conditions
-    return conditions
-
-
-def get_replicate_count(conditions, node, mandatory_mode, result_dict):
-    """
-    This function is used to ask the user for the number of biological
-    replicates for every condition. Per replicate, it calls a function to fill
-    in information for samples.
-    :param conditions: a lsit of all chosen conditions
-    :param node: a part of the keys.yaml
-    :param mandatory_mode: a bool that states if mandatory mode is active
-    :param result_dict: a dictionary containing already entered information
-    :return: condition_infos: a list containing sample information for every
-                              condition
-    """
-
-    # create a list to save the information for every condition
-    condition_infos = []
-
-    # iterate through every condition
-    for condition in conditions:
-
-        # create a dictionary for the biological replicates and save the
-        # condition name
-        replicates = {'condition_name': condition}
-
-        # print a caption for the condition, ask the user to enter the
-        # number of biological replicated and parse the user input
-        print(f'{"".center(size, "_")}\n\n'
-              f'{f"Condition: {condition}".center(size, " ")}\n'
-              f'{"".center(size, "_")}\n\n'
-              f'Please enter the number of biological replicates:')
-        bio = parse_input_value('count', '', False, 'number',
-                                result_dict)
-
-        # test if there are biological replicates
-        if bio > 0:
-
-            # parse user input to declare if the samples are pooled
-            input_pooled = parse_list_choose_one(['True ', 'False '],
-                                                 f'\nAre the samples pooled?')
-
-            # print a caption for the biological replicate
-            print(f'{"".center(size, "_")}\n\n'
-                  f'\033[1m{"Biological Replicates".center(size, " ")}'
-                  f'\033[0m\n')
-
-            # call fill_replicates to enter information for the replicate and
-            # save it in the replicates dictionary
-            replicates['biological_replicates'] = fill_replicates(
-                condition, bio, input_pooled,
-                node, mandatory_mode, result_dict)
-
-            # add the replicates dictionary to the list containing
-            # condition information
-            condition_infos.append(replicates)
-
-    # return the condition information
-    return condition_infos
-
-
-def fill_replicates(condition, bio, input_pooled, node,
-                    mandatory_mode, result_dict):
-    """
-    This function is used to enter information for biological replicates.
-    :param condition: the condition for which the biological replicated are
-                      filled
-    :param bio: the number of biological replicates
-    :param input_pooled: a bool that states if the samples were pooled
-    :param node: a part of the keys.yaml
-    :param mandatory_mode: a bool that states if mandatory mode is active
-    :param result_dict: a dictionary containing all filled information
-    :return: replicates: the replicates with information
-    """
-
-    # read in metadata structure
-    key_yaml = utils.read_in_yaml(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-                     'keys.yaml'))
-
-    # split the conditions into a list of tuples containing the factors and
-    # values
-    conditions = split_cond(condition)
-
-    # set organism to its abbreviated version by reading in the abbrev
-    # whitelist for organism and matching the input organism with the whitelist
-    organism = utils.get_whitelist(os.path.join('abbrev', 'organism_name'),
-                                   result_dict)['whitelist']
-    organism = organism[result_dict['organism']['organism_name']]
-
-    # create a dictionary for the biological replicates and fill it with the
-    # number of biological replicates and an empty list to append the samples
-    # to
-    replicates = {'count': bio, 'samples': []}
-
-    # iterate through the biological replicates
-    for i in range(1, bio+1):
-
-        # create a dictionary to save all information about the sample
-        samples = {}
-
-        # build the sample name out of the condition and the index of the
-        # biological replicate
-        sample_name = f'{condition}_b{"{:02d}".format(i)}'
-
-        # call get_short_name to create an abbreviated sample name
-        short_name = f'{get_short_name(condition, result_dict)}' \
-                     f'_b{"{:02d}".format(i)}'
-
-        # save the abbreviated sample name in the sampled dictionary
-        samples['sample_name'] = short_name
-
-        # print a caption for the sample
-        print(f'{f"Sample: {sample_name}".center(size, "-")}\n')
-
-        # save if the sample is pooled in the sample dictionary
-        samples['pooled'] = input_pooled
-
-        # prompt the user to enter a donor count if the sample is pooled or
-        # set the donor_count to 1 otherwise and save it into the sample
-        # dictionary
-        samples['donor_count'] = parse_input_value(
-            'donor_count', '', False, 'number', result_dict) if input_pooled \
-            else 1
-
-        # iterate through factors and values in the condition
-        for cond in conditions:
-
-            # find structure of the factor in metadata structure and save it
-            part_node = list(utils.find_keys(key_yaml, cond[0]))[0]
-
-            # test if the value is of type value_unit
-            if isinstance(part_node['value'], dict) and 'value' in \
-                    part_node['value'] and 'unit' in part_node['value']:
-
-                # split the value of the factor into value and unit, save them
-                # in a dictionary and overwrite the value of the factor with
-                # the dictionary
-                unit = cond[1].lstrip('0123456789')
-                value = cond[1][:len(cond[1]) - len(unit)]
-                samples[cond[0]] = {'unit': unit, 'value': int(value)}
-
-            else:
-
-                # set the input input type for the factor
-                if 'input_type' in part_node:
-                    input_type = part_node['input_type']
-                else:
-                    input_type = None
-
-                # test if the factor takes a list as value
-                if part_node['list']:
-
-                    # test if the value is a dictionary and if a key of the
-                    # dictionary takes a value_unit as input
-                    if isinstance(cond[1], dict):
-                        for key in cond[1]:
-                            #TODO: value unit
-                            if key == 'treatment_duration':
-
-                                # split the input value into unit an value,
-                                # save them into a dictionary and overwrite the
-                                # input value with the dictionary
-                                unit = cond[1][key].lstrip('0123456789')
-                                value = cond[1][key][
-                                        :len(cond[1][key]) - len(unit)]
-                                cond[1][key] = {'unit': unit,
-                                                'value': int(value)}
-
-                    if cond[0] not in samples:
-
-                        # if the factor is not yet in the sample, save the
-                        # factor value as a list
-                        samples[cond[0]] = [
-                            int(cond[1]) if input_type == 'int' else cond[1]]
-                    else:
-
-                        # if the factor is already in the sample, append the
-                        # factor value to the value list
-                        samples[cond[0]].append(
-                            int(cond[1]) if input_type == 'int' else cond[1])
-
-                else:
-
-                    # if the factor does not contain a list as value, save the
-                    # value to the sample
-                    samples[cond[0]] = int(cond[1]) if input_type == 'int' \
-                        else cond[1]
-
-        # merge the samples containing the factors with a dictionary returned
-        # by the fill_metadata_structure function called on the sample
-        # structure
-        samples = merge_dicts(
-            samples, fill_metadata_structure(
-                node['biological_replicates']
-                ['value']['samples']['value'], 'samples', samples,
-                False, mandatory_mode, result_dict, False, False))
-
-        # set number of measurements to 1 if it is not yet specified
-        if 'number_of_measurements' not in samples:
-            samples['number_of_measurements'] = 1
-
-        # call the get_technical_replicates function to create the technical
-        # replicates and save them to the sample
-        samples['technical_replicates'] = get_technical_replicates(
-            short_name, organism, samples['number_of_measurements'])
-
-        # add the filled sample to the replicate
-        replicates['samples'].append(samples)
-
-    # return the replicates for one condition
-    return replicates
-
-
-def get_technical_replicates(sample_name, organism, nom):
-    """
-    This function is used to ask for the number of technical replicates and to
-    create the filenames.
-    :param sample_name: the name of the biological replicate
-    :param organism: the specified organism
-    :param nom: the number of measurements
-    :return: a dictionary containing the number of technical replicates and the
-             filenames
-    """
-
-    # prompt user to input number of technical replicates and parse user input
-    print(f'\nPlease enter the number of technical replicates:')
-    count = parse_input_value('count', '', False, 'number', [])
-
-    # print error message and redo input if number <1 was stated
-    while count < 1:
-        print(f'The number of technical replicates has to be at least 1.')
-        count = parse_input_value('count', '', False, 'number', [])
-
-    # create a list to save the sample names
-    samples = []
-
-    # iterate over the number of technical replicates
-    for i in range(count):
-
-        # iterate over the number of measurements
-        for j in range(nom):
-
-            # add sample name containing id, organism, sample identifier,
-            # index of technical replicate and index of measurement to samples
-            # list
-            samples.append(f'{id}_{organism}_{sample_name}_'
-                           f't{"{:02d}".format(i + 1)}_'
-                           f'm{"{:02d}".format(j + 1)}')
-
-    # return a dictionary containing the number of technical replicates and the
-    # sample names
-    return {'count': count, 'sample_name': samples}
-
-
-def get_condition_combinations(factors):
-    """
-    This function returns all possible combinations for experimental factors
-    :param factors: multiple dictionaries containing the factors and their
-                    respective values
-    :return: a list containing all combinations of conditions
-    """
-
-    # create a list to store all conditions
-    combinations = []
-
-    # iterate over the factor dictionaries
-    for i in range(len(factors)):
-
-        # iterate over the values in a dictionary
-        for value in factors[i]['values']:
-
-            # if the value is of type value_unit, chain the value and its unit
-            # in a string
-            if isinstance(value, dict) and 'value' in value \
-                    and 'unit' in value:
-                value = f'{value["value"]}{value["unit"]}'
-
-            # if the value starts with '<factor>:' then add it to the
-            # combinations list, otherwise put the '<factor>:' in front of the
-            # value and add it to the combinations list
-            if type(value) == str and \
-                    value.split(':')[0] == factors[i]['factor']:
-                combinations.append(f'{value}')
-            else:
-                combinations.append(f'{factors[i]["factor"]}:"{value}"')
-
-            # iterate over the factor dictionarie starting at i+1
-            for j in range(i + 1, len(factors)):
-
-                # call this function on the sublist of factors from i+1
-                comb = get_condition_combinations(factors[j:])
-
-                # iterate over the combinations created from the sublist of
-                # factors
-                for c in comb:
-
-                    # if the value starts with '<factor>:' than chain it to the
-                    # created combination otherwise do the same but add
-                    # '<factor>:' in front of the value
-                    # add the chained combination to the combinations list
-                    if type(value) == str and \
-                            value.split(':')[0] == factors[i]['factor']:
-                        combinations.append(f'{value}-{c}')
-                    else:
-                        combinations.append(
-                            f'{factors[i]["factor"]}:"{value}"-{c}')
-
-    # return a list of all combinations
-    return combinations
-
-
 # ---------------------------------SUMMARY--------------------------------------
 
 
@@ -1184,35 +654,6 @@ def print_summary(result, depth, is_list):
     else:
         summary = f'{summary}{result}'
     return summary
-
-
-def print_sample_names(result, input_id, path):
-    """
-    This function creates a string out of all generated filenames that can be
-    printed.
-    :param result: the filled metadata dictionary
-    :param input_id: the id of the project
-    :param path: the path were the metadata should be saved to
-    """
-    samples = list(
-        utils.find_list_key(result, 'technical_replicates:sample_name'))
-    print(f'{"".center(size, "-")}\n'
-          f'{"SAMPLE NAMES".center(size, " ")}\n'
-          f'{"".center(size, "-")}\n')
-    sample_names = ''
-    for elem in samples:
-        for name in elem:
-            sample_names += f'- {name}\n'
-    print(sample_names)
-    save = parse_list_choose_one(
-        ['True ', 'False '], 'Do you want to save the sample names into a file?')
-    if save:
-        text_file = open(os.path.join(path, f'{input_id}_samples.txt'), 'w')
-        text_file.write(sample_names)
-        text_file.close()
-        print(
-            f'The sample names have been saved to file \'{path}/{input_id}'
-            f'_samples.txt\'.')
 
 
 # ---------------------------------UTILITIES------------------------------------
@@ -1522,110 +963,6 @@ def parse_group_choose_one(whitelist, w, header):
     return value
 
 
-def get_short_name(condition, result_dict):
-    """
-    This function creates an abbreviated version of a condition.
-    :param condition: the condition that should be abbreviated
-    :param result_dict: a dictionary containing all filled information
-    :return: short_condition: an abbreviated version of the condition
-    """
-    conds = split_cond(condition)
-    whitelist = utils.get_whitelist(os.path.join('abbrev', 'factor'),
-                                    result_dict)['whitelist']
-    if whitelist and 'whitelist_type' in whitelist and whitelist[
-            'whitelist_type'] == 'plain':
-        whitelist = whitelist['whitelist']
-    short_cond = []
-    for c in conds:
-        if whitelist and c[0] in whitelist:
-            k = whitelist[c[0]]
-        else:
-            k = c[0]
-        if isinstance(c[1], dict):
-            cond_whitelist = utils.get_whitelist(os.path.join('abbrev', c[0]),
-                                                 result_dict)
-            new_vals = {}
-            for v in c[1]:
-                if cond_whitelist and v in cond_whitelist['whitelist']:
-                    val_whitelist = utils.get_whitelist(
-                        os.path.join('abbrev', v), result_dict)
-                    if val_whitelist and c[1][v].lower() in \
-                            val_whitelist['whitelist']:
-                        new_vals[cond_whitelist["whitelist"][v]] = \
-                            val_whitelist["whitelist"][
-                            c[1][v].lower()]
-                    elif val_whitelist and c[1][v] in \
-                            val_whitelist['whitelist']:
-                        new_vals[cond_whitelist["whitelist"][v]] = \
-                            val_whitelist["whitelist"][
-                            c[1][v]]
-                    else:
-                        new_vals[cond_whitelist["whitelist"][v]] = c[1][v]
-            val = '+'.join([f'{x}.{new_vals[x].replace(" ", "")}' for x in
-                            list(new_vals.keys())])
-            short_cond.append(f'{k}#{val}')
-        else:
-            val_whitelist = utils.get_whitelist(os.path.join('abbrev', c[0]),
-                                                result_dict)
-            if val_whitelist and c[1].lower() in val_whitelist['whitelist']:
-                short_cond.append(
-                    f'{k}.{val_whitelist["whitelist"][c[1].lower()]}')
-            elif val_whitelist and c[1] in val_whitelist['whitelist']:
-                short_cond.append(f'{k}.{val_whitelist["whitelist"][c[1]]}')
-            else:
-                short_cond.append(f'{k}.{c[1]}')
-    short_condition = '-'.join(short_cond)
-    return short_condition
-
-
-def split_cond(condition):
-    """
-    This function splits the conditions into keys and value.
-    :param condition: a list of conditions that should be split
-    :return: conditions: a nested list containing the split keys and value of
-                         all factors in every condition
-    """
-    conditions = []
-    sub_cond = {}
-    sub = False
-    key = ''
-    sub_key = ''
-    value = ''
-    count = 0
-    start = 0
-    for i in range(len(condition)):
-        if condition[i] == '{':
-            sub = True
-            key = condition[start:i].rstrip(':')
-            start = i + 1
-        elif condition[i] == '|':
-            sub_cond[sub_key] = value
-            start = i + 1
-        elif condition[i] == '}':
-            sub_cond[sub_key] = value
-            conditions.append((key, sub_cond))
-            sub_cond = {}
-        elif condition[i] == '\"':
-            count += 1
-            if count % 2 == 0:
-                value = condition[start:i]
-            else:
-                if sub:
-                    sub_key = condition[start:i].rstrip(':')
-                else:
-                    key = condition[start:i].rstrip(':')
-                start = i + 1
-        elif condition[i] == '-' and count % 2 == 0:
-            if sub:
-                sub = False
-            else:
-                conditions.append((key, value))
-            start = i + 1
-    if not sub:
-        conditions.append((key, value))
-    return conditions
-
-
 def merge_dicts(a, b):
     """
     This function merges two dictionaries with the same structure to create
@@ -1652,140 +989,6 @@ def merge_dicts(a, b):
     else:
         res = a
     return res
-
-
-def get_combinations(values, key):
-    """
-    This function creates combinations for experimental factors that can occur
-    multiple times in one condition and lets the user choose those that were
-    analyzed.
-    :param values: the possible values of the factor
-    :param key: the name of the experimental factor
-    :return: used_values: the combinations of the experimental factor that were
-                          used in the conditions
-    """
-    is_dict = False
-    if 'ident_key' in values:
-        is_dict = True
-        if values['ident_key'] in values and len(
-                values[values['ident_key']]) > 1:
-            multi = parse_list_choose_one(
-                ['True ', 'False '],
-                f'\nCan one sample contain multiple {key}s?')
-        else:
-            multi = False
-            values.pop('ident_key')
-    else:
-        multi = parse_list_choose_one(
-            ['True ', 'False '], f'\nCan one sample contain multiple {key}s?')
-
-    if multi or is_dict:
-        merge_values = get_combis(values, key, multi)
-        print(
-            f'\nPlease select the analyzed combinations for {key} '
-            f'(1-{len(merge_values)}) divided by comma:\n')
-        print_option_list(merge_values, False)
-        used_values = parse_input_list(merge_values, False)
-    else:
-        used_values = values
-    return used_values
-
-
-def get_combis(values, key, multi):
-    """
-    This function creates all combinations for one experimental factor that can
-    occur multiple tims in one conditions.
-    :param values: the chosen values for the experimental factor
-    :param key: the name of the experimental factor
-    :param multi: a bool to state if the experimental factor occurs multiple
-                  times in one sample
-    :return: disease_values: a list of all possible combinations of the
-                             experimental factor
-    """
-    if 'multi' in values:
-        values.pop('multi')
-    if 'ident_key' in values and (
-            values['ident_key'] not in values or values['ident_key'] is None):
-        values.pop('ident_key')
-
-    if isinstance(values, list):
-        if multi:
-            possible_values = []
-            for i in range(len(values)):
-                if isinstance(values[i], dict):
-                    v = '|'.join([f'{k}:"{values[i][k]}"' for k in values[i]])
-                    s = f'{key}:{"{"}{v}{"}"}'
-                else:
-                    s = f'{key}:"{values[i]}"'
-                possible_values.append(s)
-                for j in range(i + 1, len(values)):
-                    if isinstance(values[j], dict):
-                        v = '|'.join(
-                            [f'{k}:"{values[j][k]}"' for k in values[j]])
-                        s2 = f'{key}:{"{"}{v}{"}"}'
-                    else:
-                        s2 = f'{key}:"{values[i]}"'
-                    s = f'{s}-{s2}"'
-                    possible_values.append(s)
-            return possible_values
-        else:
-            return values
-    else:
-        if multi:
-            possible_values = {}
-            disease_values = []
-            ident_key = values['ident_key']
-            depend = values[ident_key]
-            values.pop(ident_key)
-            values.pop('ident_key')
-            for elem in depend:
-                possible_values[elem] = []
-                value = [f'{ident_key}:"{elem}"']
-                for i in range(len(values.keys())):
-                    value2 = []
-                    for x in value:
-                        val = x
-                        for v in values[list(values.keys())[i]]:
-                            if isinstance(
-                                    v, dict) and 'value' in v and 'unit' in v:
-                                v = f'{v["value"]}{v["unit"]}'
-                            value2.append(
-                                f'{val}|{list(values.keys())[i]}:"{v}"')
-                    value = value2
-                possible_values[elem] = value
-                for z in possible_values:
-                    if z != elem:
-                        for x in possible_values[elem]:
-                            for y in possible_values[z]:
-                                disease_values.append(
-                                    f'{key}:{"{"}{x}{"}"}-{key}:{"{"}{y}{"}"}')
-
-        else:
-            disease_values = []
-            possible_values = []
-            if 'ident_key' in values and values['ident_key'] in values:
-                start = values['ident_key']
-                values.pop('ident_key')
-            else:
-                start = list(values.keys())[0]
-            for elem in values[start]:
-                v = [f'{start}:\"{elem}\"']
-                for k in values:
-                    if k != start:
-                        v2 = []
-                        for i in v:
-                            for x in values[k]:
-                                if isinstance(x, dict) and 'value' in x \
-                                        and 'unit' in x:
-                                    v2.append(
-                                        f'{i}|{k}:\"{x["value"]}{x["unit"]}\"')
-                                else:
-                                    v2.append(f'{i}|{k}:\"{x}\"')
-                        v = v2
-                possible_values = v
-                for z in possible_values:
-                    disease_values.append(f'{key}:{"{"}{z}{"}"}')
-        return disease_values
 
 
 def get_input_list(node, item, filled_object):
