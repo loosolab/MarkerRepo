@@ -75,26 +75,26 @@ def generate_file(path, input_id, name, mandatory_mode):
             result_dict[item] = get_redo_value(key_yaml[item], item, False,
                                                mandatory_mode, result_dict,
                                                True, False, True)
-        print(f'{"".center(size.columns, "-")}\n'
-              f'{"SUMMARY".center(size.columns, " ")}\n'
-              f'{"".center(size.columns, "-")}\n')
+        print(f'{"".center(size, "-")}\n'
+              f'{"SUMMARY".center(size, " ")}\n'
+              f'{"".center(size, "-")}\n')
         sum = print_summary(result_dict[item], 1, False)
         print(sum)
         print(f'\n\n')
-        print(f'{"".center(size.columns, "-")}\n')
+        print(f'{"".center(size, "-")}\n')
 
         correct = parse_list_choose_one(['True ', 'False '],
                                         f'\nIs the input correct? You can redo it by selecting \'False\'')
         while not correct:
             result_dict[item] = edit_item(item, result_dict[item], key_yaml[item], result_dict, mandatory_mode)
 
-            print(f'{"".center(size.columns, "-")}\n'
-                  f'{"SUMMARY".center(size.columns, " ")}\n'
-                  f'{"".center(size.columns, "-")}\n')
+            print(f'{"".center(size, "-")}\n'
+                  f'{"SUMMARY".center(size, " ")}\n'
+                  f'{"".center(size, "-")}\n')
             sum = print_summary(result_dict[item], 1, False)
             print(sum)
             print(f'\n\n')
-            print(f'{"".center(size.columns, "-")}\n')
+            print(f'{"".center(size, "-")}\n')
 
             correct = parse_list_choose_one(['True ', 'False '],
                                             f'\nIs the input correct? You can redo it by selecting \'False\'')
@@ -102,17 +102,17 @@ def generate_file(path, input_id, name, mandatory_mode):
 
     # TODO: extra function for summary
     # print summary
-    print(f'{"".center(size.columns, "-")}\n'
-          f'{"SUMMARY".center(size.columns, " ")}\n'
-          f'{"".center(size.columns, "-")}\n')
+    print(f'{"".center(size, "-")}\n'
+          f'{"SUMMARY".center(size, " ")}\n'
+          f'{"".center(size, "-")}\n')
     sum = print_summary(result_dict, 1, False)
     print(sum)
     print(f'\n\n')
-    print(f'{"".center(size.columns, "-")}\n')
+    print(f'{"".center(size, "-")}\n')
 
-    # print(f'{"".center(size.columns, "-")}\n'
-    #       f'{"FILE VALIDATION".center(size.columns, " ")}\n'
-    #       f'{"".center(size.columns, "-")}\n')
+    # print(f'{"".center(size, "-")}\n'
+    #       f'{"FILE VALIDATION".center(size, " ")}\n'
+    #       f'{"".center(size, "-")}\n')
     # valid, missing_mandatory_keys, invalid_keys, invalid_entries, \
     #     invalid_values, pool_warn, ref_genome_warn = validate_yaml.\
     #     validate_file(result_dict)
@@ -496,8 +496,8 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
                                             caption = elems[
                                                 int(indc) - 1].replace("\n",
                                                                        ", ").\
-                                                center(size.columns, ' ')
-                                            line = ''.center(size.columns, '_')
+                                                center(size, ' ')
+                                            line = ''.center(size, '_')
                                             print(f'\n'
                                                   f'{line}\n\n'
                                                   f'List element: {caption}\n'
@@ -589,10 +589,10 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
                                             # caption for the new element and
                                             # set new_element to True
 
-                                            h_line = ''.center(size.columns,
+                                            h_line = ''.center(size,
                                                                '_')
                                             caption = f'New {option}'.center(
-                                                size.columns, ' ')
+                                                size, ' ')
                                             print(f'\n'
                                                   f'{h_line}\n\n'
                                                   f'{caption}\n'
@@ -870,9 +870,9 @@ def get_replicate_count(conditions, node, mandatory_mode, result_dict):
 
         # print a caption for the condition, ask the user to enter the
         # number of biological replicated and parse the user input
-        print(f'{"".center(size.columns, "_")}\n\n'
-              f'{f"Condition: {condition}".center(size.columns, " ")}\n'
-              f'{"".center(size.columns, "_")}\n\n'
+        print(f'{"".center(size, "_")}\n\n'
+              f'{f"Condition: {condition}".center(size, " ")}\n'
+              f'{"".center(size, "_")}\n\n'
               f'Please enter the number of biological replicates:')
         bio = parse_input_value('count', '', False, 'number',
                                 result_dict)
@@ -885,8 +885,8 @@ def get_replicate_count(conditions, node, mandatory_mode, result_dict):
                                                  f'\nAre the samples pooled?')
 
             # print a caption for the biological replicate
-            print(f'{"".center(size.columns, "_")}\n\n'
-                  f'\033[1m{"Biological Replicates".center(size.columns, " ")}'
+            print(f'{"".center(size, "_")}\n\n'
+                  f'\033[1m{"Biological Replicates".center(size, " ")}'
                   f'\033[0m\n')
 
             # call fill_replicates to enter information for the replicate and
@@ -955,7 +955,7 @@ def fill_replicates(condition, bio, input_pooled, node,
         samples['sample_name'] = short_name
 
         # print a caption for the sample
-        print(f'{f"Sample: {sample_name}".center(size.columns, "-")}\n')
+        print(f'{f"Sample: {sample_name}".center(size, "-")}\n')
 
         # save if the sample is pooled in the sample dictionary
         samples['pooled'] = input_pooled
@@ -1196,9 +1196,9 @@ def print_sample_names(result, input_id, path):
     """
     samples = list(
         utils.find_list_key(result, 'technical_replicates:sample_name'))
-    print(f'{"".center(size.columns, "-")}\n'
-          f'{"SAMPLE NAMES".center(size.columns, " ")}\n'
-          f'{"".center(size.columns, "-")}\n')
+    print(f'{"".center(size, "-")}\n'
+          f'{"SAMPLE NAMES".center(size, " ")}\n'
+          f'{"".center(size, "-")}\n')
     sample_names = ''
     for elem in samples:
         for name in elem:
@@ -1241,16 +1241,16 @@ def enter_information(node, key, return_dict, optional, mandatory_mode,
         if first_node:
 
             # if the key is on top level, print a bigger caption
-            print(f'{"".center(size.columns, "_")}\n\n'
-                  f'{f"{display_name}".center(size.columns, " ")}\n'
-                  f'{"".center(size.columns, "_")}\n')
+            print(f'{"".center(size, "_")}\n\n'
+                  f'{f"{display_name}".center(size, " ")}\n'
+                  f'{"".center(size, "_")}\n')
         else:
 
             # if the key is on a lower level, print a smaller caption
             print(f'\n'
-                  f'{"".center(size.columns, "-")}\n'
-                  f'{f"{display_name}".center(size.columns, " ")}\n'
-                  f'{"".center(size.columns, "-")}\n')
+                  f'{"".center(size, "-")}\n'
+                  f'{f"{display_name}".center(size, " ")}\n'
+                  f'{"".center(size, "-")}\n')
 
         # print a description if one is stated in the metadata structure
         if node['desc'] != '':
@@ -1879,14 +1879,14 @@ def print_option_list(options, desc):
         data = [[f'{i + 1}:', f'{options[i]}', desc[i]] for i in
                 range(len(options))]
         print(tabulate(data, tablefmt='plain',
-                       maxcolwidths=[size.columns * 1 / 8,
-                                     size.columns * 3 / 8,
-                                     size.columns * 4 / 8]))
+                       maxcolwidths=[size * 1 / 8,
+                                     size * 3 / 8,
+                                     size * 4 / 8]))
     else:
         data = [[f'{i + 1}:', f'{options[i]}'] for i in range(len(options))]
         print(tabulate(data, tablefmt='plain',
-                       maxcolwidths=[size.columns * 1 / 8,
-                                     size.columns * 7 / 8]))
+                       maxcolwidths=[size * 1 / 8,
+                                     size * 7 / 8]))
 
 
 def parse_input_list(options, terminable):
