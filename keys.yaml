@@ -28,11 +28,19 @@ metadata:
       value: null
       whitelist: False
       input_type: date
-    type: # region or gene
+    marker_type: # region or gene
       mandatory: True
       display_name: 'Type'
       list: False
       desc: 'The type of the list (genomic region or gene).'
+      value: null
+      whitelist: True
+      input_type: select
+    genome_version: # hg19, hg38, ...
+      mandatory: False
+      display_name: 'Genome version'
+      list: False
+      desc: 'Genome version of markers. WARNING: this key is essential when working with genomic regions!'
       value: null
       whitelist: True
       input_type: select
