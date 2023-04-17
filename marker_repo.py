@@ -338,6 +338,10 @@ def dataframe_to_dict(df, info_col=0, marker_col=1):
     ----------
     df : pandas.DataFrame
         The dataframe containing the marker list.
+    info_col : integer
+        The column which contains additional information like cell type or phase.
+    marker_col: integer
+        The column which contains the marker (gene or genomic region).
     Returns
     --------
     dictionary :
@@ -354,3 +358,27 @@ def dataframe_to_dict(df, info_col=0, marker_col=1):
             result[key] = [value]
 
     return result
+
+
+def update_markers(df, marker_dict):
+    """
+    Updates markers by extending gene names withi ensembl IDs and the other way round.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The dataframe containing the marker list.
+    marker_dict : dictionary
+        Dictionary containing the names and IDs as keys and values.
+    Returns
+    --------
+    dictionary :
+        The dictionary containing markers and corresponding information
+    """
+
+    def apply_update(marker):
+        return marker + ' ' + marker_dict[marker] if marker in marker_dict else marker
+
+    df['Marker'] = df['Marker'].apply(apply_update)
+
+    return df
