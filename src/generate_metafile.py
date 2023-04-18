@@ -1007,7 +1007,7 @@ def get_input_list(node, item, filled_object):
             if len(whitelist['whitelist']) > 30:
                 used_values = []
                 redo = True
-                print(f'\nPlease enter the values for experimental factor '
+                print(f'\nPlease enter the values for tags '
                       f'{item}.')
                 while redo:
                     input_value = complete_input(whitelist['whitelist'],
