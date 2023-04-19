@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import git
+import src.utils as utils
 
 
 def checkFiles(LIST_PATH, METADATA_PATH, list_type):
@@ -382,3 +383,52 @@ def update_markers(df, marker_dict):
     df['Marker'] = df['Marker'].apply(apply_update)
 
     return df
+
+
+def select(key):
+    """
+    Shows selection of whitelist and returns selected value.
+
+    Parameters
+    ----------
+    key : string
+        The key of the whitelist. For example "organism".
+
+    Returns
+    --------
+    string :
+        The selection of the whitelist.
+    """
+    whitelist = utils.read_whitelist(key)['whitelist']
+    print(f"Select {key}")
+    for i, value in enumerate(whitelist):
+        print(str(i+1) + ":\t" + value)
+    
+    selection = whitelist[int(input())-1]
+    print(f"Selection: {selection}\n")
+
+    return selection
+
+
+def get_gene_dict(organism):
+    """
+    Creates dictionary of whitelist of genes of specific organism.
+
+    Parameters
+    ----------
+    organism : string
+        The organism that owns the corresponding genes.
+
+    Returns
+    --------
+    dictionary :
+        Dictionary which contains the gene names and ensembl IDs.
+    """
+    gene_dict = {}
+    w_markers = utils.read_whitelist(f"genes/{organism.split(' ')[0]}")['whitelist']
+    for marker in w_markers:
+        name, ensg = marker.split(" ")
+        gene_dict[name] = ensg
+        gene_dict[ensg] = name
+
+    return gene_dict
