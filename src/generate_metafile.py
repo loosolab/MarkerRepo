@@ -10,8 +10,7 @@ import copy
 
 size = 100 # size of screen
 factor = []
-not_editable = ['id', 'project_name', 'sample_name', 'pooled', 'donor_count',
-                'technical_replicates']
+not_editable = ['id', 'marker_list', 'organism', 'marker_type']
 id = ''
 exp_fac = {}
 list_def = []
@@ -30,7 +29,7 @@ class WhitelistCompleter:
 
 # ---------------------------------GENERATE-------------------------------------
 
-def generate_file(path, input_id, mandatory_mode, marker_list):
+def generate_file(path, input_id, mandatory_mode, marker_list, organism, marker_type):
     """
     This function is used to generate metadata by calling functions to compute
     user input. It writes the metadata into a yaml file after validating it.
@@ -59,11 +58,13 @@ def generate_file(path, input_id, mandatory_mode, marker_list):
         os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
                      'keys.yaml'))
 
-    # create metadata dictionary and fill it with the given id and name
-    result_dict = {}
+    # create metadata dictionary and fill it with the given organism and marker type
+    org_dict = {'organism_name': organism.split()[0], 'taxonomy_id': organism.split()[1]}
+    result_dict = {'metadata': {'organism': org_dict, 'marker_type': marker_type}}
 
     # parse through metadata structure and fill it for every key
     for item in key_yaml:
+        # print(f"ITEM: {key_yaml[item]}")
         if item == 'marker_list':
             result_dict['marker_list'] = marker_list
 
@@ -325,7 +326,6 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
             # iterate through all keys in the given part of the metadata
             # structure
             for item in node:
-
                 # parameter to declare if a key is optional, False per default
                 optional = False
 
@@ -339,7 +339,7 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
                     # print(item)
                     # print(node)
                     # print(node[item])
-                    
+
                     if node[item]['mandatory']:
                         return_dict[item] = get_redo_value(node[item], item,
                                                            optional,
