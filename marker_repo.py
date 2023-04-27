@@ -428,7 +428,7 @@ def get_gene_dict(organism):
     gene_dict = {}
     w_markers = utils.read_whitelist(f"genes/{organism.split(' ')[0]}")['whitelist']
     for marker in w_markers:
-        name, ensg = marker.split(" ")
+        name, ensg = marker.split(" ")[0].upper(), marker.split(" ")[1].upper()
         gene_dict[name] = ensg
         gene_dict[ensg] = name
 
