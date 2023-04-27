@@ -10,7 +10,7 @@ import copy
 
 size = 100 # size of screen
 factor = []
-not_editable = ['id', 'marker_list', 'organism', 'marker_type']
+not_editable = ['list_name', 'id', 'marker_list', 'organism', 'marker_type']
 id = ''
 exp_fac = {}
 list_def = []
@@ -29,7 +29,7 @@ class WhitelistCompleter:
 
 # ---------------------------------GENERATE-------------------------------------
 
-def generate_file(path, input_id, mandatory_mode, marker_list, organism, marker_type):
+def generate_file(path, input_id, name, mandatory_mode, marker_list, organism, marker_type):
     """
     This function is used to generate metadata by calling functions to compute
     user input. It writes the metadata into a yaml file after validating it.
@@ -41,13 +41,13 @@ def generate_file(path, input_id, mandatory_mode, marker_list, organism, marker_
     global id
     id = input_id
 
-    file_name = f'{input_id}.yaml'
+    file_name = f'{name}_{input_id}.yaml'
 
     # test if list already exists
     if os.path.exists(
             os.path.join(path, file_name)) or os.path.exists(
             os.path.join(path, file_name)):
-        print(f'The metadata file for ID {input_id} already exists.')
+        print(f'The marker list {input_id} already exists.')
         overwrite = parse_list_choose_one(['True ', 'False '],
                               f'\nDo you want to overwrite the file?')
         if not overwrite:
@@ -60,7 +60,7 @@ def generate_file(path, input_id, mandatory_mode, marker_list, organism, marker_
 
     # create metadata dictionary and fill it with the given organism and marker type
     org_dict = {'organism_name': organism.split()[0], 'taxonomy_id': organism.split()[1]}
-    result_dict = {'metadata': {'organism': org_dict, 'marker_type': marker_type}}
+    result_dict = {'metadata': {'id': input_id, 'list_name': name, 'organism': org_dict, 'marker_type': marker_type}}
 
     # parse through metadata structure and fill it for every key
     for item in key_yaml:

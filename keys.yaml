@@ -98,157 +98,156 @@ metadata:
           value: null
           whitelist: False
           input_type: short_text
-
-tags:
-  mandatory: False # discuss
-  display_name: 'Tags'
-  list: True
-  desc: 'Tags which describe the list.'
-  value: 
-    genotype:
-      mandatory: False
-      display_name: 'Genotype'
+    tags:
+      mandatory: False # discuss
+      display_name: 'Tags'
       list: False
-      desc: ''
-      value: null
-      whitelist: True
-      input_type: select
-    gender:
-      mandatory: False
-      display_name: 'Gender'
-      list: False
-      desc: ''
-      value: null
-      whitelist: True
-      input_type: select
-    life_stage:
-      mandatory: False
-      display_name: 'Life stage'
-      list: False
-      desc: ''
-      value: null
-      whitelist: True
-      input_type: select
-    ethnicity:
-      mandatory: False
-      display_name: 'Ethnicity'
-      list: False
-      desc: ''
-      value: null
-      whitelist: True
-      input_type: select
-    tissue:
-      mandatory: False
-      display_name: 'Tissue'
-      list: True
-      desc: ''
-      value: null
-      whitelist: True
-      input_type: select
-    disease:
-      mandatory: False
-      display_name: 'Disease'
-      list: True
-      desc: ''
-      special_case:
-        group: 'disease_type'
-      value:
-        disease_type:
+      desc: 'Tags which describe the list.'
+      value: 
+        genotype:
           mandatory: False
-          display_name: 'Type'
+          display_name: 'Genotype'
           list: False
           desc: ''
           value: null
           whitelist: True
           input_type: select
-        disease_status:
-          mandatory: True
-          display_name: 'Status'
-          list: False
-          desc: ''
-          value: null
-          whitelist: True
-          input_type: select
-        disease_stage:
+        gender:
           mandatory: False
-          display_name: 'Stage'
+          display_name: 'Gender'
           list: False
           desc: ''
           value: null
           whitelist: True
           input_type: select
-    injury:
-      mandatory: False
-      display_name: 'Injury'
-      list: True
-      desc: ''
-      special_case:
-        group: injury_type
-      value:
-        injury_status:
-          mandatory: True
-          display_name: 'Status'
-          list: False
-          desc: ''
-          value: null
-          whitelist: True
-          input_type: select
-        injury_type:
+        life_stage:
           mandatory: False
-          display_name: 'Type'
+          display_name: 'Life stage'
           list: False
           desc: ''
           value: null
           whitelist: True
           input_type: select
-    treatment:
-      mandatory: False
-      display_name: 'Treatment'
-      list: True
-      desc: ''
-      special_case:
-        group: 'treatment_type'
-      value:
-        treatment_type:
+        ethnicity:
           mandatory: False
-          display_name: 'Type'
+          display_name: 'Ethnicity'
           list: False
           desc: ''
           value: null
           whitelist: True
           input_type: select
-        treatment_status:
-          mandatory: True
-          display_name: 'Status'
-          list: False
-          desc: ''
-          value: null
-          whitelist: True
-          input_type: select
-        treatment_duration:
+        tissue:
           mandatory: False
-          display_name: 'Duration'
-          list: False
+          display_name: 'Tissue'
+          list: True
+          desc: ''
+          value: null
+          whitelist: True
+          input_type: select
+        disease:
+          mandatory: False
+          display_name: 'Disease'
+          list: True
           desc: ''
           special_case:
-            value_unit: time
+            group: 'disease_type'
           value:
-            value:
-              mandatory: True
-              display_name: 'Value'
-              list: False
-              desc: ''
-              value: null
-              whitelist: False
-              input_type: number
-            unit:
+            disease_type:
               mandatory: False
-              display_name: 'Unit'
+              display_name: 'Type'
               list: False
               desc: ''
               value: null
               whitelist: True
               input_type: select
+            disease_status:
+              mandatory: True
+              display_name: 'Status'
+              list: False
+              desc: ''
+              value: null
+              whitelist: True
+              input_type: select
+            disease_stage:
+              mandatory: False
+              display_name: 'Stage'
+              list: False
+              desc: ''
+              value: null
+              whitelist: True
+              input_type: select
+        injury:
+          mandatory: False
+          display_name: 'Injury'
+          list: True
+          desc: ''
+          special_case:
+            group: injury_type
+          value:
+            injury_status:
+              mandatory: True
+              display_name: 'Status'
+              list: False
+              desc: ''
+              value: null
+              whitelist: True
+              input_type: select
+            injury_type:
+              mandatory: False
+              display_name: 'Type'
+              list: False
+              desc: ''
+              value: null
+              whitelist: True
+              input_type: select
+        treatment:
+          mandatory: False
+          display_name: 'Treatment'
+          list: True
+          desc: ''
+          special_case:
+            group: 'treatment_type'
+          value:
+            treatment_type:
+              mandatory: False
+              display_name: 'Type'
+              list: False
+              desc: ''
+              value: null
+              whitelist: True
+              input_type: select
+            treatment_status:
+              mandatory: True
+              display_name: 'Status'
+              list: False
+              desc: ''
+              value: null
+              whitelist: True
+              input_type: select
+            treatment_duration:
+              mandatory: False
+              display_name: 'Duration'
+              list: False
+              desc: ''
+              special_case:
+                value_unit: time
+              value:
+                value:
+                  mandatory: True
+                  display_name: 'Value'
+                  list: False
+                  desc: ''
+                  value: null
+                  whitelist: False
+                  input_type: number
+                unit:
+                  mandatory: False
+                  display_name: 'Unit'
+                  list: False
+                  desc: ''
+                  value: null
+                  whitelist: True
+                  input_type: select
 
 marker_list:
   mandatory: True

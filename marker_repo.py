@@ -214,7 +214,7 @@ def getPaths(REPO_LISTS_PATH, df):
     return paths
 
 
-def getList(path, list_type):
+def getList(path, info_col=1, marker_col=0):
     """
     Checks the input files: does the list and - if not None - the metadata file exist? 
     Checks the format of the list: correct amount of columns? Separation correct?
@@ -234,8 +234,9 @@ def getList(path, list_type):
 
     # create dictionary containing headers of different list types
     # TODO use whitelist instead
-    ltype_dict = {"celltype": ["Cell type", "Marker"], "cellcycle": ["Marker", "Phase"], "mito": "Marker", "gender": "Marker", "blacklist": ["Chr", "Start", "Stop"]}
-    header = ltype_dict[list_type]
+    # ltype_dict = {"celltype": ["Cell type", "Marker"], "cellcycle": ["Marker", "Phase"], "mito": "Marker", "gender": "Marker", "blacklist": ["Chr", "Start", "Stop"]}
+    headers = ["Marker", "Info"]
+    header = [headers[marker_col], headers[info_col]]
 
     df = pd.read_csv(path, sep='\t', names=header)
 
@@ -432,3 +433,22 @@ def get_gene_dict(organism):
         gene_dict[ensg] = name
 
     return gene_dict
+
+
+def get_UID(path):
+    existing_uids = []
+    
+    # Iterate through all files and subdirectories in the given path
+    for root, _, files in os.walk(path):
+        for file in files:
+            # Extract the UID from the filename
+            file_parts = file.split('_')
+            uid = file_parts[-1].split('.yaml')[0]
+            existing_uids.append(uid)
+
+    # Generate a new UID and make sure it is unique
+    new_uid = 1
+    while str(new_uid) in existing_uids:
+        new_uid += 1
+
+    return str(new_uid)
