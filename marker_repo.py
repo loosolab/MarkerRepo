@@ -5,110 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import git
 import src.utils as utils
-
-
-def checkFiles(LIST_PATH, METADATA_PATH, list_type):
-    """
-    Checks the input files: does the list and - if not None - the metadata file exist? 
-    Checks the format of the list: correct amount of columns? Separation correct?
-
-    Parameters
-    ----------
-    LIST_PATH : string
-        The path where the list is stored.
-    METADATA_PATH : string
-        The path where the metadata file of the list is stored.
-    list_type : string
-        The type of the list (gene/region).
-
-    Returns
-    --------
-    boolean :
-        True if the file(s) exist and the input format seems to be correct, False else 
-    """
-
-    # Checking path(s) of input files
-    files = [LIST_PATH]
-    if METADATA_PATH:
-        files.append(METADATA_PATH)
-    for file in files:
-        if os.path.isfile(file):
-            print(f"{file} exists.")
-        else:
-            print(f"Please make sure that your input is correct. {file} does not exist.")
-            return False
-     
-    # Checking format of input list
-    correct = True
-    with open(f"{LIST_PATH}", "r") as list_file:
-        lines = list_file.readlines()
-        if list_type == "celltype" or "cellcycle":
-            for line in lines:
-                if len(line.split("\t")) != 2:
-                    print("Please make sure that your input file consists of two columns, separated by tabs.")
-                    if list_type == "celltype":
-                        print(f"First column: cell type\nSecond column: gene")
-                    if list_type == "cellcycle":
-                        print(f"First column: cellcycle gene\nSecond column: phase")
-                    correct = False
-                    break
-        elif list_type == "mito" or "gender":
-            for line in lines:
-                if len(line.split("\t")) != 1:
-                    print("Please make sure that your input file consists of one column.")
-                    print("This column should contain gene names.")
-                    correct = False
-                    break
-        # TODO: blacklist
-        if correct:
-            print("The format of the list seems correct.")
-            return True
-        else:
-            return False
-
-
-def addList(REPO_LISTS_PATH, LIST_PATH, metadata):
-    """
-    Adds a new list to the Marker Gene Repo.
-
-    Parameters
-    ----------
-    REPO_LISTS_PATH : string
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    LIST_PATH : string
-        The path where the list is stored.
-    metadata : dictionary
-        The dictionary containing the metadata information.
-
-    Returns
-    --------
-    string :
-        The path of the newly added list
-    """
-
-    # create folder(s) and get path of new list
-    folder = f"{REPO_LISTS_PATH}/{metadata['Kind']}/{metadata['Organism']}/{metadata['Tissue']}/{metadata['Year']}/{metadata['List type']}"
-    new_file_path = f"{folder}/{metadata['Title']}"
-
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-        print(f"Folder {folder} created.")
-
-    # check whether list already exists
-    if os.path.isfile(new_file_path):
-        go_on = input(f"The file {new_file_path} already exists.\nDo you want to override the existing file?\
-        Enter yes or no: ")
-        override = True if go_on == "yes" else False
-        # override existing file
-        if override:
-            shutil.copyfile(LIST_PATH, f"{folder}/{metadata['Title']}")
-            print(f"Replaced list in folder {folder}.")
-    else:
-        # copy list to Marker Repo
-        shutil.copyfile(LIST_PATH, f"{folder}/{metadata['Title']}")
-        print(f"Copied list to {folder}.")
-
-    return f"{folder}/{metadata['Title']}"
+import yaml
 
 
 def searchDB(df, keywords, exact=False):
@@ -146,6 +43,50 @@ def searchDB(df, keywords, exact=False):
     return df.reset_index(drop=True)
 
 
+def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
+    """
+    Flatten a nested dictionary, concatenating keys with a separator.
+
+    Parameters
+    ----------
+    d : dict
+        The input dictionary to be flattened.
+    parent_key : string
+        The parent key used during recursion (default is an empty string).
+    sep : string 
+        The separator used to concatenate keys (default is an underscore).
+    list_sep : string
+        The separator used to join list elements in a single cell (default is a newline character).
+
+    Returns:
+    dict :
+        The flattened dictionary with concatenated keys.
+    """
+    items = []
+    for k, v in d.items():
+        new_key = parent_key + sep + k if parent_key else k
+        if isinstance(v, dict):
+            # if the value is a dictionary, recursively flatten it
+            items.extend(flatten_dict(v, new_key, sep=sep, list_sep=list_sep).items())
+        elif isinstance(v, list):
+            # if the value is a list, process its elements
+            list_items = []
+            for i, elem in enumerate(v):
+                if isinstance(elem, dict):
+                    # if the element is a dictionary, join its key-value pairs with the list separator
+                    list_items.append(list_sep.join(f"{key}: {value}" for key, value in elem.items()))
+                else:
+                    # otherwise, convert the element to a string
+                    list_items.append(str(elem))
+            # join the list items with the list separator and store them in a single cell
+            items.append((new_key, list_sep.join(list_items)))
+        else:
+            # if the value is not a dictionary or a list, store it directly
+            items.append((new_key, v))
+            
+    return dict(items)
+
+
 def getDB(REPO_LISTS_PATH):
     """
     Get the database of the Marker Repo as dataframe.
@@ -161,57 +102,28 @@ def getDB(REPO_LISTS_PATH):
         Dataframe containing all lists
     """
 
-    # get all paths of lists of the Marker Repo
-    files = [os.path.join(root, name) for root, dirs, files in os.walk(REPO_LISTS_PATH) for name in files]
-    kinds, organisms, tissues, years, ltypes, titles = ([] for i in range(6))
+    data = []
 
-    # create dataframe of paths
-    for file in files:
-        file = file.split("lists/")[1]
-        kind, organism, tissue, year, ltype, title = file.split("/")
-        kinds.append(kind)
-        organisms.append(organism)
-        tissues.append(tissue)
-        years.append(year)
-        ltypes.append(ltype)
-        titles.append(title)
+    # iterate through all files in the folder and subfolders
+    for root, dirs, files in os.walk(REPO_LISTS_PATH):
+        for file in files:
+            if file.endswith(".yaml"):
+                file_path = os.path.join(root, file)
 
-    list_dict = {"Kind": kinds, "Organism": organisms, "Tissue": tissues, 
-                "Year": years, "List type": ltypes, "Title": titles}
+                # read YAML file and extract all leaf values from "metadata"
+                with open(file_path, 'r', encoding='utf-8') as yaml_file:
+                    yaml_data = yaml.safe_load(yaml_file)
+                    metadata = yaml_data.get("metadata", {})
 
-    df = pd.DataFrame(list_dict)
+                    # flatten the dictionary and save the results
+                    flattened_metadata = flatten_dict(metadata)
+                    data.append(flattened_metadata)
 
+    # create DataFrame and set "id" as index
+    df = pd.DataFrame(data)
+    if "id" in df.columns:
+        df.set_index("id", inplace=True)
     return df
-
-
-def getPaths(REPO_LISTS_PATH, df):
-    """
-    Converts the dataframe of the Marker Repo DB to paths.
-
-    Parameters
-    ----------
-    REPO_LISTS_PATH : string
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    df : pandas.DataFrame
-        The dataframe containing lists of the Marker Repo.
-    Returns
-    --------
-    array of strings :
-        The paths of the lists inside the dataframe.
-    """
-
-    # read dataframe, convert rows to strings
-    paths = []
-    rows = df.to_string(header=False, index=False, index_names=False).split('\n')
-
-    # convert strings to paths
-    files = ['/'.join(row.split()) for row in rows]
-    for file in files:
-        path = f"{REPO_LISTS_PATH}/{file}"
-        paths.append(path)
-        print(path)
-    
-    return paths
 
 
 def getList(path, info_col=1, marker_col=0):
