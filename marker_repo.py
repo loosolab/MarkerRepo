@@ -216,15 +216,17 @@ def getPaths(REPO_LISTS_PATH, df):
 
 def getList(path, info_col=1, marker_col=0):
     """
-    Checks the input files: does the list and - if not None - the metadata file exist? 
-    Checks the format of the list: correct amount of columns? Separation correct?
+    Reads the marker lists and converts it to a dataframe using the information
+    of info_col and marker_col.
 
     Parameters
     ----------
     path : string
         The path where the list is stored.
-    list_type : string
-        The type of the list (gene/region).
+    info_col : integer
+        The column which contains additional information like cell type or phase.
+    marker_col: integer
+        The column which contains the marker (gene or genomic region).
 
     Returns
     --------
@@ -232,13 +234,14 @@ def getList(path, info_col=1, marker_col=0):
         Dataframe containing the list
     """
 
-    # create dictionary containing headers of different list types
-    # TODO use whitelist instead
     # ltype_dict = {"celltype": ["Cell type", "Marker"], "cellcycle": ["Marker", "Phase"], "mito": "Marker", "gender": "Marker", "blacklist": ["Chr", "Start", "Stop"]}
     headers = ["Marker", "Info"]
-    header = [headers[marker_col], headers[info_col]]
-
-    df = pd.read_csv(path, sep='\t', names=header)
+    if type(info_col) == int:
+        header = [headers[marker_col], headers[info_col]]
+        df = pd.read_csv(path, sep='\t', names=header)
+    else:
+        df = pd.read_csv(path, sep='\t', names=[headers[0]])
+        df[headers[1]] = info_col
 
     return df
 
@@ -349,10 +352,11 @@ def dataframe_to_dict(df, info_col=0, marker_col=1):
     dictionary :
         The dictionary containing markers and corresponding information
     """
+
     result = {}
     for index, row in df.iterrows():
-        key = row[info_col]
-        value = row[marker_col]
+        key = row["Info"]
+        value = row["Marker"]
         
         if key in result:
             result[key].append(value)
