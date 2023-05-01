@@ -8,39 +8,96 @@ import src.utils as utils
 import yaml
 
 
-def searchDB(df, keywords, exact=False):
+def read_marker_list(file_path):
     """
-    Search for specific lists of the Marker Gene Repo.
+    Reads a YAML file containing a section named "marker_list". The "marker_list" section consists of a list,
+    where each element contains the keys "name" and "markers". The key "name" contains a string, and the key
+    "markers" contains a list of strings. The function returns a DataFrame with two columns: "Marker" and "Info".
+    The "Marker" column contains all elements of the "markers" key values, and the "Info" column contains the
+    corresponding "name" key values.
 
     Parameters
     ----------
-    df : pandas.DataFrame
-        The dataframe which contains the data to be searched.
-    keywords : dictionary
-        The dictionary containing the keywords for filtering.
-    exact : boolean, default False
-        If True perform an exact search, otherwise use "contains".
-    
+    file_path : str
+        The path to the input YAML file.
+
     Returns
-    --------
-    pandas.DataFrame :
-        Dataframe containing all the hits
+    -------
+    pd.DataFrame :
+        The resulting DataFrame containing "Marker" and "Info" columns.
     """
+    with open(file_path, 'r') as file:
+        yaml_data = yaml.safe_load(file)
 
-    # keep values which are not None
-    filters = {}
-    for key in keywords:
-        if keywords[key]:
-            filters[key] = keywords[key]
+    marker_list = yaml_data['marker_list']
 
-    # filter dataframe
-    for key in filters:
-        if exact:
-            df = df[df[key] == filters[key]]
+    marker_data = []
+    for item in marker_list:
+        name = item['name']
+        markers = item['markers']
+        for marker in markers:
+            marker_data.append({"Marker": marker, "Info": name})
+
+    df = pd.DataFrame(marker_data)
+
+    return df
+
+
+def search_db(df, keywords, exact=False, case_sensitive=False):
+    """
+    This function filters a given DataFrame based on the provided keywords. The keywords can be either
+    a dictionary or a string. If the keywords are provided as a dictionary, the DataFrame will be filtered
+    using the dictionary keys as column names and the corresponding values as the keywords to search within
+    those columns. If the keywords are provided as a string, the function will check if the DataFrame contains
+    the string anywhere and retains only the rows that fulfill the search criteria. The search can be made
+    either exact or partial (substring) and case-sensitive or case-insensitive.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input DataFrame to be filtered.
+
+    keywords : dict or str
+        The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
+        keywords as values, or a single string to search for in the entire DataFrame.
+
+    exact : bool, default: False
+        If True, the search will look for exact matches. If False, the search will look for substrings.
+
+    case_sensitive : bool, default: False
+        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
+
+    Returns
+    -------
+    pd.DataFrame :
+        The filtered DataFrame containing only the rows that meet the search criteria.
+    """
+    if not case_sensitive:
+        df = df.applymap(lambda x: str(x).lower() if isinstance(x, str) else x)
+        if isinstance(keywords, dict):
+            keywords = {k: v.lower() for k, v in keywords.items()}
         else:
-            df = df[df[key].str.contains(filters[key])]
+            keywords = keywords.lower()
+
+    if isinstance(keywords, dict):
+        # If keywords is a dictionary, filter by matching column names and values
+        filtered_df = df.copy()
+        for column, value in keywords.items():
+            if exact:
+                filtered_df = filtered_df[filtered_df[column] == value]
+            else:
+                filtered_df = filtered_df[filtered_df[column].str.contains(value, na=False, regex=False)]
+    else:
+        # If keywords is a string, filter by checking if the string exists anywhere in the DataFrame
+        if exact:
+            mask = df.applymap(lambda x: keywords == str(x)).any(axis=1)
+        else:
+            mask = df.applymap(lambda x: keywords in str(x)).any(axis=1)
+        filtered_df = df[mask]
+
+    return filtered_df
     
-    return df.reset_index(drop=True)
+    #return df.reset_index(drop=True)
 
 
 def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
@@ -51,14 +108,14 @@ def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
     ----------
     d : dict
         The input dictionary to be flattened.
-    parent_key : string
+    parent_key : string, default ''
         The parent key used during recursion (default is an empty string).
-    sep : string 
+    sep : string, default '_'
         The separator used to concatenate keys (default is an underscore).
-    list_sep : string
+    list_sep : string, default '\n'
         The separator used to join list elements in a single cell (default is a newline character).
 
-    Returns:
+    Returns
     dict :
         The flattened dictionary with concatenated keys.
     """
@@ -87,7 +144,7 @@ def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
     return dict(items)
 
 
-def getDB(REPO_LISTS_PATH):
+def get_db(REPO_LISTS_PATH):
     """
     Get the database of the Marker Repo as dataframe.
 
@@ -126,7 +183,7 @@ def getDB(REPO_LISTS_PATH):
     return df
 
 
-def getList(path, info_col=1, marker_col=0):
+def get_list(path, info_col=1, marker_col=0):
     """
     Reads the marker lists and converts it to a dataframe using the information
     of info_col and marker_col.
@@ -158,7 +215,7 @@ def getList(path, info_col=1, marker_col=0):
     return df
 
 
-def combineLists(paths, list_type, file_name="custom_list"):
+def combine_lists(paths, list_type, file_name="custom_list"):
     """
     Combine multiple lists to one custom list.
 
@@ -192,7 +249,7 @@ def combineLists(paths, list_type, file_name="custom_list"):
     return combined_df
 
 
-def showStatistics(REPO_LISTS_PATH, metadata, dpi=120):
+def show_statistics(REPO_LISTS_PATH, metadata, dpi=120):
     """
     Shows content of whole Marker Repo.
 
@@ -200,7 +257,7 @@ def showStatistics(REPO_LISTS_PATH, metadata, dpi=120):
     ----------
     REPO_LISTS_PATH : string
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    metadata : dictionary
+    metadata : dict
         The dictionary containing the metadata information.
     dpi : integer, default 120
     """
@@ -229,7 +286,7 @@ def showStatistics(REPO_LISTS_PATH, metadata, dpi=120):
     plt.show()
 
 
-def getWhitelists():
+def get_whitelists():
     """
     Fetches whitelists of the metadata_whitelist repository.
     """
@@ -261,7 +318,7 @@ def dataframe_to_dict(df, info_col=0, marker_col=1):
         The column which contains the marker (gene or genomic region).
     Returns
     --------
-    dictionary :
+    dict :
         The dictionary containing markers and corresponding information
     """
 
@@ -286,11 +343,11 @@ def update_markers(df, marker_dict):
     ----------
     df : pandas.DataFrame
         The dataframe containing the marker list.
-    marker_dict : dictionary
+    marker_dict : dict
         Dictionary containing the names and IDs as keys and values.
     Returns
     --------
-    dictionary :
+    dict :
         The dictionary containing markers and corresponding information
     """
 
@@ -338,7 +395,7 @@ def get_gene_dict(organism):
 
     Returns
     --------
-    dictionary :
+    dict :
         Dictionary which contains the gene names and ensembl IDs.
     """
     gene_dict = {}
@@ -351,7 +408,7 @@ def get_gene_dict(organism):
     return gene_dict
 
 
-def get_UID(path):
+def get_uid(path):
     existing_uids = []
     
     # Iterate through all files and subdirectories in the given path
