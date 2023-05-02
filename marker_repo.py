@@ -8,7 +8,7 @@ import src.utils as utils
 import yaml
 
 
-def read_marker_list(file_path):
+def get_marker_list(file_path):
     """
     Reads a YAML file containing a section named "marker_list". The "marker_list" section consists of a list,
     where each element contains the keys "name" and "markers". The key "name" contains a string, and the key
@@ -215,16 +215,65 @@ def get_list(path, info_col=1, marker_col=0):
     return df
 
 
-def combine_lists(paths, list_type, file_name="custom_list"):
+def export_marker_list(REPO_LISTS_PATH, file_name, df):
+    """
+    Export marker list (df) to REPO_LISTS_PATH/file_name
+
+    Parameters
+    ----------
+    REPO_LISTS_PATH : string
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    file_name : string, default "custom_list"
+        The file name of the combined list.
+    df : pd.DataFrame
+        The marker list which will be exported.
+    """
+    path = f"{REPO_LISTS_PATH}/{file_name}"
+
+    df.to_csv(path, sep="\t", index=False)
+    print(f"Combined list saved: {path}")
+
+
+def get_uid_paths(REPO_LISTS_PATH, uids):
+    """
+    Searches for files in the specified folder and its subfolders with names in the format "name_UID.yaml",
+    where UID is an integer. Returns the paths of the files that contain the UIDs from the given list.
+
+    Parameters
+    ----------
+    REPO_LISTS_PATH : string
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    uids : list of int
+        A list of integers representing the UIDs to search for.
+
+    Returns
+    -------
+    list of str :
+        A list of file paths containing the specified UIDs.
+    """
+    matching_files = []
+
+    for root, _, files in os.walk(REPO_LISTS_PATH):
+        for file in files:
+            if file.endswith('.yaml'):
+                uid = int(file.split('_')[-1].split('.')[0])
+                if uid in uids:
+                    matching_files.append(os.path.join(root, file))
+
+    return matching_files
+
+
+def combine_lists(REPO_LISTS_PATH, uids):
     """
     Combine multiple lists to one custom list.
 
     Parameters
     ----------
-    paths : array of strings
-        The paths of the lists which will be combined.
-    file_name : string, default "custom_list"
-        The file name of the combined list.
+    REPO_LISTS_PATH : string
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    uids : array of strings
+        The uids of the lists which will be combined.
+
     Returns
     --------
     pandas.DataFrame :
@@ -233,18 +282,13 @@ def combine_lists(paths, list_type, file_name="custom_list"):
 
     # read lists which are going to be combined
     dfs = []
-    for path in paths:
-        dfs.append(getList(path, list_type))
+    for file in get_uid_paths(REPO_LISTS_PATH, uids):
+        dfs.append(get_marker_list(file))
         
     # perform outer join
     combined_df = pd.concat(dfs).reset_index(drop=True)
-    display(combined_df)
 
     # TODO: inner join, etc ...
-
-    # save custom list
-    combined_df.to_csv(file_name, sep="\t", index=False)
-    print(f"Combined list saved: {os.path.abspath(file_name)}")
 
     return combined_df
 
