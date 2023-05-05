@@ -1,0 +1,11 @@
+stages:
+  - check_uids
+
+check_unique_uids:
+  stage: check_uids
+  image: python:3.8
+  script:
+    - python update_uids.py
+  only:
+    - dev
+    - master
