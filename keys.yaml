@@ -248,6 +248,15 @@ metadata:
                   value: null
                   whitelist: True
                   input_type: select
+            mandatory: True
+        custom_tag:
+          mandatory: False
+          display_name: 'Custom tag'
+          list: True
+          desc: 'A tag that does not match the provided ones.'
+          value: null
+          whitelist: False
+          input_type: short_text
 
 marker_list:
   mandatory: True
