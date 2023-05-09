@@ -271,7 +271,7 @@ def combine_lists(REPO_LISTS_PATH, uids):
     ----------
     REPO_LISTS_PATH : string
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    uids : array of strings
+    uids : list of strings
         The uids of the lists which will be combined.
 
     Returns
@@ -403,21 +403,26 @@ def update_markers(df, marker_dict):
     return df
 
 
-def select(key):
+def select(whitelist=None, key=None):
     """
     Shows selection of whitelist and returns selected value.
+    If only a key is passed, the corresponding whitelist is used as a selection.
+    If a whitelist (list of strings) is passed, the key is the heading only.
 
     Parameters
     ----------
     key : string
         The key of the whitelist. For example "organism".
+    whitelist : 
 
     Returns
     --------
     string :
         The selection of the whitelist.
     """
-    whitelist = utils.read_whitelist(key)['whitelist']
+    if not whitelist:
+        whitelist = utils.read_whitelist(key)['whitelist']
+    
     print(f"Select {key}")
     for i, value in enumerate(whitelist):
         print(str(i+1) + ":\t" + value)
@@ -453,6 +458,14 @@ def get_gene_dict(organism):
 
 
 def get_uid(path):
+    """
+    Creates a new UID by iterating through all files in path.
+
+    Returns
+    --------
+    str :
+        A string containing an unused UID
+    """
     existing_uids = []
     
     # Iterate through all files and subdirectories in the given path
