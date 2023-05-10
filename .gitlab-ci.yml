@@ -8,4 +8,3 @@ check_unique_uids:
     - python update_uids.py
   only:
     - dev
-    - master
