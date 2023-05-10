@@ -1,10 +1,12 @@
-stages:
-  - check_uids
+image: python:3.9
 
-check_unique_uids:
-  stage: check_uids
-  image: python:3.8
-  script:
-    - python update_uids.py
+stages:
+  - update_uids
+
+update_uids:
+  stage: update_uids
   only:
     - dev
+  script:
+    - pip install pyyaml
+    - python update_uids.py
