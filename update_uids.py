@@ -1,5 +1,7 @@
 import os
 import re
+import yaml
+
 
 def get_all_paths_and_uids(path):
     """
@@ -55,8 +57,16 @@ def update_uids(repo_lists_path):
                     new_uid += 1
                 uids_in_use.add(new_uid)
                 new_file_path = re.sub(r"_([0-9]+)\.yaml$", f"_{new_uid}.yaml", file_path)
-                os.rename(file_path, new_file_path)
-                print(f"File '{file_path}' was renamed to '{new_file_path}'")
+                
+                # Update the value of the "id" key in the "metadata" section
+                with open(file_path, 'r') as file:
+                    content = yaml.safe_load(file)
+                content['metadata']['id'] = new_uid
+                with open(new_file_path, 'w') as file:
+                    yaml.safe_dump(content, file)
+
+                os.remove(file_path)
+                print(f"File '{file_path}' was renamed to '{new_file_path}' and its ID was updated to {new_uid}")
 
 
 def main():
