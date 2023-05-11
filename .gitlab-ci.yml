@@ -3,12 +3,14 @@ stages:
   - commit_and_push
 
 check_and_update_uids:
+  stage: check_and_update_uids
   script: 
     - python3 update_uids.py
   only:
     - dev
 
 commit_and_push:
+  stage: commit_and_push
   script:
     - git config --global user.name "Micha Frederick Keßler"
     - git config --global user.email "Micha-Frederick.Kessler@mpi-bn.mpg.de"
