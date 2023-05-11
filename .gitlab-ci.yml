@@ -1,12 +1,19 @@
-image: python:3.9
-
 stages:
-  - update_uids
+  - check_and_update_uids
+  - commit_and_push
 
-update_uids:
-  stage: update_uids
+check_and_update_uids:
+  script: 
+    - python3 update_uids.py
   only:
     - dev
+
+commit_and_push:
   script:
-    - pip install pyyaml
-    - python update_uids.py
+    - git config --global user.name "Micha Frederick Keßler"
+    - git config --global user.email "Micha-Frederick.Kessler@mpi-bn.mpg.de"
+    - git add .
+    - git commit -m "Update UIDs automatically"
+    - git push origin dev
+  only:
+    - dev
