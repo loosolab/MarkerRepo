@@ -1,5 +1,4 @@
 import os
-import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -56,14 +55,11 @@ def search_db(df, keywords, exact=False, case_sensitive=False):
     ----------
     df : pd.DataFrame
         The input DataFrame to be filtered.
-
     keywords : dict or str
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
-
     exact : bool, default: False
         If True, the search will look for exact matches. If False, the search will look for substrings.
-
     case_sensitive : bool, default: False
         If True, the search will be case-sensitive. If False, the search will be case-insensitive.
 
@@ -146,7 +142,7 @@ def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
 
 def get_db(REPO_LISTS_PATH):
     """
-    Get the database of the Marker Repo as dataframe.
+    Get the database of the Marker Repo as DataFrame.
 
     Parameters
     ----------
@@ -185,7 +181,7 @@ def get_db(REPO_LISTS_PATH):
 
 def get_list(path, info_col=1, marker_col=0):
     """
-    Reads the marker lists and converts it to a dataframe using the information
+    Reads the marker lists and converts it to a DataFrame using the information
     of info_col and marker_col.
 
     Parameters
@@ -200,7 +196,7 @@ def get_list(path, info_col=1, marker_col=0):
     Returns
     --------
     pandas.DataFrame :
-        Dataframe containing the list
+        DataFrame containing the list
     """
 
     # ltype_dict = {"celltype": ["Cell type", "Marker"], "cellcycle": ["Marker", "Phase"], "mito": "Marker", "gender": "Marker", "blacklist": ["Chr", "Start", "Stop"]}
@@ -277,7 +273,7 @@ def combine_lists(REPO_LISTS_PATH, uids):
     Returns
     --------
     pandas.DataFrame :
-        Dataframe containing the combinend list
+        DataFrame containing the combinend list
     """
 
     # read lists which are going to be combined
@@ -347,7 +343,7 @@ def get_whitelists():
 
 def dataframe_to_dict(df, info_col=0, marker_col=1):
     """
-    Converts dataframe of marker list to dictionary,
+    Converts DataFrame of marker list to dictionary,
     using info_col as keys and marker_col as values.
 
     # TODO only marker column available
@@ -355,7 +351,7 @@ def dataframe_to_dict(df, info_col=0, marker_col=1):
     Parameters
     ----------
     df : pandas.DataFrame
-        The dataframe containing the marker list.
+        The DataFrame containing the marker list.
     info_col : integer
         The column which contains additional information like cell type or phase.
     marker_col: integer
@@ -386,7 +382,7 @@ def update_markers(df, marker_dict):
     Parameters
     ----------
     df : pandas.DataFrame
-        The dataframe containing the marker list.
+        The DataFrame containing the marker list.
     marker_dict : dict
         Dictionary containing the names and IDs as keys and values.
     Returns
