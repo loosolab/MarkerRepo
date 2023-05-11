@@ -46,6 +46,3 @@ def get_two_column_markers(keywords, REPO_LISTS_PATH, path=None, case_sensitive=
         return os.path.abspath(path)
     else:
         return markers_filtered
-
-
-print(get_two_column_markers("cellcycle", "/mnt/workspace/mkessle/projects/annotate_by_marker_and_features/lists", path="markers"))
