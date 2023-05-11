@@ -1,3 +1,5 @@
+image: python:3.9
+
 stages:
   - check_and_update_uids
   - commit_and_push
@@ -5,7 +7,7 @@ stages:
 check_and_update_uids:
   stage: check_and_update_uids
   script: 
-    - python3 update_uids.py
+    - python update_uids.py
   only:
     - dev
 
