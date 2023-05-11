@@ -1,0 +1,51 @@
+metadata:
+  id: '72'
+  list_name: HCM_human_fetal-striatum
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  marker_type: Genes
+  submitter:
+    name: Kessler, Micha Frederick
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+  date: 27.03.2020
+  source: panglao.se
+  tags:
+    tissue: fetal-striatum
+    custom_tag: cell type annotation
+marker_list:
+- name: D2-MSN(medium spiny neuron)
+  markers:
+  - GRIK3 ENSG00000163873
+  - SIX3 ENSG00000138083
+  - SP9 ENSG00000217236
+  - SIX3-AS1 ENSG00000236502
+- name: Intermediate progenitor cell
+  markers:
+  - ASCL1 ENSG00000139352
+- name: LGE-lineage cell (lateral ganglionic eminence)
+  markers:
+  - MEIS2 ENSG00000134138
+- name: Mature MSN(medium spiny neuron)
+  markers:
+  - BCL11B ENSG00000127152
+- name: pre-MSN(medium spiny neuron)
+  markers:
+  - SLC22A16 ENSG00000004809
+- name: GABAergic neuron
+  markers:
+  - GAD2 ENSG00000136750
+- name: Early progenitor cell
+  markers:
+  - GSX2 ENSG00000180613
+- name: Medium spiny neuron(MSN)
+  markers:
+  - FOXP1 ENSG00000114861
+- name: D1-MSN(medium spiny neuron)
+  markers:
+  - TAC1 ENSG00000006128
+  - ISL1 ENSG00000016082
+  - EBF1 ENSG00000164330
+- name: Neuron
+  markers:
+  - DCX ENSG00000077279

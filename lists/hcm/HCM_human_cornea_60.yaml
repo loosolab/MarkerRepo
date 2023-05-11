@@ -1,0 +1,30 @@
+metadata:
+  id: '60'
+  list_name: HCM_human_cornea
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  marker_type: Genes
+  submitter:
+    name: Kessler, Micha Frederick
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+  date: 27.03.2020
+  source: panglao.se
+  tags:
+    tissue: cornea
+    custom_tag: cell type annotation
+marker_list:
+- name: Endothelial cell
+  markers:
+  - LGR5 ENSG00000139292
+  - VCAM1 ENSG00000162692
+  - THY1 ENSG00000154096
+  - ALCAM ENSG00000170017
+  - CD34 ENSG00000174059
+  - CDH2 ENSG00000170558
+  - ICAM1 ENSG00000090339
+  - MCAM ENSG00000076706
+  - CD47 ENSG00000196776
+  - CD44 ENSG00000026508
+  - NECTIN2 ENSG00000130202
+  - NT5E ENSG00000135318

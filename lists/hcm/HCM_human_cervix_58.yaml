@@ -1,0 +1,19 @@
+metadata:
+  id: '58'
+  list_name: HCM_human_cervix
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  marker_type: Genes
+  submitter:
+    name: Kessler, Micha Frederick
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+  date: 27.03.2020
+  source: panglao.se
+  tags:
+    tissue: cervix
+    custom_tag: cell type annotation
+marker_list:
+- name: cervical squamous cell
+  markers:
+  - SOX2 ENSG00000181449

@@ -1,0 +1,25 @@
+metadata:
+  id: '18'
+  list_name: Panglao_human_oral-cavity
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  marker_type: Genes
+  submitter:
+    name: Kessler, Micha Frederick
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+  date: 27.03.2020
+  source: panglao.se
+  tags:
+    tissue: oral-cavity
+    custom_tag: cell type annotation
+marker_list:
+- name: Salivary mucous cells
+  markers:
+  - KRT14 ENSG00000186847
+  - PIP ENSG00000159763
+  - MUCL1 ENSG00000172551
+  - CNN1 ENSG00000130176
+  - THBS1 ENSG00000137801
+  - MYH11 ENSG00000133392
+  - KRT17 ENSG00000128422

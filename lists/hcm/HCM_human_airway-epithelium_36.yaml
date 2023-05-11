@@ -1,0 +1,23 @@
+metadata:
+  id: '36'
+  list_name: HCM_human_airway-epithelium
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  marker_type: Genes
+  submitter:
+    name: Kessler, Micha Frederick
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+  date: 27.03.2020
+  source: panglao.se
+  tags:
+    tissue: airway-epithelium
+    custom_tag: cell type annotation
+marker_list:
+- name: Distal epithelial cell
+  markers:
+  - SOX9 ENSG00000125398
+  - NAPSA ENSG00000131400
+- name: Basal cell
+  markers:
+  - KRT17 ENSG00000128422

@@ -1,0 +1,22 @@
+metadata:
+  id: '33'
+  list_name: HCM_human_adrenal-gland
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  marker_type: Genes
+  submitter:
+    name: Kessler, Micha Frederick
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+  date: 27.03.2020
+  source: panglao.se
+  tags:
+    tissue: adrenal-gland
+    custom_tag: cell type annotation
+marker_list:
+- name: Chromaffin cell
+  markers:
+  - NCAM1 ENSG00000149294
+- name: Definitive zone cell
+  markers:
+  - NCAM1 ENSG00000149294
