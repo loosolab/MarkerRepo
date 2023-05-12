@@ -54,3 +54,32 @@ def compare_marker_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=
     df.sort_values('Score', ascending=False, inplace=True)
 
     return df
+
+
+def invert_score(df):
+    """
+    Inverts and scales the score values in the DataFrame (marker list).
+    
+    The function calculates the inverse of the scores in the DataFrame, 
+    in addition the highest score becomes 0 and the lowest score becomes 1. 
+    All other scores are scaled accordingly. Thus, higher values correspond to lower uniqueness.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The DataFrame containing the Info, Marker and Score columns of the marker list.
+        
+    Returns
+    --------
+    pandas.DataFrame :
+        The DataFrame containing the modified scores.
+    """
+
+    # Get min and max score
+    min_score = df['Score'].min()
+    max_score = df['Score'].max()
+
+    # Invert and scale scores
+    df['Score'] = (max_score - df['Score']) / (max_score - min_score)
+
+    return df
