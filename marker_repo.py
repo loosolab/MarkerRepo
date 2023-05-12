@@ -42,7 +42,7 @@ def get_marker_list(file_path):
     return df
 
 
-def search_db(df, keywords, exact=False, case_sensitive=False):
+def search_db(df, keywords, case_sensitive=False, exact=False):
     """
     This function filters a given DataFrame based on the provided keywords. The keywords can be either
     a dictionary or a string. If the keywords are provided as a dictionary, the DataFrame will be filtered

@@ -1,7 +1,7 @@
 import marker_repo as mr
 import os
 
-def get_two_column_markers(keywords, REPO_LISTS_PATH, path=None, case_sensitive=False, exact=False):
+def get_two_column_markers(REPO_LISTS_PATH, keywords, path=None, case_sensitive=False, exact=False):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
     Optionally, it can export the DataFrame to a file.

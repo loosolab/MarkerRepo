@@ -17,7 +17,7 @@ commit_and_push:
   script:
     - git config --global user.name "Micha Frederick Keßler"
     - git config --global user.email "Micha-Frederick.Kessler@mpi-bn.mpg.de"
-    - git add .
+    - git add *
     - git commit -m "Update UIDs automatically"
     - git push origin dev
   only:
