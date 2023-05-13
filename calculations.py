@@ -2,6 +2,8 @@ import numpy as np
 import marker_repo as mr
 import pandas as pd
 import yaml
+import urllib.request
+import os
 
 def compare_marker_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=False):
     """
@@ -81,5 +83,31 @@ def invert_score(df):
 
     # Invert and scale scores
     df['Score'] = (max_score - df['Score']) / (max_score - min_score)
+
+    return df
+
+
+def download_homologene_data():
+    """
+    Downloads the latest HomoloGene data from NCBI and stores it in a Pandas DataFrame.
+
+    Returns
+    -------
+    pandas.DataFrame :
+        A DataFrame containing the HomoloGene data. The columns are: 
+        'HID' (HomoloGene group ID), 'Taxonomy ID', 'Gene ID', 'Gene Symbol', and 'Protein ID'.
+    """
+
+    url = 'ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data'
+    filename = 'homologene.data'
+
+    # Download DB
+    urllib.request.urlretrieve(url, filename)
+
+    # Save it into df
+    col_names = ['HID', 'Taxonomy ID', 'Gene ID', 'Gene Symbol', 'Protein ID']
+    df = pd.read_csv(filename, sep='\t', header=None, names=col_names)
+
+    os.remove(filename)
 
     return df
