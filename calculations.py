@@ -137,8 +137,7 @@ def transfer_markers(df, source_organism, target_organism):
     df_copy = df.copy()
 
     # Adjust the Marker column in df_copy to contain only the first marker identifier (gene symbol)
-    df_copy.loc[:, 'Marker'] = df_copy['Marker'].apply(lambda x: x.split(' ')[0] if len(x.split(' ')) > 1 else x)    
-    
+    df_copy.loc[:, 'Marker'] = df_copy['Marker'].apply(lambda x: x.split(' ')[0] if len(x.split(' ')) > 1 else x).str.upper()    
     # Filter homologene_data for the source and target organisms
     source_data = homologene_data[homologene_data['Taxonomy ID'] == source_organism]
     target_data = homologene_data[homologene_data['Taxonomy ID'] == target_organism]
@@ -146,10 +145,12 @@ def transfer_markers(df, source_organism, target_organism):
     # Merge source and target data on HID
     merged_data = pd.merge(source_data, target_data, left_index=True, right_index=True, suffixes=('_source', '_target'))
     merged_data.rename(columns={'Gene Symbol_source': 'Marker', 'Gene Symbol_target': 'Transferred Marker'}, inplace=True)
-    
+    merged_data['Marker'] = merged_data['Marker'].str.upper()
+
     # Merge input df_copy with merged_data on Marker
     result_df = pd.merge(df_copy, merged_data, on='Marker')
     result_df = result_df[['Info', 'Transferred Marker']]
+    result_df['Transferred Marker'] = result_df['Transferred Marker'].str.upper()
     
     return result_df
 
