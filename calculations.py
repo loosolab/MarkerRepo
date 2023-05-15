@@ -87,27 +87,48 @@ def invert_score(df):
     return df
 
 
-def download_homologene_data():
+def download_homologene_data(url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data"):
     """
-    Downloads the latest HomoloGene data from NCBI and stores it in a Pandas DataFrame.
+    Download and parse the HomoloGene data.
+
+    Parameters
+    ----------
+    url : str
+        URL to the HomoloGene data file.
 
     Returns
-    -------
-    pandas.DataFrame :
-        A DataFrame containing the HomoloGene data. The columns are: 
-        'HID' (HomoloGene group ID), 'Taxonomy ID', 'Gene ID', 'Gene Symbol', and 'Protein ID'.
+    --------
+    pandas.DataFrame : 
+        DataFrame with the HomoloGene data.
     """
 
-    url = 'ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data'
-    filename = 'homologene.data'
+    # Download the HomoloGene data
+    homologene_data = pd.read_csv(url, sep='\t', header=None, index_col=0)
 
-    # Download DB
-    urllib.request.urlretrieve(url, filename)
+    # Rename the columns
+    homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein gi", "Protein accession"]
+    homologene_data.index.names = ["HID"]
 
-    # Save it into df
-    col_names = ['HID', 'Taxonomy ID', 'Gene ID', 'Gene Symbol', 'Protein ID']
-    df = pd.read_csv(filename, sep='\t', header=None, names=col_names)
+    return homologene_data
 
-    os.remove(filename)
 
-    return df
+def transfer_markers(df, source_organism, target_organism):
+    """
+    Transfer markers between organisms based on homology.
+    
+    Parameters
+    ----------
+    df : DataFrame
+        Input DataFrame containing 'Marker' and 'Info' columns.
+    source_organism : int
+        Taxonomy ID of the source organism.
+    target_organism : int
+        Taxonomy ID of the target organism.
+        
+    Returns
+    --------
+    DataFrame:
+        Transferred markers DataFrame with columns corresponding to source_organism and target_organism.
+    """
+    
+    pass
