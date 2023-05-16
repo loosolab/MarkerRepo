@@ -2,8 +2,7 @@ import numpy as np
 import marker_repo as mr
 import pandas as pd
 import yaml
-import urllib.request
-import os
+import src.utils as utils
 
 def compare_marker_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=False):
     """
@@ -112,7 +111,37 @@ def download_homologene_data(url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/
     return homologene_data
 
 
-def transfer_markers(df, source_organism, target_organism):
+def get_supported_taxonomy_ids(hg_db):
+    """
+    Returns all supported taxonomy IDs in the downloaded HomoloGene data.
+
+    Parameters
+    ----------
+    hg_db : pd.DataFrame
+        DataFrame containing the HomoloGene db.
+    
+    Returns
+    -------
+    list of str:
+        List of supported taxonomy IDs.
+    """
+    
+    organism = []
+
+    # Get unique taxonomy IDs from HomoloGene db and convert them to strings
+    unique_taxonomy_ids = hg_db['Taxonomy ID'].unique().astype(str).tolist()
+    # Get support organisms from whitelist repository
+    supported_organims = utils.read_whitelist("organism")['whitelist']
+
+    for so in supported_organims:
+        name, tax = so.split(" ")
+        if tax in unique_taxonomy_ids:
+            organism.append(f"{name} {tax}")
+
+    return organism
+
+
+def transfer_markers(df, source_organism, target_organism, hg_db):
     """
     Transfer markers between organisms based on homology.
     
@@ -124,14 +153,14 @@ def transfer_markers(df, source_organism, target_organism):
         Taxonomy ID of the source organism.
     target_organism : int
         Taxonomy ID of the target organism.
+    hg_db : pd.DataFrame
+        DataFrame containing the HomoloGene db.
         
     Returns
     --------
     DataFrame :
         Transferred markers DataFrame with columns corresponding to source_organism and target_organism.
     """
-    
-    homologene_data = download_homologene_data()
 
     # Create an explicit copy of df (to avoid SettingWithCopyWarning)
     df_copy = df.copy()
@@ -139,8 +168,8 @@ def transfer_markers(df, source_organism, target_organism):
     # Adjust the Marker column in df_copy to contain only the first marker identifier (gene symbol)
     df_copy.loc[:, 'Marker'] = df_copy['Marker'].apply(lambda x: x.split(' ')[0] if len(x.split(' ')) > 1 else x).str.upper()    
     # Filter homologene_data for the source and target organisms
-    source_data = homologene_data[homologene_data['Taxonomy ID'] == int(source_organism)]
-    target_data = homologene_data[homologene_data['Taxonomy ID'] == int(target_organism)]
+    source_data = hg_db[hg_db['Taxonomy ID'] == int(source_organism)]
+    target_data = hg_db[hg_db['Taxonomy ID'] == int(target_organism)]
     
     # Merge source and target data on HID
     merged_data = pd.merge(source_data, target_data, left_index=True, right_index=True, suffixes=('_source', '_target'))
