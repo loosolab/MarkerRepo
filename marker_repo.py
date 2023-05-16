@@ -6,7 +6,6 @@ import git
 import src.utils as utils
 import yaml
 
-
 def get_marker_list(file_path):
     """
     Reads a YAML file containing a section named "marker_list". The "marker_list" section consists of a list,

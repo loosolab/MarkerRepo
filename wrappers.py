@@ -37,8 +37,10 @@ def get_two_column_markers(REPO_LISTS_PATH, keywords, path=None, case_sensitive=
     uids = [int(idx) for idx in df.index]
     combined_df = mr.combine_lists(REPO_LISTS_PATH, uids)
 
-    # Drop duplicates
+    # Drop duplicates, keep one marker only, rearrange column order
     markers_filtered = combined_df.drop_duplicates()
+    markers_filtered['Marker'] = markers_filtered['Marker'].apply(lambda x: x.split(' ')[0] if len(x.split(' ')) > 1 else x)
+    markers_filtered = markers_filtered[['Info', 'Marker']]
 
     if path:
         # Export marker list
