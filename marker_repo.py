@@ -25,6 +25,7 @@ def get_marker_list(file_path):
     pd.DataFrame :
         The resulting DataFrame containing "Marker" and "Info" columns.
     """
+
     with open(file_path, 'r') as file:
         yaml_data = yaml.safe_load(file)
 
@@ -58,16 +59,17 @@ def search_db(df, keywords, case_sensitive=False, exact=False):
     keywords : dict or str
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
-    exact : bool, default: False
-        If True, the search will look for exact matches. If False, the search will look for substrings.
     case_sensitive : bool, default: False
         If True, the search will be case-sensitive. If False, the search will be case-insensitive.
+    exact : bool, default: False
+        If True, the search will look for exact matches. If False, the search will look for substrings.
 
     Returns
     -------
     pd.DataFrame :
         The filtered DataFrame containing only the rows that meet the search criteria.
     """
+
     if not case_sensitive:
         df = df.applymap(lambda x: str(x).lower() if isinstance(x, str) else x)
         if isinstance(keywords, dict):
@@ -92,8 +94,6 @@ def search_db(df, keywords, case_sensitive=False, exact=False):
         filtered_df = df[mask]
 
     return filtered_df
-    
-    #return df.reset_index(drop=True)
 
 
 def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
@@ -104,17 +104,18 @@ def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
     ----------
     d : dict
         The input dictionary to be flattened.
-    parent_key : string, default ''
-        The parent key used during recursion (default is an empty string).
-    sep : string, default '_'
-        The separator used to concatenate keys (default is an underscore).
-    list_sep : string, default '\n'
-        The separator used to join list elements in a single cell (default is a newline character).
+    parent_key : str, default ''
+        The parent key used during recursion.
+    sep : str, default '_'
+        The separator used to concatenate keys.
+    list_sep : str, default '\n'
+        The separator used to join list elements in a single cell.
 
     Returns
     dict :
         The flattened dictionary with concatenated keys.
     """
+
     items = []
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k
@@ -146,7 +147,7 @@ def get_db(REPO_LISTS_PATH):
 
     Parameters
     ----------
-    REPO_LISTS_PATH : string
+    REPO_LISTS_PATH : str
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
 
     Returns
@@ -186,11 +187,11 @@ def get_list(path, info_col=1, marker_col=0):
 
     Parameters
     ----------
-    path : string
+    path : str
         The path where the list is stored.
-    info_col : integer
+    info_col : integer, default 1
         The column which contains additional information like cell type or phase.
-    marker_col: integer
+    marker_col: integer, default 0
         The column which contains the marker (gene or genomic region).
 
     Returns
@@ -211,23 +212,55 @@ def get_list(path, info_col=1, marker_col=0):
     return df
 
 
-def export_marker_list(REPO_LISTS_PATH, file_name, df):
+def dataframe_to_dict(df):
     """
-    Export marker list (df) to REPO_LISTS_PATH/file_name
+    Converts DataFrame of marker list to dictionary,
+    using info_col as keys and marker_col as values.
+
+    # TODO only marker column available
 
     Parameters
     ----------
-    REPO_LISTS_PATH : string
+    df : pandas.DataFrame
+        The DataFrame containing the marker list.
+
+    Returns
+    --------
+    dict :
+        The dictionary containing markers and corresponding information
+    """
+
+    result = {}
+    for index, row in df.iterrows():
+        key = row["Info"]
+        value = row["Marker"]
+        
+        if key in result:
+            result[key].append(value)
+        else:
+            result[key] = [value]
+
+    return result
+
+
+def export_marker_list(path, file_name, df):
+    """
+    Export marker list (df) to path/file_name
+
+    Parameters
+    ----------
+    path : str
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    file_name : string, default "custom_list"
+    file_name : str
         The file name of the combined list.
     df : pd.DataFrame
         The marker list which will be exported.
     """
-    path = f"{REPO_LISTS_PATH}/{file_name}"
 
-    df.to_csv(path, sep="\t", index=False)
-    print(f"Combined list saved: {path}")
+    export_path = f"{path}/{file_name}"
+
+    df.to_csv(export_path, sep="\t", index=False)
+    print(f"Combined list saved: {export_path}")
 
 
 def get_uid_paths(REPO_LISTS_PATH, uids):
@@ -237,7 +270,7 @@ def get_uid_paths(REPO_LISTS_PATH, uids):
 
     Parameters
     ----------
-    REPO_LISTS_PATH : string
+    REPO_LISTS_PATH : str
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     uids : list of int
         A list of integers representing the UIDs to search for.
@@ -247,6 +280,7 @@ def get_uid_paths(REPO_LISTS_PATH, uids):
     list of str :
         A list of file paths containing the specified UIDs.
     """
+
     matching_files = []
 
     for root, _, files in os.walk(REPO_LISTS_PATH):
@@ -265,9 +299,9 @@ def combine_lists(REPO_LISTS_PATH, uids):
 
     Parameters
     ----------
-    REPO_LISTS_PATH : string
+    REPO_LISTS_PATH : str
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    uids : list of strings
+    uids : list of str
         The uids of the lists which will be combined.
 
     Returns
@@ -295,7 +329,7 @@ def show_statistics(REPO_LISTS_PATH, metadata, dpi=120):
 
     Parameters
     ----------
-    REPO_LISTS_PATH : string
+    REPO_LISTS_PATH : str
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     metadata : dict
         The dictionary containing the metadata information.
@@ -330,6 +364,7 @@ def get_whitelists():
     """
     Fetches whitelists of the metadata_whitelist repository.
     """
+
     # Based on https://gitlab.gwdg.de/loosolab/software/metadata-organizer/-/blob/main/metaTools.py
     print('Fetching whitelists...\n')
     if not os.path.exists('metadata_whitelists'):
@@ -339,40 +374,6 @@ def get_whitelists():
         o = repo.remotes.origin
         o.pull()
     print("Done!")
-
-
-def dataframe_to_dict(df, info_col=0, marker_col=1):
-    """
-    Converts DataFrame of marker list to dictionary,
-    using info_col as keys and marker_col as values.
-
-    # TODO only marker column available
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        The DataFrame containing the marker list.
-    info_col : integer
-        The column which contains additional information like cell type or phase.
-    marker_col: integer
-        The column which contains the marker (gene or genomic region).
-    Returns
-    --------
-    dict :
-        The dictionary containing markers and corresponding information
-    """
-
-    result = {}
-    for index, row in df.iterrows():
-        key = row["Info"]
-        value = row["Marker"]
-        
-        if key in result:
-            result[key].append(value)
-        else:
-            result[key] = [value]
-
-    return result
 
 
 def update_markers(df, marker_dict):
@@ -385,6 +386,7 @@ def update_markers(df, marker_dict):
         The DataFrame containing the marker list.
     marker_dict : dict
         Dictionary containing the names and IDs as keys and values.
+
     Returns
     --------
     dict :
@@ -399,7 +401,7 @@ def update_markers(df, marker_dict):
     return df
 
 
-def select(whitelist=None, key=None):
+def select(whitelist=None, key=None, heading=None):
     """
     Shows selection of whitelist and returns selected value.
     If only a key is passed, the corresponding whitelist is used as a selection.
@@ -407,19 +409,26 @@ def select(whitelist=None, key=None):
 
     Parameters
     ----------
-    key : string
+    whitelist : list of str, default: None
+        The selection to choose from.
+    key : str, default: None
         The key of the whitelist. For example "organism".
-    whitelist : 
+    heading: str, default: None
+        The heading (description) of the whitelist.
 
     Returns
     --------
-    string :
-        The selection of the whitelist.
+    str :
+        The selected string of the whitelist.
     """
     if not whitelist:
         whitelist = utils.read_whitelist(key)['whitelist']
     
-    print(f"Select {key}")
+    if not heading:
+        print(f"Select {key}")
+    else:
+        print(f"Select {heading}")
+
     for i, value in enumerate(whitelist):
         print(str(i+1) + ":\t" + value)
     
@@ -435,7 +444,7 @@ def get_gene_dict(organism):
 
     Parameters
     ----------
-    organism : string
+    organism : str
         The organism that owns the corresponding genes.
 
     Returns
@@ -456,6 +465,11 @@ def get_gene_dict(organism):
 def get_uid(path):
     """
     Creates a new UID by iterating through all files in path.
+
+    Parameters
+    ----------
+    path : str
+        The root of the files containing UIDs.
 
     Returns
     --------

@@ -8,11 +8,11 @@ def get_two_column_markers(REPO_LISTS_PATH, keywords, path=None, case_sensitive=
 
     Parameters
     ----------
+    REPO_LISTS_PATH : str
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     keywords : dict or str
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
-    REPO_LISTS_PATH : string
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     path : str, default: None
         The path to the file where the new marker list will be saved. If not specified, the function will not save the DataFrame to a file.
     case_sensitive : bool, default: False

@@ -106,7 +106,7 @@ def download_homologene_data(url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/
     homologene_data = pd.read_csv(url, sep='\t', header=None, index_col=0)
 
     # Rename columns
-    homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein gi", "Protein accession"]
+    homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein GI", "Protein accession"]
     homologene_data.index.names = ["HID"]
 
     return homologene_data
@@ -139,8 +139,8 @@ def transfer_markers(df, source_organism, target_organism):
     # Adjust the Marker column in df_copy to contain only the first marker identifier (gene symbol)
     df_copy.loc[:, 'Marker'] = df_copy['Marker'].apply(lambda x: x.split(' ')[0] if len(x.split(' ')) > 1 else x).str.upper()    
     # Filter homologene_data for the source and target organisms
-    source_data = homologene_data[homologene_data['Taxonomy ID'] == source_organism]
-    target_data = homologene_data[homologene_data['Taxonomy ID'] == target_organism]
+    source_data = homologene_data[homologene_data['Taxonomy ID'] == int(source_organism)]
+    target_data = homologene_data[homologene_data['Taxonomy ID'] == int(target_organism)]
     
     # Merge source and target data on HID
     merged_data = pd.merge(source_data, target_data, left_index=True, right_index=True, suffixes=('_source', '_target'))
