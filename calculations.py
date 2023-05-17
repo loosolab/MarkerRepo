@@ -4,16 +4,19 @@ import pandas as pd
 import yaml
 import src.utils as utils
 
-def compare_marker_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=False):
+def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, case_sensitive=False, exact=False):
     """
     This function compares and scores markers from selected marker lists using Inverse Document Frequency (IDF).
 
     Parameters
     ----------
-    keywords : str, dict
-        Keywords for selecting marker lists. If a string, the function will check if the string is contained anywhere in the marker lists. If a dictionary, the keys are the column names and the values are the keywords to search for in those columns.
     REPO_LISTS_PATH : str
         The path to the directory containing the marker lists.
+    keywords : str, dict
+        Keywords for selecting marker lists. If a string, the function will check if the string is contained anywhere in the marker lists. 
+        If a dictionary, the keys are the column names and the values are the keywords to search for in those columns.
+    marker_df : pd.DataFrame
+        Input DataFrame with columns "Info", "Marker"
     case_sensitive : bool, default: False
         If True, the search will be case-sensitive. If False, the search will be case-insensitive.
     exact : bool, default: False
@@ -25,26 +28,31 @@ def compare_marker_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=
         A DataFrame containing the name ("Info"), the marker ("Marker") and the score ("Score") for each marker in the selected marker lists.
     """
 
-    df = mr.search_db(mr.get_db(REPO_LISTS_PATH), keywords, case_sensitive=case_sensitive, exact=exact)
-    uids = [int(idx) for idx in df.index]
-    files = mr.get_uid_paths(REPO_LISTS_PATH, uids)
+    # TODO - ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+    if not marker_df:
+        df = mr.search_db(mr.get_db(REPO_LISTS_PATH), keywords, case_sensitive=case_sensitive, exact=exact)
+        uids = [int(idx) for idx in df.index]
+        files = mr.get_uid_paths(REPO_LISTS_PATH, uids)
 
-    # Initialize dictionary
-    marker_dict = {"Info": [], "Marker": []}
+        # Initialize dictionary
+        marker_dict = {"Info": [], "Marker": []}
 
-    # Load marker lists from selected files
-    for file in files:
-        with open(file, 'r') as f:
-            data = yaml.safe_load(f)
-            marker_list_section = data.get('marker_list', [])
-            
-            for marker_list in marker_list_section:
-                name = marker_list.get('name', '')
-                markers = marker_list.get('markers', [])
-                marker_dict["Info"].extend([name]*len(markers))
-                marker_dict["Marker"].extend(markers)
+        # Load marker lists from selected files
+        for file in files:
+            with open(file, 'r') as f:
+                data = yaml.safe_load(f)
+                marker_list_section = data.get('marker_list', [])
+                
+                for marker_list in marker_list_section:
+                    name = marker_list.get('name', '')
+                    markers = marker_list.get('markers', [])
+                    marker_dict["Info"].extend([name]*len(markers))
+                    marker_dict["Marker"].extend(markers)
 
-    df = pd.DataFrame(marker_dict)
+        df = pd.DataFrame(marker_dict)
+    else:
+        df = marker_df
+
     df = df.drop_duplicates()
     
     # Calculate scores

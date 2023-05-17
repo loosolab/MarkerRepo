@@ -29,7 +29,7 @@ def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=Fa
     if df.empty:
         raise Exception(
                     f"No search results available!")
-    print(df)
+    # print(df)
 
     # Get UIDs and combine lists
     uids = [int(idx) for idx in df.index]
@@ -40,41 +40,67 @@ def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=Fa
     markers_filtered['Marker'] = markers_filtered['Marker'].apply(lambda x: x.split(' ')[0] if len(x.split(' ')) > 1 else x)
     markers_filtered = markers_filtered[['Info', 'Marker']]
 
+    return markers_filtered
 
-def get_two_column_markers(REPO_LISTS_PATH, keywords, path=None, case_sensitive=False, exact=False):
+
+def get_two_column_markers(REPO_LISTS_PATH, keywords=None, df=None, marker_list=None, path=None, case_sensitive=False, exact=False, style="two_column"):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
     Optionally, it can export the DataFrame to a file.
 
     Parameters
     ----------
-    REPO_LISTS_PATH : str
+    REPO_LISTS_PATH : str, default: None
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    keywords : dict or str
+    keywords : dict or str, default: None
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
+    df : pd.DataFrame, default: None
+        A DataFrame containing a two column marker list.
     path : str, default: None
         The path to the file where the new marker list will be saved. If not specified, the function will not save the DataFrame to a file.
     case_sensitive : bool, default: False
         If True, the function will consider the case of the keywords. If False, the function will ignore the case.
     exact : bool, default: False
         If True, the function will search for exact matches of the keywords. If False, the function will search for the keywords as substrings.
+    style : str, default: "two_column"
+        The format style of which the exported marker list should look like.
+        Currently there are three options available: "two_column", "score" and "panglao"
 
     Returns
     --------
-    pandas.DataFrame or str :
+    pd.DataFrame or str :
         If path is specified, the function returns the absolute path to the file where the marker list was saved.
         If path is not specified, the function returns the DataFrame.
     """
 
-    df = get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=case_sensitive, exact=exact)
+    if REPO_LISTS_PATH and keywords:
+        marker_list = get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=case_sensitive, exact=exact)
+    else:
+        marker_list = df
+    
+    match style:
+        case "two_column":
+            print("Preparing two column style marker list...")
+            
+        case "score":
+            print("Preparing score style marker list...")
+            marker_list = calc.compare_marker_lists(marker_df=marker_list)
+            
+        case "panglao":
+            print("Preparing panglao style marker list...")
+            marker_list = calc.compare_marker_lists(marker_df=marker_list)
+            marker_list = transform_list_to_panglao(df=marker_list)
+        case _:
+            print("Style not recognized. Try 'two_column', 'score' or 'panglao'")
+
 
     if path:
         # Export marker list
-        mr.export_marker_list(REPO_LISTS_PATH, path, df)
+        mr.export_marker_list(REPO_LISTS_PATH, path, marker_list)
         return os.path.abspath(path)
     else:
-        return df
+        return marker_list
 
 
 def transform_list_to_panglao(df, organism="Hs", tissue="all"):
@@ -105,8 +131,3 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     df = df[['Organism', 'Marker', 'Info', 'Nicknames', 'Score', 'Tissue']]
     
     return df
-
-
-def get_panglao_style_markers():
-    #TODO
-    pass
