@@ -45,6 +45,7 @@ def compare_marker_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=
                 marker_dict["Marker"].extend(markers)
 
     df = pd.DataFrame(marker_dict)
+    df = df.drop_duplicates()
     
     # Calculate scores
     total_lists = len(df['Info'].unique())
