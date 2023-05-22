@@ -84,7 +84,7 @@ metadata:
       value:
         name:
           mandatory: True
-          display_name: 'Name'
+          display_name: 'Submitter name'
           list: False
           desc: "The name should be entered in the format 'Last name, First name'."
           value: null

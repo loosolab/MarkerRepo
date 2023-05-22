@@ -174,8 +174,10 @@ def get_db(REPO_LISTS_PATH):
 
     # create DataFrame and set "id" as index
     df = pd.DataFrame(data)
-    if "id" in df.columns:
-        df.set_index("id", inplace=True)
+    df.rename(columns=get_display_names(), inplace=True)
+    if "ID" in df.columns:
+        df.set_index("ID", inplace=True)
+
     return df
 
 
@@ -491,3 +493,57 @@ def get_uid(path):
         new_uid += 1
 
     return str(new_uid)
+
+
+def extract_display_names(d, parent_key='', sep='_'):
+    """
+    Extract the display names from a nested dictionary.
+
+    Parameters
+    ----------
+    d : dict
+        The input dictionary.
+    parent_key : str, default ''
+        The parent key used during recursion.
+    sep : str, default '_'
+        The separator used to concatenate keys.
+
+    Returns
+    -------
+    dict :
+        A dictionary containing the display names as values and concatenated names as keys.
+    """
+
+    display_names = {}
+    for k, v in d.items():
+        # Determine the new key. If the current key is "value", keep the parent key.
+        new_key = parent_key if k == "value" else parent_key + sep + k if parent_key else k
+        if isinstance(v, dict):
+            # extract display name of the current key if exists
+            display_name = v.get('display_name')
+            if display_name:
+                display_names[new_key] = display_name
+            # recursively extract display names from the nested dictionary
+            display_names.update(extract_display_names(v, new_key, sep=sep))
+
+    return display_names
+
+
+def get_display_names():
+    """
+    Extracts the display names of the keys.yaml.
+
+    Returns:
+    -------
+    dict :
+        A dictionary containing the display names as values and concatenated names as keys.
+    """
+
+    # load the YAML file
+    with open('keys.yaml', 'r', encoding='utf-8') as yaml_file:
+        yaml_data = yaml.safe_load(yaml_file)
+
+    # extract the display names
+    display_names = extract_display_names(yaml_data['metadata'])
+
+    return display_names
