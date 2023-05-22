@@ -28,8 +28,9 @@ def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, ca
         A DataFrame containing the name ("Info"), the marker ("Marker") and the score ("Score") for each marker in the selected marker lists.
     """
 
-    # TODO - ValueError: The truth value of a DataFrame is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
-    if not marker_df:
+    if marker_df is not None:
+        df = marker_df
+    else:
         df = mr.search_db(mr.get_db(REPO_LISTS_PATH), keywords, case_sensitive=case_sensitive, exact=exact)
         uids = [int(idx) for idx in df.index]
         files = mr.get_uid_paths(REPO_LISTS_PATH, uids)
@@ -50,8 +51,6 @@ def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, ca
                     marker_dict["Marker"].extend(markers)
 
         df = pd.DataFrame(marker_dict)
-    else:
-        df = marker_df
 
     df = df.drop_duplicates()
     

@@ -43,7 +43,7 @@ def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=Fa
     return markers_filtered
 
 
-def get_two_column_markers(REPO_LISTS_PATH, keywords=None, df=None, marker_list=None, path=None, case_sensitive=False, exact=False, style="two_column"):
+def convert_markers(REPO_LISTS_PATH, keywords=None, df=None, marker_list=None, path=None, case_sensitive=False, exact=False, style="two_column"):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
     Optionally, it can export the DataFrame to a file.
@@ -90,6 +90,7 @@ def get_two_column_markers(REPO_LISTS_PATH, keywords=None, df=None, marker_list=
         case "panglao":
             print("Preparing panglao style marker list...")
             marker_list = calc.compare_marker_lists(marker_df=marker_list)
+            marker_list = calc.invert_score(marker_list)
             marker_list = transform_list_to_panglao(df=marker_list)
         case _:
             print("Style not recognized. Try 'two_column', 'score' or 'panglao'")
@@ -124,10 +125,10 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     
     # Add new columns
     df['Organism'] = organism
-    df['Nicknames'] = df['Marker']
+    df['Aliases'] = df['Marker']
     df['Tissue'] = tissue
     
     # Rearrange column order
-    df = df[['Organism', 'Marker', 'Info', 'Nicknames', 'Score', 'Tissue']]
+    df = df[['Organism', 'Marker', 'Info', 'Aliases', 'Score', 'Tissue']]
     
     return df
