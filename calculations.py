@@ -33,24 +33,7 @@ def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, ca
     else:
         df = mr.search_db(mr.get_db(REPO_LISTS_PATH), keywords, case_sensitive=case_sensitive, exact=exact)
         uids = [int(idx) for idx in df.index]
-        files = mr.get_uid_paths(REPO_LISTS_PATH, uids)
-
-        # Initialize dictionary
-        marker_dict = {"Info": [], "Marker": []}
-
-        # Load marker lists from selected files
-        for file in files:
-            with open(file, 'r') as f:
-                data = yaml.safe_load(f)
-                marker_list_section = data.get('marker_list', [])
-                
-                for marker_list in marker_list_section:
-                    name = marker_list.get('name', '')
-                    markers = marker_list.get('markers', [])
-                    marker_dict["Info"].extend([name]*len(markers))
-                    marker_dict["Marker"].extend(markers)
-
-        df = pd.DataFrame(marker_dict)
+        df = mr.combine_lists(REPO_LISTS_PATH, uids)
 
     df = df.drop_duplicates()
     
