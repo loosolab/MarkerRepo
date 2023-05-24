@@ -5,6 +5,7 @@ import seaborn as sns
 import git
 import src.utils as utils
 import yaml
+import string
 
 def get_marker_list(file_path):
     """
@@ -108,19 +109,42 @@ def guided_search(REPO_LISTS_PATH, df=None):
 
     Returns
     -------
-    pd.DataFrame
+    pd.DataFrame :
         The DataFrame that contains the search results.
     """
-    
+
     # Get the DataFrame if not provided
     if df is None:
         df = get_db(REPO_LISTS_PATH)
 
-    # Print column names for user's reference
-    print("Available columns for search:")
-    print('|'.join(df.columns.tolist()))
+    columns = df.columns.tolist()
+    identifiers = [str(i) for i in range(1, 10)] + list(string.ascii_lowercase)[:len(columns)-9]
+
+    # Split columns into groups of 10 for pagination
+    page = 0
+    pages = [columns[i:i+10] for i in range(0, len(columns), 10)]
+
+    while True:
+        # Print identifiers and column names for the current page
+        print("Available columns for search:")
+        for identifier, column in zip(identifiers, pages[page]):
+            print(f"{identifier}: {column}")
+        
+        # Ask for column to search in
+        col_to_search_identifier = input("Enter identifier of column to search in (leave blank to search in all columns)\nEnter 'n' for next page, 'p' for previous page: ")
+        
+        if col_to_search_identifier == 'n':
+            page = (page + 1) % len(pages)
+            continue
+        elif col_to_search_identifier == 'p':
+            page = (page - 1) % len(pages)
+            continue
+
+        if col_to_search_identifier in identifiers:
+            col_to_search = pages[page][identifiers.index(col_to_search_identifier)]
+            break
     
-    col_to_search = input("Enter column to search in (leave blank to search in all columns): ")
+    # Ask for value to search for
     search_term = input("Enter search term: ")
     exact = input("Perform an exact search? (yes/no): ").lower() == "yes"
     case_sensitive = input("Consider case sensitivity? (yes/no): ").lower() == "yes"
@@ -134,8 +158,11 @@ def guided_search(REPO_LISTS_PATH, df=None):
     # Perform the search
     results = search_db(df, keywords, exact=exact, case_sensitive=case_sensitive)
 
-    # Display the results
-    display(results)
+    print(f"Number of results: {len(results)}")
+    see_results = input("Do you want to see the results? (yes/no): ").lower() == "yes"
+
+    if see_results:
+        display(results)
 
     # Further filtering?
     further_filter = input("Do you want to filter the results further? (yes/no): ").lower() == "yes"
