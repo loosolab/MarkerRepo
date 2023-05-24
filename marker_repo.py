@@ -396,7 +396,8 @@ def combine_lists(REPO_LISTS_PATH, uids):
         
     # perform outer join
     combined_df = pd.concat(dfs).reset_index(drop=True)
-
+    combined_df.drop_duplicates(inplace=True)
+    
     # TODO: inner join, etc ...
 
     return combined_df
