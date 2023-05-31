@@ -31,7 +31,6 @@ def get_all_paths_and_uids(path):
                     else:
                         files_with_uids[uid] = [file_path]
 
-    print(files_with_uids)
     return files_with_uids
 
 
@@ -44,9 +43,14 @@ def update_uids(repo_lists_path):
     repo_lists_path : str
         The path to the folder containing the marker lists.
 
+    Returns
+    -------
+    list of str :
+        A list containing all paths of files that have been updated.
     """
     files_with_uids = get_all_paths_and_uids(repo_lists_path)
     uids_in_use = set(files_with_uids.keys())
+    new_file_paths = []
 
     for uid, file_paths in files_with_uids.items():
         if len(file_paths) > 1:
@@ -57,6 +61,7 @@ def update_uids(repo_lists_path):
                     new_uid += 1
                 uids_in_use.add(new_uid)
                 new_file_path = re.sub(r"_([0-9]+)\.yaml$", f"_{new_uid}.yaml", file_path)
+                new_file_paths.append(new_file_path)
                 
                 # Update the value of the "id" key in the "metadata" section
                 with open(file_path, 'r') as file:
@@ -68,10 +73,5 @@ def update_uids(repo_lists_path):
                 os.remove(file_path)
                 print(f"File '{file_path}' was renamed to '{new_file_path}' and its ID was updated to {new_uid}")
 
+    return new_file_paths
 
-def main():
-    lists_path = "lists"
-    update_uids(lists_path)
-
-if __name__ == "__main__":
-    main()
