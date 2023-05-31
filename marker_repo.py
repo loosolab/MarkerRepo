@@ -7,7 +7,7 @@ import src.utils as utils
 import yaml
 import string
 from git import Repo
-from update_uids import update
+from update_uids import update_uids
 
 def get_marker_list(file_path):
     """
@@ -641,34 +641,42 @@ def push_marker_list(repo_path, list_path, branch="automatic_push_feature"):
     list_path : str
         The local path of the list to be added.
     branch : str, default "automatic_push_feature"
+        The branch of the repository.
     """
 
-    # Instantiate the repository
+    files_to_add = []
     repo = Repo(repo_path)
 
-    # Checkout to "branch"
+    # Checkout to the specified branch
     if repo.active_branch.name != branch:
         repo.git.checkout(branch)
 
-    # Pull
     repo.remotes.origin.pull()
 
-    # Update UIDs using update()
-    update()
+    # Update UIDs
+    updated_files = update_uids(f"{repo_path}/lists")
 
-    # Check if there are changes
-    if repo.is_dirty():
-        # Get the name of the list file
-        list_name = list_path.split('/')[-1]
+    # If the provided list still exists after update, add it to the list of files to add
+    if os.path.exists(list_path):
+        files_to_add.append(list_path)
 
-        # Add and Commit
-        repo.git.add(list_path)
-        repo.index.commit(f"{list_name} added to repository.")
+    # Add any files updated by the update_uids() function to the list of files to add
+    for file_path in updated_files:
+        if os.path.exists(file_path):
+            files_to_add.append(file_path)
 
-        # Push
+    # If there are any files to add, add them, commit, and push
+    if files_to_add:
+        for file_path in files_to_add:
+            repo.git.add(file_path)
+
+        commit_message = "added/updated marker list(s):\n"
+        commit_message += "\n".join(files_to_add)
+        repo.index.commit(commit_message)
         repo.remotes.origin.push()
-
-        # Pull
         repo.remotes.origin.pull()
+
+        print("Successfully pushed the following marker list(s) to the repository:\n" + "\n".join(files_to_add))
+
     else:
         print("No changes to commit.")
