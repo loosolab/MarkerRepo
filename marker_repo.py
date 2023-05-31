@@ -255,6 +255,7 @@ def get_db(REPO_LISTS_PATH):
     df.rename(columns=get_display_names(), inplace=True)
     if "ID" in df.columns:
         df.set_index("ID", inplace=True)
+        df.sort_values("List name", inplace=True)
 
     return df
 
