@@ -6,6 +6,8 @@ import git
 import src.utils as utils
 import yaml
 import string
+from git import Repo
+from update_uids import update
 
 def get_marker_list(file_path):
     """
@@ -268,9 +270,9 @@ def get_list(path, info_col=1, marker_col=0):
     ----------
     path : str
         The path where the list is stored.
-    info_col : integer, default 1
+    info_col : int, default 1
         The column which contains additional information like cell type or phase.
-    marker_col: integer, default 0
+    marker_col: int, default 0
         The column which contains the marker (gene or genomic region).
 
     Returns
@@ -413,7 +415,7 @@ def show_statistics(REPO_LISTS_PATH, metadata, dpi=120):
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     metadata : dict
         The dictionary containing the metadata information.
-    dpi : integer, default 120
+    dpi : int, default 120
     """
 
     # TODO tissue plot - show count only
@@ -626,3 +628,47 @@ def get_display_names():
     display_names = extract_display_names(yaml_data['metadata'])
 
     return display_names
+
+
+def push_marker_list(repo_path, list_path, branch="automatic_push_feature"):
+    """
+    Pulls the repository, updates UIDs, commits and pushes the new list, then pulls again.
+
+    Parameters
+    ----------
+    repo_path : str
+        The local path of the repository.
+    list_path : str
+        The local path of the list to be added.
+    branch : str, default "automatic_push_feature"
+    """
+
+    # Instantiate the repository
+    repo = Repo(repo_path)
+
+    # Checkout to "branch"
+    if repo.active_branch.name != branch:
+        repo.git.checkout(branch)
+
+    # Pull
+    repo.remotes.origin.pull()
+
+    # Update UIDs using update()
+    update()
+
+    # Check if there are changes
+    if repo.is_dirty():
+        # Get the name of the list file
+        list_name = list_path.split('/')[-1]
+
+        # Add and Commit
+        repo.git.add(list_path)
+        repo.index.commit(f"{list_name} added to repository.")
+
+        # Push
+        repo.remotes.origin.push()
+
+        # Pull
+        repo.remotes.origin.pull()
+    else:
+        print("No changes to commit.")

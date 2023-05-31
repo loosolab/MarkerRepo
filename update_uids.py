@@ -31,7 +31,6 @@ def get_all_paths_and_uids(path):
                     else:
                         files_with_uids[uid] = [file_path]
 
-    print(files_with_uids)
     return files_with_uids
 
 
@@ -69,9 +68,6 @@ def update_uids(repo_lists_path):
                 print(f"File '{file_path}' was renamed to '{new_file_path}' and its ID was updated to {new_uid}")
 
 
-def main():
+def update():
     lists_path = "lists"
     update_uids(lists_path)
-
-if __name__ == "__main__":
-    main()
