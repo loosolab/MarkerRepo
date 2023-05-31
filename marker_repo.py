@@ -6,6 +6,8 @@ import git
 import src.utils as utils
 import yaml
 import string
+from git import Repo
+from update_uids import update_uids
 
 def get_marker_list(file_path):
     """
@@ -268,9 +270,9 @@ def get_list(path, info_col=1, marker_col=0):
     ----------
     path : str
         The path where the list is stored.
-    info_col : integer, default 1
+    info_col : int, default 1
         The column which contains additional information like cell type or phase.
-    marker_col: integer, default 0
+    marker_col: int, default 0
         The column which contains the marker (gene or genomic region).
 
     Returns
@@ -413,7 +415,7 @@ def show_statistics(REPO_LISTS_PATH, metadata, dpi=120):
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     metadata : dict
         The dictionary containing the metadata information.
-    dpi : integer, default 120
+    dpi : int, default 120
     """
 
     # TODO tissue plot - show count only
@@ -626,3 +628,55 @@ def get_display_names():
     display_names = extract_display_names(yaml_data['metadata'])
 
     return display_names
+
+
+def push_marker_list(repo_path, list_path, branch="automatic_push_feature"):
+    """
+    Pulls the repository, updates UIDs, commits and pushes the new list, then pulls again.
+
+    Parameters
+    ----------
+    repo_path : str
+        The local path of the repository.
+    list_path : str
+        The local path of the list to be added.
+    branch : str, default "automatic_push_feature"
+        The branch of the repository.
+    """
+
+    files_to_add = []
+    repo = Repo(repo_path)
+
+    # Checkout to the specified branch
+    if repo.active_branch.name != branch:
+        repo.git.checkout(branch)
+
+    repo.remotes.origin.pull()
+
+    # Update UIDs
+    updated_files = update_uids(f"{repo_path}/lists")
+
+    # If the provided list still exists after update, add it to the list of files to add
+    if os.path.exists(list_path):
+        files_to_add.append(list_path)
+
+    # Add any files updated by the update_uids() function to the list of files to add
+    for file_path in updated_files:
+        if os.path.exists(file_path):
+            files_to_add.append(file_path)
+
+    # If there are any files to add, add them, commit, and push
+    if files_to_add:
+        for file_path in files_to_add:
+            repo.git.add(file_path)
+
+        commit_message = "added/updated marker list(s):\n"
+        commit_message += "\n".join(files_to_add)
+        repo.index.commit(commit_message)
+        repo.remotes.origin.push()
+        repo.remotes.origin.pull()
+
+        print("Successfully pushed the following marker list(s) to the repository:\n" + "\n".join(files_to_add))
+
+    else:
+        print("No changes to commit.")
