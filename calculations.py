@@ -5,7 +5,7 @@ import src.utils as utils
 
 def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, case_sensitive=False, exact=False):
     """
-    This function compares and scores markers from selected marker lists using Inverse Document Frequency (IDF).
+    This function compares and scores markers from selected marker lists using Ubiquitousness Index.
 
     Parameters
     ----------
@@ -35,49 +35,17 @@ def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, ca
         df = mr.combine_lists(REPO_LISTS_PATH, uids)
 
     df = df.drop_duplicates()
-    
+
     # Calculate scores
-    total_lists = len(df['Info'].unique())
-    marker_counts = df['Marker'].value_counts()
-    df['Score'] = df['Marker'].apply(lambda x: np.log(total_lists / marker_counts[x]))
+    total_lists = df['Info'].nunique()
+    marker_counts = df.groupby('Marker')['Info'].nunique()
+    df['Score'] = df['Marker'].apply(lambda x: marker_counts[x] / total_lists)
 
-    # Sort by Score in descending order
-    df.sort_values('Score', ascending=False, inplace=True)
-
-    return df
-
-
-def invert_score(df):
-    """
-    Inverts and scales the score values in the DataFrame (marker list).
-    
-    The function calculates the inverse of the scores in the DataFrame, 
-    in addition the highest score becomes 0 and the lowest score becomes 1. 
-    All other scores are scaled accordingly. Thus, higher values correspond to lower uniqueness.
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        The DataFrame containing the Info, Marker and Score columns of the marker list.
-        
-    Returns
-    --------
-    pandas.DataFrame :
-        The DataFrame containing the modified scores.
-    """
-
-    # Get min and max score
-    min_score = df['Score'].min()
-    max_score = df['Score'].max()
-
-    # Invert and scale scores
-    df['Score'] = (max_score - df['Score']) / (max_score - min_score)
+    # Sort by Ubiquitousness Index in ascending order
+    df.sort_values('Score', inplace=True)
 
     return df
 
-
-import os
-import urllib.request
 
 def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data"):
     """
@@ -85,9 +53,9 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
 
     Parameters
     ----------
-    file_name : str
+    file_name : str, default "homologene.data"
         Name of the local HomoloGene data file.
-    url : str
+    url : str, default "ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data"
         URL to the HomoloGene data file.
 
     Returns

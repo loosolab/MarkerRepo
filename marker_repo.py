@@ -63,9 +63,9 @@ def search_db(df, keywords, case_sensitive=False, exact=False):
     keywords : dict or str
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
-    case_sensitive : bool, default: False
+    case_sensitive : bool, default False
         If True, the search will be case-sensitive. If False, the search will be case-insensitive.
-    exact : bool, default: False
+    exact : bool, default False
         If True, the search will look for exact matches. If False, the search will look for substrings.
 
     Returns
@@ -108,7 +108,7 @@ def guided_search(REPO_LISTS_PATH, df=None):
     ----------
     REPO_LISTS_PATH : str
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    df : pd.DataFrame, default: None
+    df : pd.DataFrame, default None
         The DataFrame to search in. If not provided, the function will create one from the REPO_LISTS_PATH.
 
     Returns
@@ -523,11 +523,11 @@ def select(whitelist=None, key=None, heading=None):
 
     Parameters
     ----------
-    whitelist : list of str, default: None
+    whitelist : list of str, default None
         The selection to choose from.
-    key : str, default: None
+    key : str, default None
         The key of the whitelist. For example "organism".
-    heading: str, default: None
+    heading: str, default None
         The heading (description) of the whitelist.
 
     Returns

@@ -12,9 +12,9 @@ def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=Fa
     keywords : dict or str
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
-    case_sensitive : bool, default: False
+    case_sensitive : bool, default False
         If True, the function will consider the case of the keywords. If False, the function will ignore the case.
-    exact : bool, default: False
+    exact : bool, default False
         If True, the function will search for exact matches of the keywords. If False, the function will search for the keywords as substrings.
 
     Returns
@@ -49,22 +49,22 @@ def convert_markers(REPO_LISTS_PATH, keywords=None, df=None, path=None, file_nam
 
     Parameters
     ----------
-    REPO_LISTS_PATH : str, default: None
+    REPO_LISTS_PATH : str, default None
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    keywords : dict or str, default: None
+    keywords : dict or str, default None
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
-    df : pd.DataFrame, default: None
+    df : pd.DataFrame, default None
         A DataFrame containing a two column marker list.
-    path : str, default: None
+    path : str, default None
         The path to the file where the new marker list will be saved. If not specified, the function will not save the DataFrame to a file.
     file_name : str, default "marker_list"
         The filename of the marker list.
-    case_sensitive : bool, default: False
+    case_sensitive : bool, default False
         If True, the function will consider the case of the keywords. If False, the function will ignore the case.
-    exact : bool, default: False
+    exact : bool, default False
         If True, the function will search for exact matches of the keywords. If False, the function will search for the keywords as substrings.
-    style : str, default: "two_column"
+    style : str, default "two_column"
         The format style of which the exported marker list should look like.
         Currently there are three options available: "two_column", "score" and "panglao"
 
@@ -113,9 +113,9 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     ----------
     df : DataFrame
         Input DataFrame with columns "Info", "Marker", and "Score".
-    organism : str, default: "Hs"
+    organism : str, default "Hs"
         Organism of panglao style markers.
-    tissue : str, default: "all"
+    tissue : str, default "all"
         Tissue of panglao style markers.
         
     Returns
