@@ -76,12 +76,17 @@ def invert_score(df):
     return df
 
 
-def download_homologene_data(url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data"):
+import os
+import urllib.request
+
+def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data"):
     """
     Download and parse the HomoloGene data.
 
     Parameters
     ----------
+    file_name : str
+        Name of the local HomoloGene data file.
     url : str
         URL to the HomoloGene data file.
 
@@ -91,8 +96,21 @@ def download_homologene_data(url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/
         DataFrame with the HomoloGene data.
     """
 
-    # Download HomoloGene db
-    homologene_data = pd.read_csv(url, sep='\t', header=None, index_col=0)
+    # Check if file already exists
+    if os.path.exists(file_name):
+        overwrite = input(f"'{file_name}' already exists. Do you want to overwrite it? (yes/no): ").lower()
+        
+        if overwrite == 'no':
+            # Load existing data
+            homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
+        else:
+            # Download new data and overwrite existing file
+            urllib.request.urlretrieve(url, file_name)
+            homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
+    else:
+        # Download data
+        urllib.request.urlretrieve(url, file_name)
+        homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
 
     # Rename columns
     homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein GI", "Protein accession"]
