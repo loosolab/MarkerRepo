@@ -8,6 +8,8 @@ import yaml
 import string
 from git import Repo
 from update_uids import update_uids
+from datetime import datetime
+
 
 def get_marker_list(file_path):
     """
@@ -133,7 +135,11 @@ def guided_search(REPO_LISTS_PATH, df=None):
             print(f"{identifier}: {column}")
         
         # Ask for column to search in
-        col_to_search_identifier = input("Enter identifier of column to search in (leave blank to search in all columns)\nEnter 'n' for next page, 'p' for previous page: ")
+        command_options = []
+        if page > 0: command_options.append("'p' for previous page")
+        if page < len(pages) - 1: command_options.append("'n' for next page")
+        command_options = ", ".join(command_options)
+        col_to_search_identifier = input(f"Enter identifier of column to search in (leave blank to search in all columns)\nEnter {command_options}: ")
         
         if col_to_search_identifier == 'n':
             page = (page + 1) % len(pages)
@@ -147,6 +153,11 @@ def guided_search(REPO_LISTS_PATH, df=None):
             break
     
     # Ask for value to search for
+    show_possible_values = input("Do you want to see all possible values for this column? (yes/no): ").lower() == "yes"
+    if show_possible_values:
+        unique_values = df[col_to_search].unique()
+        for value in unique_values:
+            print(value)
     search_term = input("Enter search term: ")
     exact = input("Perform an exact search? (yes/no): ").lower() == "yes"
     case_sensitive = input("Consider case sensitivity? (yes/no): ").lower() == "yes"
@@ -325,24 +336,42 @@ def dataframe_to_dict(df):
     return result
 
 
-def export_marker_list(path, file_name, df):
+def export_marker_list(df, path=".", file_name="marker_list"):
     """
-    Export marker list (df) to path/file_name
+    Exports a marker list (df) to path/file_name. If a file with this name already exists,
+    a timestamp suffix is added to the filename.
 
     Parameters
     ----------
-    path : str
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    file_name : str
-        The file name of the combined list.
     df : pd.DataFrame
-        The marker list which will be exported.
+        The marker list to be exported.
+    path : str, default "."
+        The path where the marker list should be saved.
+    file_name : str, default "marker_list"
+        The filename of the marker list.
+
+    Returns
+    -------
+    export_path : str
+        The full path where the marker list was saved.
     """
 
-    export_path = f"{path}/{file_name}"
+    if not path:
+        path = "."
 
+    # Generate the full file path
+    export_path = os.path.join(path, f"{file_name}")
+    
+    # Check if a file with this name already exists
+    if os.path.exists(export_path):
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        export_path = os.path.join(path, f"{file_name}_{timestamp}")
+
+    # Export the marker list
     df.to_csv(export_path, sep="\t", index=False)
-    print(f"Combined list saved: {export_path}")
+    print(f"Marker list saved: {os.path.abspath(export_path)}")
+    
+    return os.path.abspath(export_path)
 
 
 def get_uid_paths(REPO_LISTS_PATH, uids):

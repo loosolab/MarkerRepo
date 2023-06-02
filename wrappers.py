@@ -43,7 +43,7 @@ def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=Fa
     return markers_filtered
 
 
-def convert_markers(REPO_LISTS_PATH, keywords=None, df=None, path=None, case_sensitive=False, exact=False, style="two_column"):
+def convert_markers(REPO_LISTS_PATH, keywords=None, df=None, path=None, file_name="marker_list", case_sensitive=False, exact=False, style="two_column"):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
     Optionally, it can export the DataFrame to a file.
@@ -59,6 +59,8 @@ def convert_markers(REPO_LISTS_PATH, keywords=None, df=None, path=None, case_sen
         A DataFrame containing a two column marker list.
     path : str, default: None
         The path to the file where the new marker list will be saved. If not specified, the function will not save the DataFrame to a file.
+    file_name : str, default "marker_list"
+        The filename of the marker list.
     case_sensitive : bool, default: False
         If True, the function will consider the case of the keywords. If False, the function will ignore the case.
     exact : bool, default: False
@@ -96,10 +98,9 @@ def convert_markers(REPO_LISTS_PATH, keywords=None, df=None, path=None, case_sen
             print("Style not recognized. Try 'two_column', 'score' or 'panglao'")
 
 
-    if path:
+    if path or file_name:
         # Export marker list
-        mr.export_marker_list(REPO_LISTS_PATH, path, marker_list)
-        return os.path.abspath(path)
+        return mr.export_marker_list(marker_list, path=path, file_name=file_name)
     else:
         return marker_list
 
