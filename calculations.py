@@ -1,7 +1,6 @@
 import numpy as np
 import marker_repo as mr
 import pandas as pd
-import yaml
 import src.utils as utils
 
 def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, case_sensitive=False, exact=False):

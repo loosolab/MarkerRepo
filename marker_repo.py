@@ -151,25 +151,27 @@ def guided_search(REPO_LISTS_PATH, df=None):
         if col_to_search_identifier in identifiers:
             col_to_search = pages[page][identifiers.index(col_to_search_identifier)]
             break
-    
+
     # Ask for value to search for
     show_possible_values = input("Do you want to see all possible values for this column? (yes/no): ").lower() == "yes"
     if show_possible_values:
         unique_values = df[col_to_search].unique()
         for value in unique_values:
             print(value)
-    search_term = input("Enter search term: ")
+    
+    search_terms = input("Enter search terms (separate multiple terms with a comma): ").split(',')
     exact = input("Perform an exact search? (yes/no): ").lower() == "yes"
     case_sensitive = input("Consider case sensitivity? (yes/no): ").lower() == "yes"
-    
-    # Build the keywords
-    if col_to_search:
-        keywords = {col_to_search: search_term}
-    else:
-        keywords = search_term
 
-    # Perform the search
-    results = search_db(df, keywords, exact=exact, case_sensitive=case_sensitive)
+    # Perform the search for each term and combine the results
+    results = pd.DataFrame()
+    for search_term in search_terms:
+        if col_to_search:
+            keywords = {col_to_search: search_term.strip()}
+        else:
+            keywords = search_term.strip()
+        result = search_db(df, keywords, exact=exact, case_sensitive=case_sensitive)
+        results = pd.concat([results, result])
 
     print(f"Number of results: {len(results)}")
     see_results = input("Do you want to see the results? (yes/no): ").lower() == "yes"

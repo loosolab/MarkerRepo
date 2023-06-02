@@ -1,6 +1,5 @@
 import marker_repo as mr
 import calculations as calc
-import os
 
 def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=False):
     """
