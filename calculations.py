@@ -2,10 +2,13 @@ import numpy as np
 import marker_repo as mr
 import pandas as pd
 import src.utils as utils
+from sklearn.preprocessing import MinMaxScaler
 
 def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, case_sensitive=False, exact=False):
     """
     This function compares and scores markers from selected marker lists using Ubiquitousness Index.
+    A score of '0' signifies that the marker is the most specific within this selection, 
+    while a score of '1' indicates that the marker is the most prevalent.
 
     Parameters
     ----------
@@ -35,14 +38,17 @@ def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, ca
         df = mr.combine_lists(REPO_LISTS_PATH, uids)
 
     df = df.drop_duplicates()
-
+    
     # Calculate scores
-    total_lists = df['Info'].nunique()
-    marker_counts = df.groupby('Marker')['Info'].nunique()
-    df['Score'] = df['Marker'].apply(lambda x: marker_counts[x] / total_lists)
+    total_lists = len(df['Info'].unique())
+    marker_counts = df['Marker'].value_counts()
+    df['Score'] = df['Marker'].apply(lambda x: total_lists / marker_counts[x])
 
-    # Sort by Ubiquitousness Index in ascending order
-    df.sort_values('Score', inplace=True)
+    # Scaling scores to be between 0 and 1
+    scaler = MinMaxScaler()
+    df['Score'] = scaler.fit_transform(df[['Score']])
+    df['Score'] = 1 - df['Score']
+    df.sort_values('Score', ascending=True, inplace=True)
 
     return df
 
