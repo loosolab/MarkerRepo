@@ -38,3 +38,23 @@ Once you are done, you can deactivate the `marker-repo` environment by running:
 `conda deactivate`
 
 That's it! You have successfully created a Conda environment, activated it, and added it as a Kernel in Jupyter. Select the `marker-repo` Kernel in the provided notebooks and begin working on your project.
+
+# Installing the MarkerRepo Package
+
+The MarkerRepo package allows you to use the functionalities of MarkerRepo in external environments. Follow these steps to install the package:
+
+## Step 1: Activate the Conda environment
+
+Before installing the package, make sure to activate the Conda environment where you want the package installed. Run:
+
+`conda activate your-env`
+
+## Step 2: Install the MarkerRepo package
+
+With the Conda environment activated, navigate to the root directory of the MarkerRepo package and run:
+
+`pip install .`
+
+This command installs the MarkerRepo package into your `your-env` Conda environment.
+
+Now you can import and use the MarkerRepo package in any Python script or notebook running in the `your-env` Conda environment.
