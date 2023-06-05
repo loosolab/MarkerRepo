@@ -1,7 +1,8 @@
-import numpy as np
-import marker_repo as mr
+from .marker_repo import search_db, combine_lists, get_db
 import pandas as pd
-import src.utils as utils
+import os
+import urllib.request
+from .utils import read_whitelist
 from sklearn.preprocessing import MinMaxScaler
 
 def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, case_sensitive=False, exact=False):
@@ -33,9 +34,9 @@ def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, ca
     if marker_df is not None:
         df = marker_df
     else:
-        df = mr.search_db(mr.get_db(REPO_LISTS_PATH), keywords, case_sensitive=case_sensitive, exact=exact)
+        df = search_db(get_db(REPO_LISTS_PATH), keywords, case_sensitive=case_sensitive, exact=exact)
         uids = [int(idx) for idx in df.index]
-        df = mr.combine_lists(REPO_LISTS_PATH, uids)
+        df = combine_lists(REPO_LISTS_PATH, uids)
 
     df = df.drop_duplicates()
     
@@ -113,7 +114,7 @@ def get_supported_taxonomy_ids(hg_db):
     # Get unique taxonomy IDs from HomoloGene db and convert them to strings
     unique_taxonomy_ids = hg_db['Taxonomy ID'].unique().astype(str).tolist()
     # Get support organisms from whitelist repository
-    supported_organims = utils.read_whitelist("organism")['whitelist']
+    supported_organims = read_whitelist("organism")['whitelist']
 
     for so in supported_organims:
         name, tax = so.split(" ")

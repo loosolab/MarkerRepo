@@ -3,11 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import git
-import src.utils as utils
+from .utils import read_whitelist
 import yaml
 import string
 from git import Repo
-from update_uids import update_uids
+from .update_uids import update_uids
 from datetime import datetime
 
 
@@ -265,7 +265,7 @@ def get_db(REPO_LISTS_PATH):
                     flattened_metadata = flatten_dict(metadata)
                     data.append(flattened_metadata)
 
-    # create DataFrame and set "id" as index
+    # create DataFrame and set "ID" as index
     df = pd.DataFrame(data)
     df.rename(columns=get_display_names(), inplace=True)
     if "ID" in df.columns:
@@ -536,7 +536,7 @@ def select(whitelist=None, key=None, heading=None):
         The selected string of the whitelist.
     """
     if not whitelist:
-        whitelist = utils.read_whitelist(key)['whitelist']
+        whitelist = read_whitelist(key)['whitelist']
     
     if not heading:
         print(f"Select {key}")
@@ -567,7 +567,7 @@ def get_gene_dict(organism):
         Dictionary which contains the gene names and ensembl IDs.
     """
     gene_dict = {}
-    w_markers = utils.read_whitelist(f"genes/{organism.split(' ')[0]}")['whitelist']
+    w_markers = read_whitelist(f"genes/{organism.split(' ')[0]}")['whitelist']
     for marker in w_markers:
         name, ensg = marker.split(" ")[0].upper(), marker.split(" ")[1].upper()
         gene_dict[name] = ensg
