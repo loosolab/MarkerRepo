@@ -1,6 +1,6 @@
 import os.path
 import datetime
-from src import utils
+from .utils import read_in_yaml, find_keys, get_whitelist, read_whitelist, read_grouped_whitelist
 
 
 # This script includes functions for the validation of metadata yaml files
@@ -27,7 +27,7 @@ def validate_file(metafile):
     pool_warn = []
     ref_genome_warn = []
     valid = True
-    key_yaml = utils.read_in_yaml(os.path.join(
+    key_yaml = read_in_yaml(os.path.join(
         os.path.dirname(os.path.abspath(__file__)), '..', 'keys.yaml'))
     invalid_keys, invalid_entries, invalid_value = \
         new_test(metafile, key_yaml, [], '', [], [], [], None, [], None, metafile)
@@ -150,20 +150,20 @@ def new_test(metafile, key_yaml, sub_lists, key_name, invalid_keys,
             'value' in metafile and 'unit' in metafile):
         for key in metafile:
             if not key_yaml and key_name.split(':')[-1] in is_factor or (key_name.split(':')[-1] == 'values' and local_factor is not None):
-                new_yaml1 = utils.read_in_yaml(os.path.join(
+                new_yaml1 = read_in_yaml(os.path.join(
                     os.path.dirname(os.path.abspath(__file__)), '..',
                     'keys.yaml'))
                 if key_name.split(':')[-1] in is_factor:
-                    new_yaml = list(utils.find_keys(new_yaml1, key_name.split(':')[-1]))
+                    new_yaml = list(find_keys(new_yaml1, key_name.split(':')[-1]))
                 else:
-                    new_yaml = list(utils.find_keys(new_yaml1, local_factor))
+                    new_yaml = list(find_keys(new_yaml1, local_factor))
                 if len(new_yaml) > 0:
                     if 'whitelist' in new_yaml[0] and new_yaml[0]['whitelist']:
                         if key_name.split(':')[-1] in is_factor:
-                            w = utils.get_whitelist(key_name.split(':')[-1],
+                            w = get_whitelist(key_name.split(':')[-1],
                                                     full_metadata)
                         else:
-                            w = utils.get_whitelist(local_factor, full_metadata)
+                            w = get_whitelist(local_factor, full_metadata)
                         if w and 'headers' in w:
                             if isinstance(w['headers'], dict):
                                 if 'whitelist_keys' in w:
@@ -190,7 +190,7 @@ def new_test(metafile, key_yaml, sub_lists, key_name, invalid_keys,
                     is_factor.append(metafile[key])
                 input_type = None
                 if key == 'values' and factor is not None:
-                    node = list(utils.find_keys(key_yaml, factor))
+                    node = list(find_keys(key_yaml, factor))
                     if len(node) > 0:
                         if 'input_type' in node:
                             input_type = node['input_type']
@@ -237,7 +237,7 @@ def new_test_for_whitelist(entry_key, entry_value, sublists):
                       value
     :return: True if the entry does not match the whitelist else False
     """
-    whitelist = utils.read_whitelist(entry_key)
+    whitelist = read_whitelist(entry_key)
     if whitelist and whitelist['whitelist_type'] == 'plain':
         whitelist = whitelist['whitelist']
     if isinstance(whitelist, dict):
@@ -246,7 +246,7 @@ def new_test_for_whitelist(entry_key, entry_value, sublists):
             whitelist_key = whitelist['ident_key']
             for i in reversed(range(len(sublists))):
 
-                value = list(utils.find_keys(sublists[i], whitelist_key))
+                value = list(find_keys(sublists[i], whitelist_key))
 
                 if len(value) > 0:
                     if len(value) == 1:
@@ -258,12 +258,12 @@ def new_test_for_whitelist(entry_key, entry_value, sublists):
             if value[0] in whitelist:
                 whitelist = whitelist[value[0]]
             else:
-                whitelist = utils.read_whitelist(value[0])
+                whitelist = read_whitelist(value[0])
                 if whitelist and whitelist['whitelist_type'] == 'plain':
                     whitelist = whitelist['whitelist']
         if isinstance(whitelist, dict) and whitelist[
                 'whitelist_type'] == 'group':
-            whitelist = utils.read_grouped_whitelist(whitelist, {})
+            whitelist = read_grouped_whitelist(whitelist, {})
             whitelist = [x for xs in list(whitelist['whitelist'].values())
                          if xs is not None for x in xs]
     if whitelist and not isinstance(whitelist, list) and not isinstance(
@@ -271,7 +271,7 @@ def new_test_for_whitelist(entry_key, entry_value, sublists):
             and os.path.isfile(os.path.join(
             os.path.dirname(os.path.abspath(__file__)), '..',
             'metadata_whitelists', 'whitelists', whitelist)):
-        whitelist = utils.read_whitelist(whitelist)
+        whitelist = read_whitelist(whitelist)
         if whitelist:
             whitelist = whitelist['whitelist']
     if whitelist and entry_value not in whitelist:
@@ -345,7 +345,7 @@ def find_key(metafile, key):
     :return: missing_keys: a list containing the missing mandatory keys
     """
     for k in key.split(':'):
-        new_metafile = list(utils.find_keys(metafile, k))
+        new_metafile = list(find_keys(metafile, k))
     return new_metafile
 
 
@@ -402,15 +402,15 @@ def validate_logic(metafile):
     """
     pool_warn = []
     ref_genome_warn = []
-    samples = list(utils.find_keys(metafile, 'samples'))
+    samples = list(find_keys(metafile, 'samples'))
     for cond in samples:
         for sample in cond:
             warning, warn_message = validate_donor_count(sample['pooled'],
                                                          sample['donor_count'])
             if warning:
                 pool_warn.append((sample['sample_name'], warn_message))
-    organisms = list(utils.find_keys(metafile, 'organism_name'))
-    runs = list(utils.find_keys(metafile, 'runs'))
+    organisms = list(find_keys(metafile, 'organism_name'))
+    runs = list(find_keys(metafile, 'runs'))
     if len(runs) > 0:
         for run in runs[0]:
             if 'reference_genome' in run:
@@ -432,7 +432,7 @@ def validate_reference_genome(organisms, reference_genome):
     """
     invalid = False
     message = None
-    ref_genome_whitelist = utils.get_whitelist(
+    ref_genome_whitelist = get_whitelist(
         'reference_genome', None)['whitelist']
     if not any([reference_genome in ref_genome_whitelist[organism] for
                 organism in organisms]):

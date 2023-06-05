@@ -1,7 +1,6 @@
 import sys
 from tabulate import tabulate
-import src.utils as utils
-import src.validate_yaml as validate_yaml
+from .utils import read_in_yaml, save_as_yaml, find_keys, get_whitelist
 import datetime
 import os
 import readline
@@ -54,7 +53,7 @@ def generate_file(path, input_id, name, mandatory_mode, marker_list, organism, m
             sys.exit(f'Program terminated.')
 
     # read in structure file
-    key_yaml = utils.read_in_yaml(
+    key_yaml = read_in_yaml(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
                      'keys.yaml'))
 
@@ -128,7 +127,7 @@ def generate_file(path, input_id, name, mandatory_mode, marker_list, organism, m
     #     print(f'Validation complete. No errors found.\n')
 
     list_path = os.path.join(path, file_name)
-    utils.save_as_yaml(result_dict, list_path)
+    save_as_yaml(result_dict, list_path)
     print(f'Marker list saved:\n{list_path}')
     
     # not needed for marker repo
@@ -394,7 +393,7 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
                                 new_element = False
 
                                 # read in the structure file
-                                key_yaml = utils.read_in_yaml(
+                                key_yaml = read_in_yaml(
                                     os.path.join(os.path.dirname(
                                         os.path.abspath(__file__)), '..',
                                         'keys.yaml'))
@@ -402,7 +401,7 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
                                 # list all possible keys that can occur in one
                                 # list element of the optional key
                                 possible_keys = list(list(
-                                    utils.find_keys(
+                                    find_keys(
                                         key_yaml, option))[0]['value'].keys())
 
                                 # create lists for list elements that contain
@@ -544,7 +543,7 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
                                                 # unfilled key in the metadata
                                                 # structure and save it
                                                 part_node = list(
-                                                    utils.find_keys(
+                                                    find_keys(
                                                         key_yaml,
                                                         possible_input[0]))[0]
 
@@ -752,7 +751,7 @@ def parse_input_value(key, desc, has_whitelist, value_type, result_dict):
 
     # read in whitelist if the key has one or set the whitelist to None
     if has_whitelist:
-        whitelist = utils.get_whitelist(key, result_dict)
+        whitelist = get_whitelist(key, result_dict)
     else:
         whitelist = None
 
@@ -1002,7 +1001,7 @@ def get_input_list(node, item, filled_object):
     """
     if 'whitelist' in node and node['whitelist'] or 'special_case' in node \
             and 'merge' in node['special_case']:
-        whitelist = utils.get_whitelist(item, filled_object)
+        whitelist = get_whitelist(item, filled_object)
         if whitelist:
             if len(whitelist['whitelist']) > 30:
                 used_values = []
