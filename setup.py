@@ -12,5 +12,7 @@ setup(
         'pyyaml',
         'tabulate',
         'ipykernel',
+        'GitPython',
+        'scikit-learn',
     ],
 )

@@ -267,7 +267,7 @@ def get_db(REPO_LISTS_PATH):
 
     # create DataFrame and set "ID" as index
     df = pd.DataFrame(data)
-    df.rename(columns=get_display_names(), inplace=True)
+    df.rename(columns=get_display_names(REPO_LISTS_PATH.split("/lists")[0]), inplace=True)
     if "ID" in df.columns:
         df.set_index("ID", inplace=True)
         df.sort_values("List name", inplace=True)
@@ -474,15 +474,20 @@ def show_statistics(REPO_LISTS_PATH, metadata, dpi=120):
     plt.show()
 
 
-def get_whitelists():
+def get_whitelists(REPO_PATH):
     """
     Fetches whitelists of the metadata_whitelist repository.
+    
+    Parameters
+    ----------
+    REPO_PATH : str
+        The path of the marker repository.
     """
 
     # Based on https://gitlab.gwdg.de/loosolab/software/metadata-organizer/-/blob/main/metaTools.py
     print('Fetching whitelists...\n')
-    if not os.path.exists('metadata_whitelists'):
-        repo = git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git/', 'metadata_whitelists')
+    if not os.path.exists(f"{REPO_PATH}/metadata_whitelists"):
+        repo = git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git/', f"{REPO_PATH}/metadata_whitelists")
     else:
         repo = git.Repo('metadata_whitelists')
         o = repo.remotes.origin
@@ -642,9 +647,14 @@ def extract_display_names(d, parent_key='', sep='_'):
     return display_names
 
 
-def get_display_names():
+def get_display_names(REPO_PATH):
     """
     Extracts the display names of the keys.yaml.
+
+    Parameters
+    ----------
+    REPO_PATH : str
+        The path of the marker repository.
 
     Returns:
     -------
@@ -653,7 +663,7 @@ def get_display_names():
     """
 
     # load the YAML file
-    with open('keys.yaml', 'r', encoding='utf-8') as yaml_file:
+    with open(f"{REPO_PATH}/keys.yaml", 'r', encoding='utf-8') as yaml_file:
         yaml_data = yaml.safe_load(yaml_file)
 
     # extract the display names
