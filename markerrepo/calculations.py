@@ -170,14 +170,14 @@ def transfer_markers(df, source_organism, target_organism, hg_db):
 def get_panglao_ui(panglao_file="panglao_markers", organism="Hs"):
     """
     Create a dictionary with gene symbols and nicknames as keys and average ubiquitousness index as values.
-    Only considers rows with the given species.
+    Only considers rows with the given organism.
 
     Parameters
     ----------
     panglao_file : str
         Path to the panglao markers.
-    species : str
-        Species to consider (e.g. "Hs" or "Mm").
+    organism : str
+        Organism to consider (e.g. "Hs" or "Mm").
 
     Returns
     -------
@@ -190,7 +190,7 @@ def get_panglao_ui(panglao_file="panglao_markers", organism="Hs"):
     # Filter dataframe by organism
     df = df[df['species'].str.contains(organism, na=False)]
     
-    gene_index_dict = {}
+    panglao_ui_dict = {}
 
     for _, row in df.iterrows():
         # Get gene symbols and nicknames
@@ -201,10 +201,45 @@ def get_panglao_ui(panglao_file="panglao_markers", organism="Hs"):
         # Fill dictionary
         for symbol in symbols:
             symbol = symbol.upper()
-            if symbol in gene_index_dict:
+            if symbol in panglao_ui_dict:
                 # If the symbol is already in the dictionary, update the value to the average
-                gene_index_dict[symbol] = round((gene_index_dict[symbol] + row['ubiquitousness index']) / 2, 3)
+                panglao_ui_dict[symbol] = round((panglao_ui_dict[symbol] + row['ubiquitousness index']) / 2, 3)
             else:
-                gene_index_dict[symbol] = row['ubiquitousness index']
+                panglao_ui_dict[symbol] = row['ubiquitousness index']
 
-    return gene_index_dict
+    return panglao_ui_dict
+
+
+def update_scores(df, organism="Hs", panglao_file="panglao_markers"):
+    """
+    Update the scores in the dataframe using the ubiquitousness index from the panglao database.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame with columns "Marker", "Info", and "Score". 
+    organism : str
+        Organism to consider when retrieving the ubiquitousness index (e.g. "Hs" or "Mm").
+    panglao_file : str
+        Path to the panglao markers.
+
+    Returns
+    -------
+    pd.DataFrame :
+        Updated dataframe with new scores.
+    """
+
+    # Retrieve the ubiquitousness index dictionary for the given organism
+    ui_dict = get_panglao_ui(panglao_file, organism)
+
+    # Split the "Marker" column and take the first part
+    df['MainMarker'] = df['Marker'].str.split().str[0].str.upper()
+
+    # Update scores where the main marker is in ui_dict
+    df['Score'] = df['MainMarker'].map(ui_dict).fillna(df['Score'])
+
+
+    df = df.drop(columns='MainMarker')
+    df.sort_values('Score', ascending=True, inplace=True)
+
+    return df
