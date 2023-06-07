@@ -1,5 +1,5 @@
 from .marker_repo import get_db, search_db, combine_lists, export_marker_list
-from .calculations import compare_marker_lists
+from .calculations import compare_marker_lists, update_scores
 
 def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=False):
     """
@@ -95,7 +95,7 @@ def convert_markers(REPO_LISTS_PATH, keywords=None, df=None, path=None, file_nam
         case "panglao":
             print("Preparing panglao style marker list...")
             marker_list = compare_marker_lists(marker_df=marker_list)
-            # marker_list = calc.invert_score(marker_list)
+            marker_list = update_scores(marker_list)
             marker_list = transform_list_to_panglao(df=marker_list, organism=organism, tissue=tissue)
         case _:
             print("Style not recognized. Try 'two_column', 'score' or 'panglao'")
