@@ -166,3 +166,45 @@ def transfer_markers(df, source_organism, target_organism, hg_db):
     
     return result_df
 
+
+def get_panglao_ui(panglao_file="panglao_markers", organism="Hs"):
+    """
+    Create a dictionary with gene symbols and nicknames as keys and average ubiquitousness index as values.
+    Only considers rows with the given species.
+
+    Parameters
+    ----------
+    panglao_file : str
+        Path to the panglao markers.
+    species : str
+        Species to consider (e.g. "Hs" or "Mm").
+
+    Returns
+    -------
+    dict :
+        Dictionary with gene symbols and nicknames as keys and average ubiquitousness index as values.
+    """
+
+    df = pd.read_csv(panglao_file, sep="\t")
+    
+    # Filter dataframe by organism
+    df = df[df['species'].str.contains(organism, na=False)]
+    
+    gene_index_dict = {}
+
+    for _, row in df.iterrows():
+        # Get gene symbols and nicknames
+        symbols = [row['official gene symbol']]
+        if pd.notna(row['nicknames']):
+            symbols.extend(row['nicknames'].split('|'))
+
+        # Fill dictionary
+        for symbol in symbols:
+            symbol = symbol.upper()
+            if symbol in gene_index_dict:
+                # If the symbol is already in the dictionary, update the value to the average
+                gene_index_dict[symbol] = round((gene_index_dict[symbol] + row['ubiquitousness index']) / 2, 3)
+            else:
+                gene_index_dict[symbol] = row['ubiquitousness index']
+
+    return gene_index_dict
