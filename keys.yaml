@@ -30,7 +30,7 @@ metadata:
       input_type: date
     marker_type: # region or gene
       mandatory: True
-      display_name: 'Type'
+      display_name: 'Marker type'
       list: False
       desc: 'The type of the list (genomic region or gene).'
       value: null
@@ -52,7 +52,7 @@ metadata:
       value: null
       whitelist: False
       input_type: short_text
-    organism: # merge needed? simplify organism?
+    organism:
       mandatory: True
       display_name: 'Organism'
       list: False
@@ -90,7 +90,7 @@ metadata:
           value: null
           whitelist: False
           input_type: short_text
-        email: # do we need this?
+        email: 
           mandatory: False 
           display_name: 'Email'
           list: False
@@ -99,7 +99,7 @@ metadata:
           whitelist: False
           input_type: short_text
     tags:
-      mandatory: False # discuss
+      mandatory: False 
       display_name: 'Tags'
       list: False
       desc: 'Tags which describe the list.'
@@ -113,6 +113,14 @@ metadata:
           whitelist: False
           input_type: short_text
       value: 
+        list_type:
+          mandatory: False
+          display_name: 'List type'
+          list: True
+          desc: 'The type of markers such as "cell type annotation" or "cell cycle".'
+          value: null
+          whitelist: True
+          input_type: select
         genotype:
           mandatory: False
           display_name: 'Genotype'
@@ -163,7 +171,7 @@ metadata:
           value:
             disease_type:
               mandatory: False
-              display_name: 'Type'
+              display_name: 'Disease type'
               list: False
               desc: ''
               value: null
@@ -171,7 +179,7 @@ metadata:
               input_type: select
             disease_status:
               mandatory: True
-              display_name: 'Status'
+              display_name: 'Disease status'
               list: False
               desc: ''
               value: null
@@ -195,7 +203,7 @@ metadata:
           value:
             injury_status:
               mandatory: True
-              display_name: 'Status'
+              display_name: 'Injury status'
               list: False
               desc: ''
               value: null
@@ -203,7 +211,7 @@ metadata:
               input_type: select
             injury_type:
               mandatory: False
-              display_name: 'Type'
+              display_name: 'Injury type'
               list: False
               desc: ''
               value: null
@@ -219,7 +227,7 @@ metadata:
           value:
             treatment_type:
               mandatory: False
-              display_name: 'Type'
+              display_name: 'Treatment type'
               list: False
               desc: ''
               value: null
@@ -227,7 +235,7 @@ metadata:
               input_type: select
             treatment_status:
               mandatory: True
-              display_name: 'Status'
+              display_name: 'Treatment status'
               list: False
               desc: ''
               value: null
@@ -235,7 +243,7 @@ metadata:
               input_type: select
             treatment_duration:
               mandatory: False
-              display_name: 'Duration'
+              display_name: 'Treatment duration'
               list: False
               desc: ''
               special_case:
@@ -243,7 +251,7 @@ metadata:
               value:
                 value:
                   mandatory: True
-                  display_name: 'Value'
+                  display_name: 'Treatment duration value'
                   list: False
                   desc: ''
                   value: null
@@ -251,7 +259,7 @@ metadata:
                   input_type: number
                 unit:
                   mandatory: False
-                  display_name: 'Unit'
+                  display_name: 'Treatment duration unit'
                   list: False
                   desc: ''
                   value: null
@@ -273,7 +281,6 @@ marker_list:
       whitelist: False
       input_type: short_text
 
-    # wouldn't it be easier to outsource the  markers itself? by just checking correct spelling by using the whitelists?
     markers: # marker list itself
       mandatory: True
       display_name: 'Markers'
