@@ -84,8 +84,9 @@ def generate_file(path, input_id, name, mandatory_mode, marker_list, organism, m
         print(f'\n\n')
         print(f'{"".center(size, "-")}\n')
 
-        correct = parse_list_choose_one(['True ', 'False '],
-                                        f'\nIs the input correct? You can redo it by selecting \'False\'')
+        correct = True
+        #correct = parse_list_choose_one(['True ', 'False '],
+        #                                f'\nIs the input correct? You can redo it by selecting \'False\'')
         while not correct:
             result_dict[item] = edit_item(item, result_dict[item], key_yaml[item], result_dict, mandatory_mode)
 
@@ -281,7 +282,7 @@ def get_redo_value(node, item, optional, mandatory_mode, result_dict,
 
 
 def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
-                            result_dict, first_node, is_factor):
+                            result_dict, first_node, is_factor, custom=None):
     """
     This function calls other functions to fill in metadata information for a
     key depending on its type.
@@ -354,6 +355,10 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
                             optionals.append(item)
                             desc.append(node[item]['desc'])
 
+            if custom is not None:
+                optionals.append(custom['display_name'])
+                desc.append(custom['desc'])
+
             # if there are optional keys and mandatory mode is not active, ask
             # the user whether he wants to add optional information
             if len(optionals) > 0 and mandatory_mode == False:
@@ -377,239 +382,251 @@ def fill_metadata_structure(node, key, return_dict, optional, mandatory_mode,
                     # chosen optional key
                     for option in options:
 
-                        # TODO: runter rücken?
-                        new_element = True
+                        # Loop to enter Custom Keys
+                        if option == 'Custom Tag':
+                            redo = True
+                            while redo:
+                                print('Enter a key for your custom tag:')
+                                custom_key = parse_input_value('Custom tag', '', False,
+                                                    'str', result_dict)
+                                custom_value = get_redo_value(custom, custom_key, optional, mandatory_mode, result_dict, first_node, is_factor, True)
+                                return_dict[custom_key] = custom_value
+                                redo = parse_list_choose_one(['True ', 'False '], 'Do you want to add another custom key?')
 
-                        # test if the value for the optional key is of type
-                        # list
-                        if node[option]['list']:
+                        else:
+                            # TODO: runter rücken?
+                            new_element = True
 
-                            # TODO: ??
-                            if option in return_dict and all(
-                                    isinstance(x, dict) for x in
-                                    return_dict[option]):
+                            # test if the value for the optional key is of type
+                            # list
+                            if node[option]['list']:
 
-                                # set the new_element parameter to False
-                                new_element = False
+                                # TODO: ??
+                                if option in return_dict and all(
+                                        isinstance(x, dict) for x in
+                                        return_dict[option]):
 
-                                # read in the structure file
-                                key_yaml = read_in_yaml(
-                                    os.path.join(os.path.dirname(
-                                        os.path.abspath(__file__)), '..',
-                                        'keys.yaml'))
+                                    # set the new_element parameter to False
+                                    new_element = False
 
-                                # list all possible keys that can occur in one
-                                # list element of the optional key
-                                possible_keys = list(list(
-                                    find_keys(
-                                        key_yaml, option))[0]['value'].keys())
+                                    # read in the structure file
+                                    key_yaml = read_in_yaml(
+                                        os.path.join(os.path.dirname(
+                                            os.path.abspath(__file__)), '..',
+                                            'keys.yaml'))
 
-                                # create lists for list elements that contain
-                                # optional keys that have no value yet and the
-                                # descriptions of the list elements
-                                elems = []
-                                desc = []
+                                    # list all possible keys that can occur in one
+                                    # list element of the optional key
+                                    possible_keys = list(list(
+                                        find_keys(
+                                            key_yaml, option))[0]['value'].keys())
 
-                                # iterate through all list elements that
-                                # already exist for the optional key
-                                for i in range(len(return_dict[option])):
+                                    # create lists for list elements that contain
+                                    # optional keys that have no value yet and the
+                                    # descriptions of the list elements
+                                    elems = []
+                                    desc = []
 
-                                    # test if optional keys are missing in the
-                                    # list element
-                                    if not all(k in return_dict[option][i] for
-                                               k in possible_keys):
+                                    # iterate through all list elements that
+                                    # already exist for the optional key
+                                    for i in range(len(return_dict[option])):
 
-                                        # add the list element with missing
-                                        # optional keys to the 'elems' list
-                                        elems.append(', '.join(
-                                            [f'{k}: '
-                                             f'{return_dict[option][i][k]}'
-                                             for k in return_dict[option][i]]))
+                                        # test if optional keys are missing in the
+                                        # list element
+                                        if not all(k in return_dict[option][i] for
+                                                   k in possible_keys):
 
-                                        # add a description of the list element
-                                        # with missing optional keys to the
-                                        # 'desc' list
-                                        keys = ', '.join(
-                                            [x for x in possible_keys if x
-                                             not in return_dict[option][i]])
-                                        desc.append(
-                                            f'Possible information to add: '
-                                            f'{keys}')
+                                            # add the list element with missing
+                                            # optional keys to the 'elems' list
+                                            elems.append(', '.join(
+                                                [f'{k}: '
+                                                 f'{return_dict[option][i][k]}'
+                                                 for k in return_dict[option][i]]))
 
-                                # test if list with list elems containing
-                                # unfilled optional keys is not empty
-                                if len(elems) > 0:
+                                            # add a description of the list element
+                                            # with missing optional keys to the
+                                            # 'desc' list
+                                            keys = ', '.join(
+                                                [x for x in possible_keys if x
+                                                 not in return_dict[option][i]])
+                                            desc.append(
+                                                f'Possible information to add: '
+                                                f'{keys}')
 
-                                    # add an option for adding a new list value
-                                    # to the 'elems' list (with empty desc)
-                                    elems.append(f'Add new {option}')
-                                    desc.append('')
+                                    # test if list with list elems containing
+                                    # unfilled optional keys is not empty
+                                    if len(elems) > 0:
 
-                                    # print information for user that there are
-                                    # existing list elements for the optional
-                                    # key and let the user select if he wants
-                                    # to add information to an existing list
-                                    # element or create a new one + parse the
-                                    # user input
-                                    print(
-                                        f'\nThere are existing elements for '
-                                        f'{option}. Please select the elements'
-                                        f' for which you want to add '
-                                        f'information.\n')
-                                    print_option_list(elems, desc)
-                                    list_elems = parse_input_list(
-                                        range(len(return_dict[option]) + 1),
-                                        False)
+                                        # add an option for adding a new list value
+                                        # to the 'elems' list (with empty desc)
+                                        elems.append(f'Add new {option}')
+                                        desc.append('')
 
-                                    # iterate through the list elements the
-                                    # user chose to add information
-                                    for indc in list_elems:
+                                        # print information for user that there are
+                                        # existing list elements for the optional
+                                        # key and let the user select if he wants
+                                        # to add information to an existing list
+                                        # element or create a new one + parse the
+                                        # user input
+                                        print(
+                                            f'\nThere are existing elements for '
+                                            f'{option}. Please select the elements'
+                                            f' for which you want to add '
+                                            f'information.\n')
+                                        print_option_list(elems, desc)
+                                        list_elems = parse_input_list(
+                                            range(len(return_dict[option]) + 1),
+                                            False)
 
-                                        # test if the user chose an existing
-                                        # list element to add information
-                                        if int(indc) - 1 < len(
-                                                return_dict[option]):
+                                        # iterate through the list elements the
+                                        # user chose to add information
+                                        for indc in list_elems:
 
-                                            # set a caption to show the user
-                                            # which existing list element he is
-                                            # about to edit and print it
-                                            caption = elems[
-                                                int(indc) - 1].replace("\n",
-                                                                       ", ").\
-                                                center(size, ' ')
-                                            line = ''.center(size, '_')
-                                            print(f'\n'
-                                                  f'{line}\n\n'
-                                                  f'List element: {caption}\n'
-                                                  f'{line}\n')
+                                            # test if the user chose an existing
+                                            # list element to add information
+                                            if int(indc) - 1 < len(
+                                                    return_dict[option]):
 
-                                            # save all unfilled optional keys
-                                            # of the list element into a list
-                                            possible_input = [
-                                                x for x in possible_keys
-                                                if x not in list(
-                                                    return_dict[option]
-                                                    [int(indc) - 1].keys())]
+                                                # set a caption to show the user
+                                                # which existing list element he is
+                                                # about to edit and print it
+                                                caption = elems[
+                                                    int(indc) - 1].replace("\n",
+                                                                           ", ").\
+                                                    center(size, ' ')
+                                                line = ''.center(size, '_')
+                                                print(f'\n'
+                                                      f'{line}\n\n'
+                                                      f'List element: {caption}\n'
+                                                      f'{line}\n')
 
-                                            # test if there are multiple
-                                            # unfilled keys in the list element
-                                            if len(possible_input) > 1:
+                                                # save all unfilled optional keys
+                                                # of the list element into a list
+                                                possible_input = [
+                                                    x for x in possible_keys
+                                                    if x not in list(
+                                                        return_dict[option]
+                                                        [int(indc) - 1].keys())]
 
-                                                # copy the metadata structure
-                                                # of the optional key
-                                                part_node = copy.deepcopy(
-                                                    node[option])
+                                                # test if there are multiple
+                                                # unfilled keys in the list element
+                                                if len(possible_input) > 1:
 
-                                                # iterate through the keys
-                                                # contained as value of the
-                                                # optional key and those keys
-                                                # to a list if they are
-                                                # already filled
-                                                remove_keys = []
-                                                for k in part_node['value']:
-                                                    if k not in possible_input:
-                                                        remove_keys.append(k)
+                                                    # copy the metadata structure
+                                                    # of the optional key
+                                                    part_node = copy.deepcopy(
+                                                        node[option])
 
-                                                # remove the filled keys from
-                                                # the metadata structure of
-                                                # the optional key
-                                                for k in remove_keys:
-                                                    part_node['value'].pop(k)
+                                                    # iterate through the keys
+                                                    # contained as value of the
+                                                    # optional key and those keys
+                                                    # to a list if they are
+                                                    # already filled
+                                                    remove_keys = []
+                                                    for k in part_node['value']:
+                                                        if k not in possible_input:
+                                                            remove_keys.append(k)
 
-                                                # call the
-                                                # fill_metadata_structure
-                                                # function for the structure
-                                                # of the optional key without
-                                                # the already filled keys
-                                                val = fill_metadata_structure(
-                                                    part_node, option, {},
-                                                    optional, mandatory_mode,
-                                                    result_dict, False,
-                                                    is_factor)
+                                                    # remove the filled keys from
+                                                    # the metadata structure of
+                                                    # the optional key
+                                                    for k in remove_keys:
+                                                        part_node['value'].pop(k)
 
-                                                # merge the prefilled optional
-                                                # key with the new input
-                                                # information
-                                                return_dict[
-                                                    option][int(indc) - 1] \
-                                                    = merge_dicts(
+                                                    # call the
+                                                    # fill_metadata_structure
+                                                    # function for the structure
+                                                    # of the optional key without
+                                                    # the already filled keys
+                                                    val = fill_metadata_structure(
+                                                        part_node, option, {},
+                                                        optional, mandatory_mode,
+                                                        result_dict, False,
+                                                        is_factor)
+
+                                                    # merge the prefilled optional
+                                                    # key with the new input
+                                                    # information
+                                                    return_dict[
+                                                        option][int(indc) - 1] \
+                                                        = merge_dicts(
+                                                        return_dict[option][
+                                                            int(indc) - 1], val)
+
+                                                # if there is just one unfilled key
+                                                else:
+
+                                                    # find the structure of the
+                                                    # unfilled key in the metadata
+                                                    # structure and save it
+                                                    part_node = list(
+                                                        find_keys(
+                                                            key_yaml,
+                                                            possible_input[0]))[0]
+
+                                                    # call function to fill the
+                                                    # unfilled key
+                                                    val = get_redo_value(
+                                                        part_node,
+                                                        possible_input[0],
+                                                        optional, mandatory_mode,
+                                                        result_dict, False,
+                                                        is_factor, True)
+
+                                                    # save the now filled key in
+                                                    # the dictionary
                                                     return_dict[option][
-                                                        int(indc) - 1], val)
+                                                        int(indc) - 1][
+                                                        possible_input[0]] = val
 
-                                            # if there is just one unfilled key
                                             else:
 
-                                                # find the structure of the
-                                                # unfilled key in the metadata
-                                                # structure and save it
-                                                part_node = list(
-                                                    find_keys(
-                                                        key_yaml,
-                                                        possible_input[0]))[0]
+                                                # if the user chose to add a new
+                                                # element to the list, print a
+                                                # caption for the new element and
+                                                # set new_element to True
 
-                                                # call function to fill the
-                                                # unfilled key
-                                                val = get_redo_value(
-                                                    part_node,
-                                                    possible_input[0],
-                                                    optional, mandatory_mode,
-                                                    result_dict, False,
-                                                    is_factor, True)
+                                                h_line = ''.center(size,
+                                                                   '_')
+                                                caption = f'New {option}'.center(
+                                                    size, ' ')
+                                                print(f'\n'
+                                                      f'{h_line}\n\n'
+                                                      f'{caption}\n'
+                                                      f'{h_line}\n')
+                                                new_element = True
 
-                                                # save the now filled key in
-                                                # the dictionary
-                                                return_dict[option][
-                                                    int(indc) - 1][
-                                                    possible_input[0]] = val
+                                    else:
 
-                                        else:
+                                        # set new_element to True if there are no
+                                        # list elements with unfilled keys
+                                        new_element = True
 
-                                            # if the user chose to add a new
-                                            # element to the list, print a
-                                            # caption for the new element and
-                                            # set new_element to True
+                            # create a new list element if new_element is set to
+                            # True
+                            if new_element:
 
-                                            h_line = ''.center(size,
-                                                               '_')
-                                            caption = f'New {option}'.center(
-                                                size, ' ')
-                                            print(f'\n'
-                                                  f'{h_line}\n\n'
-                                                  f'{caption}\n'
-                                                  f'{h_line}\n')
-                                            new_element = True
-
+                                if 'special_case' in node[option] and 'merge' in \
+                                        node[option]['special_case']:
+                                    value = parse_input_value(option,
+                                                              node[option]['desc'],
+                                                              True, 'str',
+                                                              result_dict)
+                                    return_dict[option] = value
                                 else:
-
-                                    # set new_element to True if there are no
-                                    # list elements with unfilled keys
-                                    new_element = True
-
-                        # create a new list element if new_element is set to
-                        # True
-                        if new_element:
-
-                            if 'special_case' in node[option] and 'merge' in \
-                                    node[option]['special_case']:
-                                value = parse_input_value(option,
-                                                          node[option]['desc'],
-                                                          True, 'str',
-                                                          result_dict)
-                                return_dict[option] = value
-                            else:
-                                val = get_redo_value(node[option],
-                                                     option,
-                                                     optional,
-                                                     mandatory_mode,
-                                                     result_dict, False,
-                                                     is_factor, True)
-                                if node[option]['list']:
-                                    if option in return_dict:
-                                        return_dict[option] += val
+                                    val = get_redo_value(node[option],
+                                                         option,
+                                                         optional,
+                                                         mandatory_mode,
+                                                         result_dict, False,
+                                                         is_factor, True)
+                                    if node[option]['list']:
+                                        if option in return_dict:
+                                            return_dict[option] += val
+                                        else:
+                                            return_dict[option] = val
                                     else:
                                         return_dict[option] = val
-                                else:
-                                    return_dict[option] = val
     else:
         if node['mandatory'] or optional or is_factor:
             if 'special_case' in node and 'merge' in node['special_case']:
@@ -696,11 +713,15 @@ def enter_information(node, key, return_dict, optional, mandatory_mode,
         if node['desc'] != '':
             print(f'{node["desc"]}\n')
 
+        if 'special_case' in node and 'custom_key' in node['special_case']:
+            custom = node['special_case']['custom_key']
+        else:
+            custom = None
         # call fill_metadata_structure to fill in the dictionary
         return fill_metadata_structure(node['value'], key, return_dict,
                                        optional,
                                        mandatory_mode, result_dict, False,
-                                       is_factor)
+                                       is_factor, custom)
 
     else:
         # call parse_input_value to fill in a single value
