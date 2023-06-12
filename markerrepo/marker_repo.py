@@ -47,31 +47,32 @@ def get_marker_list(file_path):
     return df
 
 
-def search_db(df, keywords, case_sensitive=False, exact=False):
+def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", mr_path="./lists"):
     """
-    This function filters a given DataFrame based on the provided keywords. The keywords can be either
-    a dictionary or a string. If the keywords are provided as a dictionary, the DataFrame will be filtered
-    using the dictionary keys as column names and the corresponding values as the keywords to search within
-    those columns. If the keywords are provided as a string, the function will check if the DataFrame contains
-    the string anywhere and retains only the rows that fulfill the search criteria. The search can be made
-    either exact or partial (substring) and case-sensitive or case-insensitive.
+    This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
+    the function either returns the filtered DataFrame or a combined list of markers.
 
     Parameters
     ----------
     df : pd.DataFrame
         The input DataFrame to be filtered.
     keywords : dict or str
-        The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
-        keywords as values, or a single string to search for in the entire DataFrame.
+        The keywords to filter the DataFrame.
     case_sensitive : bool, default False
         If True, the search will be case-sensitive. If False, the search will be case-insensitive.
     exact : bool, default False
         If True, the search will look for exact matches. If False, the search will look for substrings.
+    out : str, default "metadata"
+        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
+        'marker_list', the function returns a combined list of markers.
+    mr_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+        Required if out = 'marker_list'.
 
     Returns
     -------
-    pd.DataFrame :
-        The filtered DataFrame containing only the rows that meet the search criteria.
+    pd.DataFrame or list
+        The output of the function. Either the filtered DataFrame or a combined list of markers.
     """
 
     if not case_sensitive:
@@ -82,7 +83,6 @@ def search_db(df, keywords, case_sensitive=False, exact=False):
             keywords = keywords.lower()
 
     if isinstance(keywords, dict):
-        # If keywords is a dictionary, filter by matching column names and values
         filtered_df = df.copy()
         for column, value in keywords.items():
             if exact:
@@ -90,12 +90,17 @@ def search_db(df, keywords, case_sensitive=False, exact=False):
             else:
                 filtered_df = filtered_df[filtered_df[column].str.contains(value, na=False, regex=False)]
     else:
-        # If keywords is a string, filter by checking if the string exists anywhere in the DataFrame
         if exact:
             mask = df.applymap(lambda x: keywords == str(x)).any(axis=1)
         else:
             mask = df.applymap(lambda x: keywords in str(x)).any(axis=1)
         filtered_df = df[mask]
+
+    if out == "marker_list":
+        if mr_path is None:
+            raise ValueError("mr_path must be provided when out='marker_list'")
+        uids = [int(idx) for idx in filtered_df.index]
+        return combine_lists(mr_path, uids)
 
     return filtered_df
 
