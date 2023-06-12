@@ -71,8 +71,8 @@ def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", m
 
     Returns
     -------
-    pd.DataFrame or list
-        The output of the function. Either the filtered DataFrame or a combined list of markers.
+    pd.DataFrame
+        Either the filtered search results as metadata or as a combined list of markers.
     """
 
     if not case_sensitive:
@@ -105,21 +105,24 @@ def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", m
     return filtered_df
 
 
-def guided_search(REPO_LISTS_PATH, df=None):
+def guided_search(REPO_LISTS_PATH, df=None, out="metadata"):
     """
     An interactive function that guides the user through the process of searching the DataFrame.
 
     Parameters
     ----------
     REPO_LISTS_PATH : str
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+        The path where the lists of the Marker Repo are stored.
     df : pd.DataFrame, default None
         The DataFrame to search in. If not provided, the function will create one from the REPO_LISTS_PATH.
+    out : str, default "metadata"
+        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
+        'marker_list', the function returns a combined list of markers.
 
     Returns
     -------
-    pd.DataFrame :
-        The DataFrame that contains the search results.
+    pd.DataFrame
+        Either the filtered search results as metadata or as a combined list of markers.
     """
 
     # Get the DataFrame if not provided
@@ -189,6 +192,10 @@ def guided_search(REPO_LISTS_PATH, df=None):
 
     if further_filter:
         return guided_search(REPO_LISTS_PATH, results)
+    
+    if out == "marker_list":
+        uids = [int(idx) for idx in results.index]
+        return combine_lists(REPO_LISTS_PATH, uids)
     
     return results
 
