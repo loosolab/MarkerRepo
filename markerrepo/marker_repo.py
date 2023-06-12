@@ -155,17 +155,20 @@ def guided_search(REPO_LISTS_PATH, df=None, out="metadata"):
         elif col_to_search_identifier == 'p':
             page = (page - 1) % len(pages)
             continue
-
-        if col_to_search_identifier in identifiers:
+        elif col_to_search_identifier == '':
+            col_to_search = None  # Search in all columns
+            break
+        elif col_to_search_identifier in identifiers:
             col_to_search = pages[page][identifiers.index(col_to_search_identifier)]
             break
 
     # Ask for value to search for
-    show_possible_values = input("Do you want to see all possible values for this column? (yes/no): ").lower() == "yes"
-    if show_possible_values:
-        unique_values = df[col_to_search].unique()
-        for value in unique_values:
-            print(value)
+    if col_to_search:
+        show_possible_values = input("Do you want to see all possible values for this column? (yes/no): ").lower() == "yes"
+        if show_possible_values:
+            unique_values = df[col_to_search].unique()
+            for value in unique_values:
+                print(value)
     
     search_terms = input("Enter search terms (separate multiple terms with a comma): ").split(',')
     exact = input("Perform an exact search? (yes/no): ").lower() == "yes"
