@@ -43,12 +43,11 @@ def compare_marker_lists(REPO_LISTS_PATH=None, keywords=None, marker_df=None, ca
     # Calculate scores
     total_lists = len(df['Info'].unique())
     marker_counts = df['Marker'].value_counts()
-    df['Score'] = df['Marker'].apply(lambda x: total_lists / marker_counts[x])
+    df['Score'] = df['Marker'].apply(lambda x: marker_counts[x] / total_lists)
 
     # Scaling scores to be between 0 and 1
     scaler = MinMaxScaler()
     df['Score'] = scaler.fit_transform(df[['Score']])
-    df['Score'] = 1 - df['Score']
     df.sort_values('Score', ascending=True, inplace=True)
 
     return df

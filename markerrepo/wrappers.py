@@ -28,7 +28,6 @@ def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=Fa
     if df.empty:
         raise Exception(
                     f"No search results available!")
-    # print(df)
 
     # Get UIDs and combine lists
     uids = [int(idx) for idx in df.index]

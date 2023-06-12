@@ -224,22 +224,22 @@ def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k
         if isinstance(v, dict):
-            # if the value is a dictionary, recursively flatten it
+            # If the value is a dictionary, flatten it
             items.extend(flatten_dict(v, new_key, sep=sep, list_sep=list_sep).items())
         elif isinstance(v, list):
-            # if the value is a list, process its elements
+            # If the value is a list, process its elements
             list_items = []
             for i, elem in enumerate(v):
                 if isinstance(elem, dict):
-                    # if the element is a dictionary, join its key-value pairs with the list separator
+                    # If the element is a dictionary, join its key-value pairs with the list separator
                     list_items.append(list_sep.join(f"{key}: {value}" for key, value in elem.items()))
                 else:
-                    # otherwise, convert the element to a string
+                    # Otherwise, convert the element to a string
                     list_items.append(str(elem))
-            # join the list items with the list separator and store them in a single cell
+            # Join the list items with the list separator and store them in a single cell
             items.append((new_key, list_sep.join(list_items)))
         else:
-            # if the value is not a dictionary or a list, store it directly
+            # If the value is not a dictionary or a list, store it directly
             items.append((new_key, v))
             
     return dict(items)
@@ -262,22 +262,22 @@ def get_db(REPO_LISTS_PATH):
 
     data = []
 
-    # iterate through all files in the folder and subfolders
+    # Iterate through all files in the folder and subfolders
     for root, dirs, files in os.walk(REPO_LISTS_PATH):
         for file in files:
             if file.endswith(".yaml"):
                 file_path = os.path.join(root, file)
 
-                # read YAML file and extract all leaf values from "metadata"
+                # Read YAML file and extract all leaf values from "metadata"
                 with open(file_path, 'r', encoding='utf-8') as yaml_file:
                     yaml_data = yaml.safe_load(yaml_file)
                     metadata = yaml_data.get("metadata", {})
 
-                    # flatten the dictionary and save the results
+                    # Flatten the dictionary and save the results
                     flattened_metadata = flatten_dict(metadata)
                     data.append(flattened_metadata)
 
-    # create DataFrame and set "ID" as index
+    # Create DataFrame and set "ID" as index
     df = pd.DataFrame(data)
     df.rename(columns=get_display_names(REPO_LISTS_PATH.split("/lists")[0]), inplace=True)
     if "ID" in df.columns:
@@ -307,7 +307,6 @@ def get_list(path, info_col=1, marker_col=0):
         DataFrame containing the list
     """
 
-    # ltype_dict = {"celltype": ["Cell type", "Marker"], "cellcycle": ["Marker", "Phase"], "mito": "Marker", "gender": "Marker", "blacklist": ["Chr", "Start", "Stop"]}
     headers = ["Marker", "Info"]
     if type(info_col) == int:
         header = [headers[marker_col], headers[info_col]]
@@ -435,12 +434,12 @@ def combine_lists(REPO_LISTS_PATH, uids):
         DataFrame containing the combinend list
     """
 
-    # read lists which are going to be combined
+    # Read lists which are going to be combined
     dfs = []
     for file in get_uid_paths(REPO_LISTS_PATH, uids):
         dfs.append(get_marker_list(file))
         
-    # perform outer join
+    # Perform outer join
     combined_df = pd.concat(dfs).reset_index(drop=True)
     combined_df.drop_duplicates(inplace=True)
     
@@ -509,7 +508,7 @@ def get_whitelists(REPO_PATH):
 
 def update_markers(df, marker_dict):
     """
-    Updates markers by extending gene names withi ensembl IDs and the other way round.
+    Updates markers by extending gene names with ensembl IDs and the other way round.
 
     Parameters
     ----------
@@ -552,6 +551,7 @@ def select(whitelist=None, key=None, heading=None):
     str :
         The selected string of the whitelist.
     """
+
     if not whitelist:
         whitelist = read_whitelist(key)['whitelist']
     
@@ -583,6 +583,7 @@ def get_gene_dict(organism):
     dict :
         Dictionary which contains the gene names and ensembl IDs.
     """
+
     gene_dict = {}
 
     if len(organism.split(' ')) > 1:
@@ -612,6 +613,7 @@ def get_uid(path):
     str :
         A string containing an unused UID
     """
+
     existing_uids = []
     
     # Iterate through all files and subdirectories in the given path
@@ -654,11 +656,11 @@ def extract_display_names(d, parent_key='', sep='_'):
         # Determine the new key. If the current key is "value", keep the parent key.
         new_key = parent_key if k == "value" else parent_key + sep + k if parent_key else k
         if isinstance(v, dict):
-            # extract display name of the current key if exists
+            # Extract display name of the current key if exists
             display_name = v.get('display_name')
             if display_name:
                 display_names[new_key] = display_name
-            # recursively extract display names from the nested dictionary
+            # Extract display names from the nested dictionary
             display_names.update(extract_display_names(v, new_key, sep=sep))
 
     return display_names
@@ -679,11 +681,11 @@ def get_display_names(REPO_PATH):
         A dictionary containing the display names as values and concatenated names as keys.
     """
 
-    # load the YAML file
+    # Load the YAML file
     with open(f"{REPO_PATH}/keys.yaml", 'r', encoding='utf-8') as yaml_file:
         yaml_data = yaml.safe_load(yaml_file)
 
-    # extract the display names
+    # Extract the display names
     display_names = extract_display_names(yaml_data['metadata'])
 
     return display_names
