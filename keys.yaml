@@ -103,6 +103,15 @@ metadata:
       display_name: 'Tags'
       list: False
       desc: 'Tags which describe the list.'
+      special_case:
+        custom_key:
+          mandatory: False
+          display_name: 'Custom Tag'
+          list: True
+          desc: 'A tag that does not match the provided ones.'
+          value: null
+          whitelist: False
+          input_type: short_text
       value: 
         genotype:
           mandatory: False
@@ -248,15 +257,6 @@ metadata:
                   value: null
                   whitelist: True
                   input_type: select
-            mandatory: True
-        custom_tag:
-          mandatory: False
-          display_name: 'Custom tag'
-          list: True
-          desc: 'A tag that does not match the provided ones.'
-          value: null
-          whitelist: False
-          input_type: short_text
 
 marker_list:
   mandatory: True
