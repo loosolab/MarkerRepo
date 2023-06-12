@@ -584,7 +584,12 @@ def get_gene_dict(organism):
         Dictionary which contains the gene names and ensembl IDs.
     """
     gene_dict = {}
-    w_markers = read_whitelist(f"genes/{organism.split(' ')[0]}")['whitelist']
+
+    if len(organism.split(' ')) > 1:
+        w_markers = read_whitelist(f"genes/{organism.split(' ')[0]}")['whitelist']
+    else:
+        w_markers = read_whitelist(f"genes/{organism}")['whitelist']
+
     for marker in w_markers:
         name, ensg = marker.split(" ")[0].upper(), marker.split(" ")[1].upper()
         gene_dict[name] = ensg

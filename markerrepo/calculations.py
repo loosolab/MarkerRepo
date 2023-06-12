@@ -161,7 +161,7 @@ def transfer_markers(df, source_organism, target_organism, hg_db):
 
     # Merge input df_copy with merged_data on Marker
     result_df = pd.merge(df_copy, merged_data, on='Marker')
-    result_df = result_df[['Info', 'Transferred Marker']]
+    result_df = result_df[['Transferred Marker', 'Info']]
     result_df['Transferred Marker'] = result_df['Transferred Marker'].str.upper()
     
     return result_df
