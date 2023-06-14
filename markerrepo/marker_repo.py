@@ -488,20 +488,20 @@ def show_statistics(metadata, repo_lists_path="./lists", dpi=120):
     plt.show()
 
 
-def get_whitelists(REPO_PATH):
+def get_whitelists(repo_path="."):
     """
     Fetches whitelists of the metadata_whitelist repository.
     
     Parameters
     ----------
-    REPO_PATH : str
+    repo_path : str, default "."
         The path of the marker repository.
     """
 
     # Based on https://gitlab.gwdg.de/loosolab/software/metadata-organizer/-/blob/main/metaTools.py
     print('Fetching whitelists...\n')
-    if not os.path.exists(f"{REPO_PATH}/metadata_whitelists"):
-        repo = git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git/', f"{REPO_PATH}/metadata_whitelists")
+    if not os.path.exists(f"{repo_path}/metadata_whitelists"):
+        repo = git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git/', f"{repo_path}/metadata_whitelists")
     else:
         repo = git.Repo('metadata_whitelists')
         o = repo.remotes.origin
@@ -602,13 +602,13 @@ def get_gene_dict(organism):
     return gene_dict
 
 
-def get_uid(path):
+def get_uid(path="./lists"):
     """
     Creates a new UID by iterating through all files in path.
 
     Parameters
     ----------
-    path : str
+    path : str, default "./lists"
         The root of the files containing UIDs.
 
     Returns
@@ -669,13 +669,13 @@ def extract_display_names(d, parent_key='', sep='_'):
     return display_names
 
 
-def get_display_names(REPO_PATH):
+def get_display_names(repo_path="."):
     """
     Extracts the display names of the keys.yaml.
 
     Parameters
     ----------
-    REPO_PATH : str
+    repo_path : str, default "."
         The path of the marker repository.
 
     Returns:
@@ -685,7 +685,7 @@ def get_display_names(REPO_PATH):
     """
 
     # Load the YAML file
-    with open(f"{REPO_PATH}/keys.yaml", 'r', encoding='utf-8') as yaml_file:
+    with open(f"{repo_path}/keys.yaml", 'r', encoding='utf-8') as yaml_file:
         yaml_data = yaml.safe_load(yaml_file)
 
     # Extract the display names
@@ -694,16 +694,18 @@ def get_display_names(REPO_PATH):
     return display_names
 
 
-def push_marker_list(repo_path, list_path, branch="automatic_push_feature"):
+def push_marker_list(list_file, repo_path=".", repo_list_path="./lists", branch="automatic_push_feature"):
     """
     Pulls the repository, updates UIDs, commits and pushes the new list, then pulls again.
 
     Parameters
     ----------
-    repo_path : str
+    list_file : str
+        The local file name of the list to be added.
+    repo_path : str, default "."
         The local path of the repository.
-    list_path : str
-        The local path of the list to be added.
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     branch : str, default "automatic_push_feature"
         The branch of the repository.
     """
@@ -718,11 +720,11 @@ def push_marker_list(repo_path, list_path, branch="automatic_push_feature"):
     repo.remotes.origin.pull()
 
     # Update UIDs
-    updated_files = update_uids(f"{repo_path}/lists")
+    updated_files = update_uids(repo_lists_path=repo_list_path)
 
     # If the provided list still exists after update, add it to the list of files to add
-    if os.path.exists(list_path):
-        files_to_add.append(list_path)
+    if os.path.exists(f"{repo_list_path}/{list_file}"):
+        files_to_add.append(list_file)
 
     # Add any files updated by the update_uids() function to the list of files to add
     for file_path in updated_files:

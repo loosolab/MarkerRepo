@@ -16,12 +16,15 @@ def save_as_yaml(dictionary, file_path):
         documents = yaml.dump(dictionary, file, sort_keys=False)
 
 
-def read_in_yaml(yaml_file):
+def read_in_yaml(yaml_file, repo_lists_path="./lists", marker_list=True):
     """
     read yaml, auto lower all keys
     :param yaml_file: the path to the yaml file to be read in
     :return: low_output: a dictionary containing the information of the yaml
     """
+    if marker_list:
+        yaml_file = f"{repo_lists_path}/{yaml_file}"
+        
     with open(yaml_file) as file:
         output = yaml.load(file, Loader=yaml.FullLoader)
     low_output = {k.lower(): v for k, v in output.items()}

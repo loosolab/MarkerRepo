@@ -28,13 +28,31 @@ class WhitelistCompleter:
 
 # ---------------------------------GENERATE-------------------------------------
 
-def generate_file(path, input_id, name, mandatory_mode, marker_list, organism, marker_type):
+def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_type, path="./lists"):
     """
     This function is used to generate metadata by calling functions to compute
-    user input. It writes the metadata into a yaml file after validating it.
-    :param path: the path to the folder the metadata file should be saved to
-    :param input_id: the ID of the experiment
-    :param mandatory_mode: if True only mandatory files are filled out
+    user input. It writes the metadata into a yaml file.
+
+    Parameters
+    ----------
+    input_id : int
+        The ID of the marker list.
+    name : str
+        The name of the marker list.
+    mandatory_mode : bool
+        Enables or disables the mandatory mode.
+    marker_list : list of dict
+        The marker list - name of the list and list of markers per dict.
+    organism : str
+        The organism of the marker list.
+    marker_type : str
+        The type of the marker list (genes or regions)
+    path : str, default "./lists"    
+
+    Returns
+    --------
+    pd.DataFrame :
+        A DataFrame containing the name ("Info"), the marker ("Marker") and the score ("Score") for each marker in the selected marker lists.
     """
 
     global id
