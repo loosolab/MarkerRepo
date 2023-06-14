@@ -724,7 +724,7 @@ def push_marker_list(list_file, repo_path=".", repo_list_path="./lists", branch=
 
     # If the provided list still exists after update, add it to the list of files to add
     if os.path.exists(f"{repo_list_path}/{list_file}"):
-        files_to_add.append(list_file)
+        files_to_add.append(f"{repo_list_path}/{list_file}")
 
     # Add any files updated by the update_uids() function to the list of files to add
     for file_path in updated_files:

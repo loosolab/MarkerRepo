@@ -73,7 +73,7 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
     # read in structure file
     key_yaml = read_in_yaml(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-                     'keys.yaml'))
+                     'keys.yaml'), marker_list=False)
 
     # create metadata dictionary and fill it with the given organism and marker type
     org_dict = {'organism_name': organism.split()[0], 'taxonomy_id': organism.split()[1]}

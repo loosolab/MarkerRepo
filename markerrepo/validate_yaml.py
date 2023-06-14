@@ -28,7 +28,7 @@ def validate_file(metafile):
     ref_genome_warn = []
     valid = True
     key_yaml = read_in_yaml(os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), '..', 'keys.yaml'))
+        os.path.dirname(os.path.abspath(__file__)), '..', 'keys.yaml'), marker_list=False)
     invalid_keys, invalid_entries, invalid_value = \
         new_test(metafile, key_yaml, [], '', [], [], [], None, [], None, metafile)
     missing_mandatory_keys = test_for_mandatory(metafile, key_yaml,

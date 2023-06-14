@@ -24,7 +24,7 @@ def read_in_yaml(yaml_file, repo_lists_path="./lists", marker_list=True):
     """
     if marker_list:
         yaml_file = f"{repo_lists_path}/{yaml_file}"
-        
+
     with open(yaml_file) as file:
         output = yaml.load(file, Loader=yaml.FullLoader)
     low_output = {k.lower(): v for k, v in output.items()}
@@ -86,7 +86,7 @@ def find_values(node, kv):
                         yield val
 
 
-def read_whitelist(key):
+def read_whitelist(key, marker_list=False):
     """
     This function reads in a whitelist and returns it.
     :param key: the key that contains a whitelist
@@ -95,7 +95,7 @@ def read_whitelist(key):
     try:
         whitelist = read_in_yaml(
             os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-                         'metadata_whitelists', 'whitelists', key))
+                         'metadata_whitelists', 'whitelists', key), marker_list=marker_list)
     except (AttributeError, FileNotFoundError):
         whitelist = None
     return whitelist
