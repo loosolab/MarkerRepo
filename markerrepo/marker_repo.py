@@ -47,7 +47,7 @@ def get_marker_list(file_path):
     return df
 
 
-def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", mr_path="./lists"):
+def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", repo_lists_path="./lists"):
     """
     This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
     the function either returns the filtered DataFrame or a combined list of markers.
@@ -65,7 +65,7 @@ def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", m
     out : str, default "metadata"
         Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
         'marker_list', the function returns a combined list of markers.
-    mr_path : str, default "./lists"
+    repo_lists_path : str, default "./lists"
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
         Required if out = 'marker_list'.
 
@@ -97,10 +97,10 @@ def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", m
         filtered_df = df[mask]
 
     if out == "marker_list":
-        if mr_path is None:
+        if repo_lists_path is None:
             raise ValueError("mr_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in filtered_df.index]
-        return combine_lists(mr_path, uids)
+        return combine_lists(uids, repo_lists_path=repo_lists_path)
 
     return filtered_df
 
@@ -127,7 +127,7 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
 
     # Get the DataFrame if not provided
     if df is None:
-        df = get_db(repo_lists_path)
+        df = get_db(repo_lists_path=repo_lists_path)
 
     columns = df.columns.tolist()
     identifiers = [str(i) for i in range(1, 10)] + list(string.ascii_lowercase)[:len(columns)-9]
@@ -194,11 +194,11 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
     further_filter = input("Do you want to filter the results further? (yes/no): ").lower() == "yes"
 
     if further_filter:
-        return guided_search(repo_lists_path, results)
+        return guided_search(repo_lists_path=repo_lists_path, df=results)
     
     if out == "marker_list":
         uids = [int(idx) for idx in results.index]
-        return combine_lists(repo_lists_path, uids)
+        return combine_lists(uids, repo_lists_path=repo_lists_path)
     
     return results
 
@@ -439,7 +439,7 @@ def combine_lists(uids, repo_lists_path="./lists"):
 
     # Read lists which are going to be combined
     dfs = []
-    for file in get_uid_paths(repo_lists_path, uids):
+    for file in get_uid_paths(uids, repo_lists_path=repo_lists_path):
         dfs.append(get_marker_list(file))
         
     # Perform outer join
