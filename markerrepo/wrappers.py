@@ -1,17 +1,17 @@
 from .marker_repo import get_db, search_db, combine_lists, export_marker_list
 from .calculations import compare_marker_lists, update_scores
 
-def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=False):
+def get_selected_lists(keywords, repo_lists_path="./lists", case_sensitive=False, exact=False):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
 
     Parameters
     ----------
-    REPO_LISTS_PATH : str
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     keywords : dict or str
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     case_sensitive : bool, default False
         If True, the function will consider the case of the keywords. If False, the function will ignore the case.
     exact : bool, default False
@@ -23,7 +23,7 @@ def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=Fa
         The DataFrame conaining the combined lists.
     """
 
-    db = get_db(REPO_LISTS_PATH)
+    db = get_db(repo_lists_path=repo_lists_path)
     df = search_db(db, keywords, case_sensitive=case_sensitive, exact=exact)
     if df.empty:
         raise Exception(
@@ -31,7 +31,7 @@ def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=Fa
 
     # Get UIDs and combine lists
     uids = [int(idx) for idx in df.index]
-    combined_df = combine_lists(REPO_LISTS_PATH, uids)
+    combined_df = combine_lists(uids, repo_lists_path=repo_lists_path)
 
     # Drop duplicates, keep one marker only, rearrange column order
     markers_filtered = combined_df.drop_duplicates()
@@ -41,14 +41,14 @@ def get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=False, exact=Fa
     return markers_filtered
 
 
-def convert_markers(REPO_LISTS_PATH, keywords=None, df=None, path=None, file_name="marker_list", case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all"):
+def convert_markers(repo_lists_path="./lists", keywords=None, df=None, path=None, file_name="marker_list", case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all"):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
     Optionally, it can export the DataFrame to a file.
 
     Parameters
     ----------
-    REPO_LISTS_PATH : str, default None
+    repo_lists_path : str, default "./lists"
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     keywords : dict or str, default None
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
@@ -78,8 +78,8 @@ def convert_markers(REPO_LISTS_PATH, keywords=None, df=None, path=None, file_nam
         If path is not specified, the function returns the DataFrame.
     """
 
-    if REPO_LISTS_PATH and keywords:
-        marker_list = get_selected_lists(REPO_LISTS_PATH, keywords, case_sensitive=case_sensitive, exact=exact)
+    if repo_lists_path and keywords:
+        marker_list = get_selected_lists(keywords, repo_lists_path=repo_lists_path, case_sensitive=case_sensitive, exact=exact)
     else:
         marker_list = df
     
