@@ -4,6 +4,8 @@ import os
 import urllib.request
 from .utils import read_whitelist
 from sklearn.preprocessing import MinMaxScaler
+from pybiomart import Server
+
 
 def compare_marker_lists(repo_lists_path="./lists", keywords=None, marker_df=None, case_sensitive=False, exact=False):
     """
@@ -242,3 +244,83 @@ def update_scores(df, organism="Hs", panglao_file="panglao_markers"):
     df.sort_values('Score', ascending=True, inplace=True)
 
     return df
+
+
+def fetch_homologs(source_organism, target_organism):
+    """
+    Fetch homologous genes from the BioMart database.
+    
+    Parameters
+    ----------
+    source_organism : str
+        Name of the source organism.
+    target_organism : str
+        Name of the target organism.
+    
+    Returns
+    -------
+    pd.DataFrame :
+        DataFrame containing homologous genes.
+    """
+    # Initialize BioMart server
+    server = Server(host='http://www.ensembl.org')
+
+    # Define source and target datasets
+    source_dataset = server.marts['ENSEMBL_MART_ENSEMBL'].datasets[source_organism + '_gene_ensembl']
+    target_homolog_attribute = target_organism + '_homolog_ensembl_gene'
+
+    # Query BioMart database
+    attributes = ['ensembl_gene_id', 'external_gene_name', target_homolog_attribute]
+    data = source_dataset.query(attributes=attributes)
+    
+    return data
+
+
+def create_dataset_dict():
+    """
+    Creates a dictionary mapping the display names of the datasets to their actual names.
+    
+    Parameters
+    ----------
+    datasets : dict
+        A dictionary of available datasets from the Biomart server.
+
+    Returns
+    --------
+    dict :
+        A dictionary with display names as keys and actual dataset names as values.
+    """
+
+    # Get the available datasets from the Biomart server
+    server = Server(host='http://www.ensembl.org')
+    datasets = server.marts['ENSEMBL_MART_ENSEMBL'].datasets
+
+    dataset_dict = {}
+
+    for name, dataset in datasets.items():
+        dataset_dict[dataset.display_name] = name
+
+    return dataset_dict
+
+
+def get_dataset_names(organism_name):
+    """
+    Retrieves the names of datasets corresponding to a specific organism.
+    
+    Parameters
+    ----------
+    organism_name : str
+        The name of the organism to search for.
+    dataset_dict : dict
+        A dictionary with display names as keys and actual dataset names as values.
+
+    Returns
+    --------
+    list :
+        A list of dataset names that correspond to the input organism_name.
+    """
+
+    dataset_dict = create_dataset_dict()
+    matching_names = [dataset_name for display_name, dataset_name in dataset_dict.items() if organism_name.lower() in display_name.lower()]
+
+    return matching_names

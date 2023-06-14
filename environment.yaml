@@ -15,4 +15,5 @@ dependencies:
   - pip=23.0.1
   - pip:
     - gitpython
+    - pybiomart
     - .

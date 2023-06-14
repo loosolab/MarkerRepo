@@ -14,5 +14,6 @@ setup(
         'ipykernel',
         'GitPython',
         'scikit-learn',
+        'pybiomart',
     ],
 )
