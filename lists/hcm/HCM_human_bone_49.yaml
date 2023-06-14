@@ -1,21 +1,5 @@
-metadata:
-  id: '49'
-  list_name: HCM_human_bone
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: bone
-    custom_tag: cell type annotation
 marker_list:
-- name: Osteoblast
-  markers:
+- markers:
   - RUNX2 ENSG00000124813
   - CD44 ENSG00000026508
   - DLX5 ENSG00000105880
@@ -44,8 +28,8 @@ marker_list:
   - TOP2A ENSG00000131747
   - COL2A1 ENSG00000139219
   - SOX9 ENSG00000125398
-- name: Mesenchymal stem cell
-  markers:
+  name: Osteoblast
+- markers:
   - CD19 ENSG00000177455
   - CD34 ENSG00000174059
   - CD44 ENSG00000026508
@@ -67,8 +51,8 @@ marker_list:
   - TNFRSF1A ENSG00000067182
   - VCAM1 ENSG00000162692
   - MCAM ENSG00000076706
-- name: Osteocyte
-  markers:
+  name: Mesenchymal stem cell
+- markers:
   - DMP1 ENSG00000152592
   - SPARC ENSG00000113140
   - FGF23 ENSG00000118972
@@ -87,8 +71,8 @@ marker_list:
   - IBSP ENSG00000029559
   - MMP9 ENSG00000100985
   - ALPL ENSG00000162551
-- name: Osteoclast
-  markers:
+  name: Osteocyte
+- markers:
   - CALCR ENSG00000004948
   - CTSK ENSG00000143387
   - NCAM1 ENSG00000149294
@@ -100,8 +84,8 @@ marker_list:
   - MMP9 ENSG00000100985
   - OCSTAMP ENSG00000149635
   - SIGLEC15 ENSG00000197046
-- name: Stem cell
-  markers:
+  name: Osteoclast
+- markers:
   - MCAM ENSG00000076706
   - CD34 ENSG00000174059
   - PTPRC ENSG00000081237
@@ -109,32 +93,32 @@ marker_list:
   - NT5E ENSG00000135318
   - RUNX2 ENSG00000124813
   - MID1 ENSG00000101871
-- name: Mesenchymal progenitor cell
-  markers:
+  name: Stem cell
+- markers:
   - MCAM ENSG00000076706
   - PDGFRB ENSG00000113721
   - CSPG4 ENSG00000173546
   - ITGB1 ENSG00000150093
-- name: Progenitor cell
-  markers:
+  name: Mesenchymal progenitor cell
+- markers:
   - THY1 ENSG00000154096
   - CD44 ENSG00000026508
   - NT5E ENSG00000135318
   - CD34 ENSG00000174059
   - ITGB1 ENSG00000150093
-- name: Innate lymphoid cell
-  markers:
+  name: Progenitor cell
+- markers:
   - GATA3 ENSG00000107485
   - CXCR4 ENSG00000121966
   - CXCR3 ENSG00000186810
   - CXCR5 ENSG00000160683
   - CCR6 ENSG00000112486
-- name: Cancer cell
-  markers:
+  name: Innate lymphoid cell
+- markers:
   - FGF23 ENSG00000118972
   - AHSA1 ENSG00000100591
-- name: Macrophage
-  markers:
+  name: Cancer cell
+- markers:
   - CD68 ENSG00000129226
   - TSPO ENSG00000100300
   - FCGR2A ENSG00000143226
@@ -146,119 +130,119 @@ marker_list:
   - NR4A3 ENSG00000119508
   - TNF ENSG00000232810
   - CCR7 ENSG00000126353
-- name: Myeloid cell
-  markers:
+  name: Macrophage
+- markers:
   - MRC1 ENSG00000260314
   - CD163 ENSG00000177575
   - CD14 ENSG00000170458
   - FCGR3A ENSG00000203747
   - CD74 ENSG00000019582
-- name: T cell
-  markers:
+  name: Myeloid cell
+- markers:
   - CD69 ENSG00000110848
   - CD3D ENSG00000167286
-- name: Leukemic stem cell
-  markers:
+  name: T cell
+- markers:
   - CD96 ENSG00000153283
   - IL1RAP ENSG00000196083
   - CD47 ENSG00000196776
-- name: Hematopoietic stem cell
-  markers:
+  name: Leukemic stem cell
+- markers:
   - CD34 ENSG00000174059
-- name: Monocyte
-  markers:
+  name: Hematopoietic stem cell
+- markers:
   - CD14 ENSG00000170458
-- name: B cell
-  markers:
+  name: Monocyte
+- markers:
   - CD19 ENSG00000177455
-- name: Plasmacytoid dendritic cell(pDC)
-  markers:
+  name: B cell
+- markers:
   - IL3RA ENSG00000185291
-- name: Langerhans cell
-  markers:
+  name: Plasmacytoid dendritic cell(pDC)
+- markers:
   - CD1A ENSG00000158477
   - CD207 ENSG00000116031
-- name: Neutrophil
-  markers:
+  name: Langerhans cell
+- markers:
   - PRTN3 ENSG00000196415
   - CEACAM8 ENSG00000124469
-- name: M2 macrophage
-  markers:
+  name: Neutrophil
+- markers:
   - IL10 ENSG00000136634
   - MSR1 ENSG00000038945
   - MRC1 ENSG00000260314
   - CD163 ENSG00000177575
-- name: Tissue resident memory T(TRM) cell
-  markers:
+  name: M2 macrophage
+- markers:
   - CD69 ENSG00000110848
   - ITGAE ENSG00000083457
   - ZNF683 ENSG00000176083
   - S1PR1 ENSG00000170989
   - CRTAM ENSG00000109943
-- name: Tc 17 cell
-  markers:
+  name: Tissue resident memory T(TRM) cell
+- markers:
   - CXCR6 ENSG00000172215
-- name: Type 17 T cell
-  markers:
+  name: Tc 17 cell
+- markers:
   - KLRB1 ENSG00000111796
   - CCR6 ENSG00000112486
-- name: Proliferative fibrochondrocyte
-  markers:
+  name: Type 17 T cell
+- markers:
   - COL1A1 ENSG00000108821
   - FGF7 ENSG00000140285
-- name: Cartilage progenitor Cell
-  markers:
+  name: Proliferative fibrochondrocyte
+- markers:
   - CDK1 ENSG00000170312
   - BIRC5 ENSG00000089685
-- name: Fibrochondrocyte progenitor cell
-  markers:
+  name: Cartilage progenitor Cell
+- markers:
   - COL3A1 ENSG00000168542
   - COL1A1 ENSG00000108821
   - MYLK ENSG00000065534
   - MCAM ENSG00000076706
-- name: Endothelial cell
-  markers:
+  name: Fibrochondrocyte progenitor cell
+- markers:
   - CDH5 ENSG00000179776
   - CD93 ENSG00000125810
   - VWF ENSG00000110799
   - MYL1 ENSG00000168530
-- name: Myofibroblast
-  markers:
+  name: Endothelial cell
+- markers:
   - MYLK ENSG00000065534
   - MYL9 ENSG00000101335
   - ACTA2 ENSG00000107796
-- name: Prehypertrophic chondrocyte
-  markers:
+  name: Myofibroblast
+- markers:
   - MMP1 ENSG00000196611
   - TNFAIP6 ENSG00000123610
   - COL11A1 ENSG00000060718
   - COL9A3 ENSG00000092758
   - SOX9 ENSG00000125398
-- name: Fibrochondrocyte
-  markers:
+  name: Prehypertrophic chondrocyte
+- markers:
   - COL6A1 ENSG00000142156
   - COL1A1 ENSG00000108821
   - COL3A1 ENSG00000168542
-- name: Regulatory chondrocyte
-  markers:
+  name: Fibrochondrocyte
+- markers:
   - BMP2 ENSG00000125845
   - FOSL1 ENSG00000175592
   - EIF5A ENSG00000132507
   - ANXA1 ENSG00000135046
   - TUBA1A ENSG00000167552
   - PGK1 ENSG00000102144
-- name: Epithelial cell
-  markers:
+  name: Regulatory chondrocyte
+- markers:
   - CDH1 ENSG00000039068
-- name: Mesenchymal cell
-  markers:
+  name: Epithelial cell
+- markers:
   - CDH2 ENSG00000170558
   - VIM ENSG00000026025
-- name: Plasma cell
-  markers:
+  name: Mesenchymal cell
+- markers:
   - SDC1 ENSG00000115884
-- name: Cancer stem cell
-  markers:
+  name: Plasma cell
+- markers:
   - SOX4 ENSG00000124766
   - KDR ENSG00000128052
   - SOX9 ENSG00000125398
@@ -271,28 +255,28 @@ marker_list:
   - CD27 ENSG00000139193
   - ABCG2 ENSG00000118777
   - ALDH1A1 ENSG00000165092
-- name: Pericyte
-  markers:
+  name: Cancer stem cell
+- markers:
   - ACTA2 ENSG00000107796
   - RGS5 ENSG00000232995
-- name: Fibroblast
-  markers:
+  name: Pericyte
+- markers:
   - LUM ENSG00000139329
   - DCN ENSG00000011465
   - COL1A1 ENSG00000108821
   - ACTA2 ENSG00000107796
   - FAP ENSG00000078098
-- name: Myoblast
-  markers:
+  name: Fibroblast
+- markers:
   - MYL1 ENSG00000168530
   - MYLPF ENSG00000180209
-- name: Natural killer cell
-  markers:
+  name: Myoblast
+- markers:
   - IL7R ENSG00000168685
   - NKG7 ENSG00000105374
   - CD3D ENSG00000167286
-- name: Cartilage progenitor cell
-  markers:
+  name: Natural killer cell
+- markers:
   - CENPF ENSG00000117724
   - UBE2C ENSG00000175063
   - PCLAF ENSG00000166803
@@ -300,23 +284,39 @@ marker_list:
   - CDKN3 ENSG00000100526
   - BIRC5 ENSG00000089685
   - CKAP2 ENSG00000136108
-- name: Fibrocartilage chondrocyte
-  markers:
+  name: Cartilage progenitor cell
+- markers:
   - SH3BGRL3 ENSG00000142669
   - IGFBP5 ENSG00000115461
   - S100A6 ENSG00000197956
   - LMCD1 ENSG00000071282
   - MYL9 ENSG00000101335
-- name: Homeostatic chondrocyte
-  markers:
+  name: Fibrocartilage chondrocyte
+- markers:
   - TIMP1 ENSG00000102265
   - IFITM3 ENSG00000142089
   - TXNIP ENSG00000265972
   - GDF15 ENSG00000130513
-- name: Lymphocyte
-  markers:
+  name: Homeostatic chondrocyte
+- markers:
   - SET ENSG00000119335
-- name: Mesenchymal stromal cell
-  markers:
+  name: Lymphocyte
+- markers:
   - MCAM ENSG00000076706
   - ALCAM ENSG00000170017
+  name: Mesenchymal stromal cell
+metadata:
+  date: 27.03.2020
+  id: '49'
+  list_name: HCM_human_bone
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: bone

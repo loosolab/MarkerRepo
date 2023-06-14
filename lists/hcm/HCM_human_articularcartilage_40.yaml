@@ -1,21 +1,5 @@
-metadata:
-  id: '40'
-  list_name: HCM_human_articularcartilage
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: articularcartilage
-    custom_tag: cell type annotation
 marker_list:
-- name: Prehypertrophic chondrocyte
-  markers:
+- markers:
   - TGFBI ENSG00000120708
   - TNFAIP6 ENSG00000123610
   - THBS3 ENSG00000169231
@@ -52,8 +36,8 @@ marker_list:
   - S100A4 ENSG00000196154
   - CAPS ENSG00000105519
   - AOC2 ENSG00000131480
-- name: Proliferative chondrocyte
-  markers:
+  name: Prehypertrophic chondrocyte
+- markers:
   - NOTCH2 ENSG00000134250
   - BMP6 ENSG00000153162
   - NGF ENSG00000134259
@@ -90,8 +74,8 @@ marker_list:
   - DDX21 ENSG00000165732
   - TXNRD1 ENSG00000198431
   - SNX9 ENSG00000130340
-- name: Hypertrophic chondrocyte
-  markers:
+  name: Proliferative chondrocyte
+- markers:
   - WWP2 ENSG00000198373
   - CRISPLD1 ENSG00000121005
   - RNU6-2 ENSG00000207357
@@ -104,14 +88,14 @@ marker_list:
   - VTRNA1-1 ENSG00000199990
   - MEF2C ENSG00000081189
   - SCIN ENSG00000006747
-- name: Fibroblast
-  markers:
+  name: Hypertrophic chondrocyte
+- markers:
   - COL5A1 ENSG00000130635
   - COL3A1 ENSG00000168542
   - COL1A1 ENSG00000108821
   - S100A4 ENSG00000196154
-- name: Fibrocartilage chondrocyte
-  markers:
+  name: Fibroblast
+- markers:
   - MTRNR2L1 ENSG00000256618
   - COL4A2 ENSG00000134871
   - IFI16 ENSG00000163565
@@ -229,8 +213,8 @@ marker_list:
   - IGFBP5 ENSG00000115461
   - PRSS23 ENSG00000150687
   - MYL9 ENSG00000101335
-- name: Homeostatic chondrocyte
-  markers:
+  name: Fibrocartilage chondrocyte
+- markers:
   - IER2 ENSG00000160888
   - IER5 ENSG00000162783
   - NXF1 ENSG00000162231
@@ -306,30 +290,30 @@ marker_list:
   - CSRNP1 ENSG00000144655
   - TSPYL2 ENSG00000184205
   - RSRC2 ENSG00000111011
-- name: Hematopoietic cell
-  markers:
+  name: Homeostatic chondrocyte
+- markers:
   - PROM1 ENSG00000007062
   - CD34 ENSG00000174059
   - PTPRC ENSG00000081237
-- name: Stem cell
-  markers:
+  name: Hematopoietic cell
+- markers:
   - NT5E ENSG00000135318
   - THY1 ENSG00000154096
   - ITGB1 ENSG00000150093
   - CD44 ENSG00000026508
-- name: Mesenchymal stem cell
-  markers:
+  name: Stem cell
+- markers:
   - VCAM1 ENSG00000162692
   - MCAM ENSG00000076706
   - ITGA11 ENSG00000137809
-- name: Cartilage Progenitor cell
-  markers:
+  name: Mesenchymal stem cell
+- markers:
   - BIRC5 ENSG00000089685
   - STMN1 ENSG00000117632
   - DHFR ENSG00000228716
   - CENPU ENSG00000151725
-- name: Effector chondrocyte
-  markers:
+  name: Cartilage Progenitor cell
+- markers:
   - KIF9 ENSG00000088727
   - CHRDL2 ENSG00000054938
   - CYSTM1 ENSG00000120306
@@ -337,9 +321,25 @@ marker_list:
   - TPM4 ENSG00000167460
   - RARRES2 ENSG00000106538
   - DSC2 ENSG00000134755
-- name: Regulatory chondrocyte
-  markers:
+  name: Effector chondrocyte
+- markers:
   - HMOX1 ENSG00000100292
   - TMEM176A ENSG00000002933
   - CKS2 ENSG00000123975
   - TUBB4B ENSG00000188229
+  name: Regulatory chondrocyte
+metadata:
+  date: 27.03.2020
+  id: '40'
+  list_name: HCM_human_articularcartilage
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: articularcartilage

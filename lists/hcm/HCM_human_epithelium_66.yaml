@@ -1,21 +1,5 @@
-metadata:
-  id: '66'
-  list_name: HCM_human_epithelium
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: epithelium
-    custom_tag: cell type annotation
 marker_list:
-- name: Epithelial cell
-  markers:
+- markers:
   - CD24 ENSG00000272398
   - ANPEP ENSG00000166825
   - CDH1 ENSG00000039068
@@ -31,11 +15,11 @@ marker_list:
   - MUC1 ENSG00000185499
   - KRT19 ENSG00000171345
   - EPCAM ENSG00000119888
-- name: Keratinocyte
-  markers:
+  name: Epithelial cell
+- markers:
   - CD34 ENSG00000174059
-- name: Basal cell
-  markers:
+  name: Keratinocyte
+- markers:
   - CD151 ENSG00000177697
   - TAZ ENSG00000102125
   - KRT5 ENSG00000186081
@@ -56,8 +40,8 @@ marker_list:
   - BCAM ENSG00000187244
   - LAMA3 ENSG00000053747
   - DAPL1 ENSG00000163331
-- name: Club cell (Clara cell)
-  markers:
+  name: Basal cell
+- markers:
   - KRT19 ENSG00000171345
   - SLPI ENSG00000124107
   - MSMB ENSG00000263639
@@ -69,8 +53,8 @@ marker_list:
   - WFDC2 ENSG00000101443
   - KRT15 ENSG00000171346
   - LYPD2 ENSG00000197353
-- name: Secretory cell
-  markers:
+  name: Club cell (Clara cell)
+- markers:
   - KRT4 ENSG00000170477
   - PIGR ENSG00000162896
   - MUC5B ENSG00000117983
@@ -87,21 +71,21 @@ marker_list:
   - B4GALT5 ENSG00000158470
   - ADH7 ENSG00000196344
   - SLPI ENSG00000124107
-- name: Ionocyte
-  markers:
+  name: Secretory cell
+- markers:
   - CFTR ENSG00000001626
   - ASCL3 ENSG00000176009
   - FOXI1 ENSG00000168269
-- name: Pericyte
-  markers:
+  name: Ionocyte
+- markers:
   - ACTA2 ENSG00000107796
   - MYL9 ENSG00000101335
-- name: Smooth muscle cell
-  markers:
+  name: Pericyte
+- markers:
   - ACTA2 ENSG00000107796
   - MYL9 ENSG00000101335
-- name: Ciliated cell
-  markers:
+  name: Smooth muscle cell
+- markers:
   - FOXJ1 ENSG00000129654
   - FAM183A ENSG00000186973
   - LRRIQ1 ENSG00000133640
@@ -118,25 +102,25 @@ marker_list:
   - CCDC113 ENSG00000103021
   - MLF1 ENSG00000178053
   - LZTFL1 ENSG00000163818
-- name: Hillock cell
-  markers:
+  name: Ciliated cell
+- markers:
   - KRT13 ENSG00000171401
   - KRT4 ENSG00000170477
-- name: Pulmonary neuroendocrine cell
-  markers:
+  name: Hillock cell
+- markers:
   - INSM1 ENSG00000173404
   - ASCL1 ENSG00000139352
   - HOXB5 ENSG00000120075
   - CALCA ENSG00000110680
   - CHGA ENSG00000100604
-- name: Lonocyte
-  markers:
+  name: Pulmonary neuroendocrine cell
+- markers:
   - CFTR ENSG00000001626
   - ASCL3 ENSG00000176009
   - RARRES2 ENSG00000106538
   - FOXI1 ENSG00000168269
-- name: Brush cell (Tuft cell)
-  markers:
+  name: Lonocyte
+- markers:
   - DCLK1 ENSG00000133083
   - RGS13 ENSG00000127074
   - ASCL2 ENSG00000183734
@@ -145,17 +129,17 @@ marker_list:
   - GNAT3 ENSG00000214415
   - TRPM5 ENSG00000070985
   - AVIL ENSG00000135407
-- name: Mucous-ciliated cell
-  markers:
+  name: Brush cell (Tuft cell)
+- markers:
   - FOXJ1 ENSG00000129654
   - MUC5AC ENSG00000215182
-- name: Suprabasal cell
-  markers:
+  name: Mucous-ciliated cell
+- markers:
   - NOTCH3 ENSG00000074181
   - KRT19 ENSG00000171345
   - KRT5 ENSG00000186081
-- name: Goblet cell
-  markers:
+  name: Suprabasal cell
+- markers:
   - MSMB ENSG00000263639
   - TFF3 ENSG00000160180
   - WFDC2 ENSG00000101443
@@ -166,16 +150,32 @@ marker_list:
   - MUC5B ENSG00000117983
   - SPDEF ENSG00000124664
   - GP2 ENSG00000169347
-- name: Deuterosomal cell
-  markers:
+  name: Goblet cell
+- markers:
   - FOXN4 ENSG00000139445
   - DEUP1 ENSG00000165325
   - CDC20B ENSG00000164287
   - FOXJ1 ENSG00000129654
-- name: Neuroendocrine cell
-  markers:
+  name: Deuterosomal cell
+- markers:
   - ASCL1 ENSG00000139352
-- name: Mucous cell
-  markers:
+  name: Neuroendocrine cell
+- markers:
   - TFF2 ENSG00000160181
   - MUC5B ENSG00000117983
+  name: Mucous cell
+metadata:
+  date: 27.03.2020
+  id: '66'
+  list_name: HCM_human_epithelium
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: epithelium

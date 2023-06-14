@@ -1,21 +1,5 @@
-metadata:
-  id: '52'
-  list_name: HCM_human_breast
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: breast
-    custom_tag: cell type annotation
 marker_list:
-- name: Epithelial cell
-  markers:
+- markers:
   - ETFA ENSG00000140374
   - PIP ENSG00000159763
   - ALCAM ENSG00000170017
@@ -48,8 +32,8 @@ marker_list:
   - SPINK5 ENSG00000133710
   - AIRE ENSG00000160224
   - AVIL ENSG00000135407
-- name: Luminal epithelial cell
-  markers:
+  name: Epithelial cell
+- markers:
   - FLOT2 ENSG00000132589
   - ETFA ENSG00000140374
   - SYTL2 ENSG00000137501
@@ -67,23 +51,23 @@ marker_list:
   - CDH1 ENSG00000039068
   - CD44 ENSG00000026508
   - PGR ENSG00000082175
-- name: Myoepithelial cell
-  markers:
+  name: Luminal epithelial cell
+- markers:
   - SMN1 ENSG00000172062
   - ITGB1 ENSG00000150093
   - CD44 ENSG00000026508
   - MME ENSG00000196549
   - KRT14 ENSG00000186847
   - RPE65 ENSG00000116745
-- name: Progenitor cell
-  markers:
+  name: Myoepithelial cell
+- markers:
   - CD44 ENSG00000026508
   - CD24 ENSG00000272398
   - ITGB1 ENSG00000150093
   - ITGA6 ENSG00000091409
   - EPCAM ENSG00000119888
-- name: Cancer stem cell
-  markers:
+  name: Progenitor cell
+- markers:
   - ALDH1A1 ENSG00000165092
   - PROM1 ENSG00000007062
   - FLOT2 ENSG00000132589
@@ -120,27 +104,27 @@ marker_list:
   - ALDH6A1 ENSG00000119711
   - ESR1 ENSG00000091831
   - ALDH2 ENSG00000111275
-- name: Immune cell
-  markers:
+  name: Cancer stem cell
+- markers:
   - CD86 ENSG00000114013
   - PTPRC ENSG00000081237
   - ANPEP ENSG00000166825
   - CD14 ENSG00000170458
   - CD209 ENSG00000090659
   - CD83 ENSG00000112149
-- name: Hematopoietic stem cell
-  markers:
+  name: Immune cell
+- markers:
   - PROM1 ENSG00000007062
   - CD34 ENSG00000174059
   - KIT ENSG00000157404
-- name: Mesenchymal stem cell
-  markers:
+  name: Hematopoietic stem cell
+- markers:
   - NT5E ENSG00000135318
   - THY1 ENSG00000154096
   - NOTCH4 ENSG00000204301
   - CD44 ENSG00000026508
-- name: Luminal progenitor cell
-  markers:
+  name: Mesenchymal stem cell
+- markers:
   - EPCAM ENSG00000119888
   - ITGA6 ENSG00000091409
   - CD44 ENSG00000026508
@@ -154,8 +138,8 @@ marker_list:
   - GABRP ENSG00000094755
   - TNFRSF11A ENSG00000141655
   - EZH2 ENSG00000106462
-- name: Basal progenitor cell
-  markers:
+  name: Luminal progenitor cell
+- markers:
   - ITGA6 ENSG00000091409
   - CD44 ENSG00000026508
   - CD24 ENSG00000272398
@@ -163,12 +147,12 @@ marker_list:
   - WIF1 ENSG00000156076
   - ACTG2 ENSG00000163017
   - MYLK ENSG00000065534
-- name: Epithelial progenitor cell
-  markers:
+  name: Basal progenitor cell
+- markers:
   - CD44 ENSG00000026508
   - CD24 ENSG00000272398
-- name: Natural killer cell
-  markers:
+  name: Epithelial progenitor cell
+- markers:
   - NCAM1 ENSG00000149294
   - XCL1 ENSG00000143184
   - GNLY ENSG00000115523
@@ -189,16 +173,16 @@ marker_list:
   - CCR7 ENSG00000126353
   - CD3D ENSG00000167286
   - CD8A ENSG00000153563
-- name: Basal epithelial cell
-  markers:
+  name: Natural killer cell
+- markers:
   - TP63 ENSG00000073282
   - MYLK ENSG00000065534
   - ACTA2 ENSG00000107796
   - KRT14 ENSG00000186847
   - KRT5 ENSG00000186081
   - ITGB4 ENSG00000132470
-- name: Endothelial cell
-  markers:
+  name: Basal epithelial cell
+- markers:
   - PECAM1 ENSG00000261371
   - CDH5 ENSG00000179776
   - SERPINH1 ENSG00000149257
@@ -213,8 +197,8 @@ marker_list:
   - PTPRB ENSG00000127329
   - SOX18 ENSG00000203883
   - KDR ENSG00000128052
-- name: Cytotoxic T cell
-  markers:
+  name: Endothelial cell
+- markers:
   - IL2RA ENSG00000134460
   - CD3E ENSG00000198851
   - PRF1 ENSG00000180644
@@ -229,8 +213,8 @@ marker_list:
   - CD28 ENSG00000178562
   - CD8A ENSG00000153563
   - GZMA ENSG00000145649
-- name: Mesenchymal cell
-  markers:
+  name: Cytotoxic T cell
+- markers:
   - VIM ENSG00000026025
   - ZEB1 ENSG00000148516
   - SNAI1 ENSG00000124216
@@ -261,8 +245,8 @@ marker_list:
   - PDGFRB ENSG00000113721
   - MCAM ENSG00000076706
   - ECM1 ENSG00000143369
-- name: Cancer cell
-  markers:
+  name: Mesenchymal cell
+- markers:
   - ITK ENSG00000113263
   - ARHGAP10 ENSG00000071205
   - EDNRA ENSG00000151617
@@ -333,8 +317,8 @@ marker_list:
   - CTNNA1 ENSG00000044115
   - GNA13 ENSG00000120063
   - OAS1 ENSG00000089127
-- name: B cell
-  markers:
+  name: Cancer cell
+- markers:
   - MS4A1 ENSG00000156738
   - CD19 ENSG00000177455
   - LAPTM5 ENSG00000162511
@@ -357,8 +341,8 @@ marker_list:
   - CCDC50 ENSG00000152492
   - TCF4 ENSG00000196628
   - SEL1L3 ENSG00000091490
-- name: Tumor?associated macrophage (TAM)
-  markers:
+  name: B cell
+- markers:
   - SIGLEC1 ENSG00000088827
   - CD163 ENSG00000177575
   - APOE ENSG00000130203
@@ -372,8 +356,8 @@ marker_list:
   - SETMAR ENSG00000170364
   - MRC1 ENSG00000260314
   - CX3CR1 ENSG00000168329
-- name: Regulatory T(Treg) cell
-  markers:
+  name: Tumor?associated macrophage (TAM)
+- markers:
   - FOXP3 ENSG00000049768
   - BATF ENSG00000156127
   - TGFB1 ENSG00000105329
@@ -386,13 +370,13 @@ marker_list:
   - CD3D ENSG00000167286
   - KLRB1 ENSG00000111796
   - CCR7 ENSG00000126353
-- name: Lymphocyte
-  markers:
+  name: Regulatory T(Treg) cell
+- markers:
   - STIL ENSG00000123473
   - CD274 ENSG00000120217
   - CD8A ENSG00000153563
-- name: Macrophage
-  markers:
+  name: Lymphocyte
+- markers:
   - CD68 ENSG00000129226
   - ITGAM ENSG00000169896
   - VIM ENSG00000026025
@@ -415,11 +399,11 @@ marker_list:
   - CSF1R ENSG00000182578
   - CD74 ENSG00000019582
   - CLEC5A ENSG00000258227
-- name: Pan-macrophage
-  markers:
+  name: Macrophage
+- markers:
   - CD68 ENSG00000129226
-- name: Basal cell
-  markers:
+  name: Pan-macrophage
+- markers:
   - KRT14 ENSG00000186847
   - MYLK ENSG00000065534
   - ACTA2 ENSG00000107796
@@ -430,14 +414,14 @@ marker_list:
   - KIT ENSG00000157404
   - PGR ENSG00000082175
   - KRT17 ENSG00000128422
-- name: Luminal cell
-  markers:
+  name: Basal cell
+- markers:
   - KRT8 ENSG00000170421
   - KRT18 ENSG00000111057
   - KRT19 ENSG00000171345
   - EPCAM ENSG00000119888
-- name: M2 macrophage
-  markers:
+  name: Luminal cell
+- markers:
   - CCL3 ENSG00000277632
   - MARCO ENSG00000019169
   - NRP2 ENSG00000118257
@@ -447,23 +431,23 @@ marker_list:
   - ARG1 ENSG00000118520
   - MRC1 ENSG00000260314
   - CXCL10 ENSG00000169245
-- name: Tumor-infiltrating T cell
-  markers:
+  name: M2 macrophage
+- markers:
   - CD8A ENSG00000153563
   - CD4 ENSG00000010610
   - FOXP3 ENSG00000049768
-- name: Naive memory B cell
-  markers:
+  name: Tumor-infiltrating T cell
+- markers:
   - CD38 ENSG00000004468
-- name: Naive T(Th0) cell
-  markers:
+  name: Naive memory B cell
+- markers:
   - CCR7 ENSG00000126353
   - LEF1 ENSG00000138795
-- name: Tumor-infiltrating B cell
-  markers:
+  name: Naive T(Th0) cell
+- markers:
   - MS4A1 ENSG00000156738
-- name: Stem cell
-  markers:
+  name: Tumor-infiltrating B cell
+- markers:
   - CD44 ENSG00000026508
   - POU5F1 ENSG00000204531
   - NANOG ENSG00000111704
@@ -493,8 +477,8 @@ marker_list:
   - LGR4 ENSG00000205213
   - MET ENSG00000105976
   - PROCR ENSG00000101000
-- name: T cell
-  markers:
+  name: Stem cell
+- markers:
   - CD4 ENSG00000010610
   - PTPRC ENSG00000081237
   - CD2 ENSG00000116824
@@ -513,8 +497,8 @@ marker_list:
   - CFD ENSG00000197766
   - GZMK ENSG00000113088
   - ETS1 ENSG00000134954
-- name: Monocyte
-  markers:
+  name: T cell
+- markers:
   - CD33 ENSG00000105383
   - CD14 ENSG00000170458
   - CD4 ENSG00000010610
@@ -529,8 +513,8 @@ marker_list:
   - VCAN ENSG00000038427
   - S100A8 ENSG00000143546
   - S100A12 ENSG00000163221
-- name: Plasma cell
-  markers:
+  name: Monocyte
+- markers:
   - IGHG1 ENSG00000211896
   - SDC1 ENSG00000115884
   - LAPTM5 ENSG00000162511
@@ -543,22 +527,22 @@ marker_list:
   - IGLC7 ENSG00000211685
   - IGHA1 ENSG00000211895
   - IGHG4 ENSG00000211892
-- name: Myofibroblast
-  markers:
+  name: Plasma cell
+- markers:
   - COL3A1 ENSG00000168542
   - VIM ENSG00000026025
   - SDC1 ENSG00000115884
   - COL1A1 ENSG00000108821
   - SERPINH1 ENSG00000149257
   - ACTA2 ENSG00000107796
-- name: CD4+ T cell
-  markers:
+  name: Myofibroblast
+- markers:
   - CD4 ENSG00000010610
   - CD40LG ENSG00000102245
   - IL7R ENSG00000168685
   - IL2RA ENSG00000134460
-- name: CD8+ T cell
-  markers:
+  name: CD4+ T cell
+- markers:
   - CD8A ENSG00000153563
   - HLA-E ENSG00000204592
   - CXCL10 ENSG00000169245
@@ -568,50 +552,50 @@ marker_list:
   - STAT1 ENSG00000115415
   - GZMB ENSG00000100453
   - GZMH ENSG00000100450
-- name: Red blood cell (erythrocyte)
-  markers:
+  name: CD8+ T cell
+- markers:
   - GYPA ENSG00000170180
   - HBB ENSG00000244734
   - HBA2 ENSG00000188536
-- name: Hematopoietic cell
-  markers:
+  name: Red blood cell (erythrocyte)
+- markers:
   - PTPRC ENSG00000081237
-- name: Mammary stem cell
-  markers:
+  name: Hematopoietic cell
+- markers:
   - KRT5 ENSG00000186081
-- name: Breast cancer stem-like cell
-  markers:
+  name: Mammary stem cell
+- markers:
   - CD44 ENSG00000026508
-- name: Conventional T(Tconv) cell
-  markers:
+  name: Breast cancer stem-like cell
+- markers:
   - IL17A ENSG00000112115
   - IL7R ENSG00000168685
   - CD4 ENSG00000010610
   - IL2RA ENSG00000134460
   - DUSP1 ENSG00000120129
-- name: EMT cancer stem cell
-  markers:
+  name: Conventional T(Tconv) cell
+- markers:
   - EPCAM ENSG00000119888
   - CD44 ENSG00000026508
-- name: Epithelial-mesenchymal transition cancer stem cell
-  markers:
+  name: EMT cancer stem cell
+- markers:
   - ALDH1A3 ENSG00000184254
   - ALDH1A1 ENSG00000165092
-- name: EMT non-cancer stem cell(EMT non-CSC)
-  markers:
+  name: Epithelial-mesenchymal transition cancer stem cell
+- markers:
   - CD44 ENSG00000026508
-- name: Endothelial progenitor cell
-  markers:
+  name: EMT non-cancer stem cell(EMT non-CSC)
+- markers:
   - CD36 ENSG00000135218
-- name: M1 macrophage
-  markers:
+  name: Endothelial progenitor cell
+- markers:
   - CD40 ENSG00000101017
   - CD68 ENSG00000129226
   - SOCS3 ENSG00000184557
   - CXCL10 ENSG00000169245
   - CXCL9 ENSG00000138755
-- name: Paget cell
-  markers:
+  name: M1 macrophage
+- markers:
   - KRT7 ENSG00000135480
   - MUC1 ENSG00000185499
   - GATA3 ENSG00000107485
@@ -622,14 +606,14 @@ marker_list:
   - PDPN ENSG00000162493
   - MMP9 ENSG00000100985
   - KRT8 ENSG00000170421
-- name: Melanocyte
-  markers:
+  name: Paget cell
+- markers:
   - MLANA ENSG00000120215
-- name: Cycling epithelial cell
-  markers:
+  name: Melanocyte
+- markers:
   - MKI67 ENSG00000148773
-- name: Fibroblast
-  markers:
+  name: Cycling epithelial cell
+- markers:
   - PDGFRA ENSG00000134853
   - PDGFRB ENSG00000113721
   - COL1A1 ENSG00000108821
@@ -651,23 +635,23 @@ marker_list:
   - KRT8 ENSG00000170421
   - SERPINH1 ENSG00000149257
   - PTN ENSG00000105894
-- name: Suprabasal epithelial cell
-  markers:
+  name: Fibroblast
+- markers:
   - KRT10 ENSG00000186395
-- name: Lymphatic endothelial cell
-  markers:
+  name: Suprabasal epithelial cell
+- markers:
   - LYVE1 ENSG00000133800
-- name: Proliferating T cell
-  markers:
+  name: Lymphatic endothelial cell
+- markers:
   - MKI67 ENSG00000148773
-- name: Natural killer T(NKT) cell
-  markers:
+  name: Proliferating T cell
+- markers:
   - NCR1 ENSG00000189430
   - CD3D ENSG00000167286
   - GNLY ENSG00000115523
   - KLRD1 ENSG00000134539
-- name: Myeloid cell
-  markers:
+  name: Natural killer T(NKT) cell
+- markers:
   - CD68 ENSG00000129226
   - CD14 ENSG00000170458
   - FCGR3A ENSG00000203747
@@ -677,26 +661,26 @@ marker_list:
   - ITGA6 ENSG00000091409
   - CD274 ENSG00000120217
   - THBD ENSG00000178726
-- name: T follicular helper(Tfh) cell
-  markers:
+  name: Myeloid cell
+- markers:
   - CXCL13 ENSG00000156234
   - CD200 ENSG00000091972
   - BCL6 ENSG00000113916
   - IL21 ENSG00000138684
   - PDCD1 ENSG00000188389
-- name: B10 Regulatory B cell
-  markers:
+  name: T follicular helper(Tfh) cell
+- markers:
   - CD24 ENSG00000272398
   - CD19 ENSG00000177455
   - CD38 ENSG00000004468
-- name: GrB+ Regulatory B cell
-  markers:
+  name: B10 Regulatory B cell
+- markers:
   - CD1D ENSG00000158473
   - CD38 ENSG00000004468
   - BSG ENSG00000172270
   - CD19 ENSG00000177455
-- name: Dendritic cell
-  markers:
+  name: GrB+ Regulatory B cell
+- markers:
   - HLA-DQB1 ENSG00000179344
   - ITGAX ENSG00000140678
   - HLA-DRA ENSG00000204287
@@ -706,26 +690,26 @@ marker_list:
   - NRP1 ENSG00000099250
   - REL ENSG00000162924
   - NR4A3 ENSG00000119508
-- name: Gamma delta(??) T cell
-  markers:
+  name: Dendritic cell
+- markers:
   - CXCR6 ENSG00000172215
   - CCR5 ENSG00000160791
-- name: Stromal cell
-  markers:
+  name: Gamma delta(??) T cell
+- markers:
   - ACTA2 ENSG00000107796
-- name: Mature luminal cell
-  markers:
+  name: Stromal cell
+- markers:
   - ANKRD30A ENSG00000148513
   - ESR1 ENSG00000091831
   - AGR2 ENSG00000106541
   - FOXA1 ENSG00000129514
   - PGR ENSG00000082175
-- name: Polyploid giant cancer cell
-  markers:
+  name: Mature luminal cell
+- markers:
   - CD44 ENSG00000026508
   - PROM1 ENSG00000007062
-- name: Perivascular cell
-  markers:
+  name: Polyploid giant cancer cell
+- markers:
   - THY1 ENSG00000154096
   - CAV1 ENSG00000105974
   - ACTA2 ENSG00000107796
@@ -736,8 +720,8 @@ marker_list:
   - MCAM ENSG00000076706
   - S100A4 ENSG00000196154
   - MYH11 ENSG00000133392
-- name: Pericyte
-  markers:
+  name: Perivascular cell
+- markers:
   - MCAM ENSG00000076706
   - RGS5 ENSG00000232995
   - TAGLN ENSG00000149591
@@ -745,39 +729,39 @@ marker_list:
   - COL1A2 ENSG00000164692
   - ACTA2 ENSG00000107796
   - MYH11 ENSG00000133392
-- name: Exhausted T(Tex) cell
-  markers:
+  name: Pericyte
+- markers:
   - GPR25 ENSG00000170128
   - INPP5F ENSG00000198825
-- name: T helper 1(Th1) cell
-  markers:
+  name: Exhausted T(Tex) cell
+- markers:
   - ZEB2 ENSG00000169554
-- name: Neutrophil
-  markers:
+  name: T helper 1(Th1) cell
+- markers:
   - C5AR1 ENSG00000197405
   - CSF3R ENSG00000119535
   - CXCL8 ENSG00000169429
-- name: Tumor-initiating cell
-  markers:
+  name: Neutrophil
+- markers:
   - CD44 ENSG00000026508
-- name: Leukocyte
-  markers:
+  name: Tumor-initiating cell
+- markers:
   - PTPRC ENSG00000081237
-- name: Antigen presentation cancer-associated fibroblast
-  markers:
+  name: Leukocyte
+- markers:
   - CAV1 ENSG00000105974
   - CD74 ENSG00000019582
   - CLU ENSG00000120885
-- name: Plasmablast
-  markers:
+  name: Antigen presentation cancer-associated fibroblast
+- markers:
   - JCHAIN ENSG00000132465
-- name: Perivascular-like cell
-  markers:
+  name: Plasmablast
+- markers:
   - PDGFRB ENSG00000113721
   - MCAM ENSG00000076706
   - ACTA2 ENSG00000107796
-- name: Cancer-associated fibroblast
-  markers:
+  name: Perivascular-like cell
+- markers:
   - PDGFRA ENSG00000134853
   - ACTA2 ENSG00000107796
   - PDPN ENSG00000162493
@@ -785,56 +769,56 @@ marker_list:
   - PDGFRB ENSG00000113721
   - FAP ENSG00000078098
   - THY1 ENSG00000154096
-- name: Proliferative cell
-  markers:
+  name: Cancer-associated fibroblast
+- markers:
   - MKI67 ENSG00000148773
-- name: Naive CD4 T cell
-  markers:
+  name: Proliferative cell
+- markers:
   - CCR7 ENSG00000126353
   - CD3G ENSG00000160654
   - CD3D ENSG00000167286
-- name: Myeloid dendritic cell
-  markers:
+  name: Naive CD4 T cell
+- markers:
   - CCR7 ENSG00000126353
   - LAMP3 ENSG00000078081
-- name: Effector CD8 T cell
-  markers:
+  name: Myeloid dendritic cell
+- markers:
   - NKG7 ENSG00000105374
   - CD8A ENSG00000153563
   - CCR7 ENSG00000126353
   - CD3D ENSG00000167286
   - CD3G ENSG00000160654
-- name: Plasmacytoid dendritic cell(pDC)
-  markers:
+  name: Effector CD8 T cell
+- markers:
   - CLEC4C ENSG00000198178
   - JCHAIN ENSG00000132465
   - IL3RA ENSG00000185291
-- name: Mast cell
-  markers:
+  name: Plasmacytoid dendritic cell(pDC)
+- markers:
   - TPSD1 ENSG00000095917
   - KIT ENSG00000157404
   - CMA1 ENSG00000092009
   - CTSG ENSG00000100448
   - CPA3 ENSG00000163751
-- name: Adipocyte
-  markers:
+  name: Mast cell
+- markers:
   - SCARA5 ENSG00000168079
   - APOD ENSG00000189058
   - DLK1 ENSG00000185559
   - CFD ENSG00000197766
-- name: Muscle cell
-  markers:
+  name: Adipocyte
+- markers:
   - ACTA2 ENSG00000107796
   - MYH11 ENSG00000133392
   - MCAM ENSG00000076706
   - MYL9 ENSG00000101335
-- name: Myo-epithelial cell
-  markers:
+  name: Muscle cell
+- markers:
   - KRT5 ENSG00000186081
   - KRT17 ENSG00000128422
   - KRT14 ENSG00000186847
-- name: Exhausted CD8+ T cell
-  markers:
+  name: Myo-epithelial cell
+- markers:
   - HLA-DRB1 ENSG00000196126
   - ENTPD1 ENSG00000138185
   - KRT86 ENSG00000170442
@@ -860,10 +844,26 @@ marker_list:
   - GNLY ENSG00000115523
   - IFI44L ENSG00000137959
   - CCL3 ENSG00000277632
-- name: T helper(Th) cell
-  markers:
+  name: Exhausted CD8+ T cell
+- markers:
   - CD4 ENSG00000010610
-- name: Eosinophil
-  markers:
+  name: T helper(Th) cell
+- markers:
   - SORL1 ENSG00000137642
   - CORO1A ENSG00000102879
+  name: Eosinophil
+metadata:
+  date: 27.03.2020
+  id: '52'
+  list_name: HCM_human_breast
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: breast

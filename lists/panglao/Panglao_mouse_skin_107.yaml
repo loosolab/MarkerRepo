@@ -1,21 +1,5 @@
-metadata:
-  id: '107'
-  list_name: Panglao_mouse_skin
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: skin
-    custom_tag: cell type annotation
 marker_list:
-- name: Keratinocytes
-  markers:
+- markers:
   - FLG ENSMUSG00000102439
   - KPRP ENSMUSG00000059832
   - ICAM1 ENSMUSG00000037405
@@ -63,8 +47,8 @@ marker_list:
   - SBSN ENSMUSG00000046056
   - KRT84 ENSMUSG00000044294
   - KRT36 ENSMUSG00000020916
-- name: Langerhans cells
-  markers:
+  name: Keratinocytes
+- markers:
   - ACHE ENSMUSG00000023328
   - CD207 ENSMUSG00000034783
   - EHF ENSMUSG00000012350
@@ -81,8 +65,8 @@ marker_list:
   - CCR6 ENSMUSG00000040899
   - DEFB3 ENSMUSG00000039775
   - CLDN1 ENSMUSG00000022512
-- name: Melanocytes
-  markers:
+  name: Langerhans cells
+- markers:
   - AHR ENSMUSG00000019256
   - MC1R ENSMUSG00000074037
   - PMEL ENSMUSG00000025359
@@ -125,8 +109,8 @@ marker_list:
   - PPARD ENSMUSG00000002250
   - PPARG ENSMUSG00000000440
   - PRKCA ENSMUSG00000050965
-- name: Merkel cells
-  markers:
+  name: Melanocytes
+- markers:
   - CHGA ENSMUSG00000021194
   - KRT20 ENSMUSG00000035775
   - FLI1 ENSMUSG00000016087
@@ -142,8 +126,8 @@ marker_list:
   - GFI1 ENSMUSG00000029275
   - KRT8 ENSMUSG00000049382
   - KRT18 ENSMUSG00000023043
-- name: Sebocytes
-  markers:
+  name: Merkel cells
+- markers:
   - CAMP ENSMUSG00000038357
   - IHH ENSMUSG00000006538
   - CRHR1 ENSMUSG00000018634
@@ -169,10 +153,26 @@ marker_list:
   - FFAR3 ENSMUSG00000019429
   - MUC1 ENSMUSG00000042784
   - HRH1 ENSMUSG00000053004
-- name: Trichocytes
-  markers:
+  name: Sebocytes
+- markers:
   - KRT86 ENSMUSG00000067614
   - DSG2 ENSMUSG00000044393
   - KRT81 ENSMUSG00000067615
   - DSG4 ENSMUSG00000001804
   - HOXC13 ENSMUSG00000001655
+  name: Trichocytes
+metadata:
+  date: 27.03.2020
+  id: '107'
+  list_name: Panglao_mouse_skin
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: skin

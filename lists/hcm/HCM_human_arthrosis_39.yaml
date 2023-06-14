@@ -1,36 +1,36 @@
+marker_list:
+- markers:
+  - CCR6 ENSG00000112486
+  - KLRB1 ENSG00000111796
+  name: T helper 17(Th17) cell
+- markers:
+  - CCR7 ENSG00000126353
+  name: Central memory CD4+ T cell
+- markers:
+  - CCR7 ENSG00000126353
+  name: Naive CD4+ T cell
+- markers:
+  - CXCR3 ENSG00000186810
+  name: T helper 1(Th1) cell
+- markers:
+  - IL2RA ENSG00000134460
+  name: Regulatory T(Treg) cell
+- markers:
+  - STMN1 ENSG00000117632
+  - MKI67 ENSG00000148773
+  name: CD8+ T cell
 metadata:
+  date: 27.03.2020
   id: '39'
   list_name: HCM_human_arthrosis
+  marker_type: Genes
   organism:
     organism_name: human
     taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
   source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
   tags:
+    list_type: Cell type annotation
     tissue: arthrosis
-    custom_tag: cell type annotation
-marker_list:
-- name: T helper 17(Th17) cell
-  markers:
-  - CCR6 ENSG00000112486
-  - KLRB1 ENSG00000111796
-- name: Central memory CD4+ T cell
-  markers:
-  - CCR7 ENSG00000126353
-- name: Naive CD4+ T cell
-  markers:
-  - CCR7 ENSG00000126353
-- name: T helper 1(Th1) cell
-  markers:
-  - CXCR3 ENSG00000186810
-- name: Regulatory T(Treg) cell
-  markers:
-  - IL2RA ENSG00000134460
-- name: CD8+ T cell
-  markers:
-  - STMN1 ENSG00000117632
-  - MKI67 ENSG00000148773

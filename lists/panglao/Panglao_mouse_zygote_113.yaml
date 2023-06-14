@@ -1,21 +1,5 @@
-metadata:
-  id: '113'
-  list_name: Panglao_mouse_zygote
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: zygote
-    custom_tag: cell type annotation
 marker_list:
-- name: Embryonic stem cells
-  markers:
+- markers:
   - MYC ENSMUSG00000022346
   - FOXD3 ENSMUSG00000067261
   - POU5F1 ENSMUSG00000024406
@@ -94,3 +78,19 @@ marker_list:
   - LIFR ENSMUSG00000054263
   - IL6ST ENSMUSG00000021756
   - ZSCAN4D ENSMUSG00000090714
+  name: Embryonic stem cells
+metadata:
+  date: 27.03.2020
+  id: '113'
+  list_name: Panglao_mouse_zygote
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: zygote

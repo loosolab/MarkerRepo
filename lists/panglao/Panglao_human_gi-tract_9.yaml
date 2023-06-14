@@ -1,21 +1,5 @@
-metadata:
-  id: '9'
-  list_name: Panglao_human_gi-tract
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: gi-tract
-    custom_tag: cell type annotation
 marker_list:
-- name: Crypt cells
-  markers:
+- markers:
   - KCNE3 ENSG00000175538
   - KCNQ1 ENSG00000053918
   - OLFM4 ENSG00000102837
@@ -34,8 +18,8 @@ marker_list:
   - TNFRSF19 ENSG00000127863
   - SLC12A2 ENSG00000064651
   - AXIN2 ENSG00000168646
-- name: Enteric glia cells
-  markers:
+  name: Crypt cells
+- markers:
   - GFRA3 ENSG00000146013
   - MPZ ENSG00000158887
   - LGI4 ENSG00000153902
@@ -53,8 +37,8 @@ marker_list:
   - FOXD3 ENSG00000187140
   - ALDH1A3 ENSG00000184254
   - SLC18A2 ENSG00000165646
-- name: Enteric neurons
-  markers:
+  name: Enteric glia cells
+- markers:
   - HIVEP3 ENSG00000127124
   - PLEKHA5 ENSG00000052126
   - IGF2BP3 ENSG00000136231
@@ -123,8 +107,8 @@ marker_list:
   - NMU ENSG00000109255
   - VIP ENSG00000146469
   - CCK ENSG00000187094
-- name: Enterochromaffin cells
-  markers:
+  name: Enteric neurons
+- markers:
   - REG4 ENSG00000134193
   - AFP ENSG00000081051
   - SLC18A1 ENSG00000036565
@@ -138,8 +122,8 @@ marker_list:
   - TPH1 ENSG00000129167
   - CRH ENSG00000147571
   - GJB1 ENSG00000169562
-- name: Enterocytes
-  markers:
+  name: Enterochromaffin cells
+- markers:
   - GATA4 ENSG00000136574
   - LYPD8 ENSG00000259823
   - NLRP6 ENSG00000174885
@@ -291,8 +275,8 @@ marker_list:
   - MAOA ENSG00000189221
   - DGAT1 ENSG00000185000
   - DGAT2 ENSG00000062282
-- name: Enteroendocrine cells
-  markers:
+  name: Enterocytes
+- markers:
   - NPSR1 ENSG00000187258
   - FFAR3 ENSG00000185897
   - SCN3A ENSG00000153253
@@ -342,8 +326,8 @@ marker_list:
   - TAS1R2 ENSG00000179002
   - TAS1R3 ENSG00000169962
   - GNAT3 ENSG00000214415
-- name: Foveolar cells
-  markers:
+  name: Enteroendocrine cells
+- markers:
   - MUC1 ENSG00000185499
   - ANXA10 ENSG00000109511
   - MUC5AC ENSG00000215182
@@ -367,8 +351,8 @@ marker_list:
   - AKR1B10 ENSG00000198074
   - ARL1 ENSG00000120805
   - IL33 ENSG00000137033
-- name: Gastric chief cells
-  markers:
+  name: Foveolar cells
+- markers:
   - ANPEP ENSG00000166825
   - BHLHA15 ENSG00000180535
   - RAB3D ENSG00000105514
@@ -379,8 +363,8 @@ marker_list:
   - PRKCZ ENSG00000067606
   - CHIA ENSG00000134216
   - CHRM3 ENSG00000133019
-- name: Goblet cells
-  markers:
+  name: Gastric chief cells
+- markers:
   - CREB3L1 ENSG00000157613
   - NLRP6 ENSG00000174885
   - PAN3 ENSG00000152520
@@ -418,8 +402,8 @@ marker_list:
   - BACE2 ENSG00000182240
   - MANF ENSG00000145050
   - SPINK4 ENSG00000122711
-- name: Microfold cells
-  markers:
+  name: Goblet cells
+- markers:
   - GP2 ENSG00000169347
   - SPIB ENSG00000269404
   - PGLYRP1 ENSG00000008438
@@ -450,8 +434,8 @@ marker_list:
   - IRF2 ENSG00000168310
   - NFIB ENSG00000147862
   - FOXP4 ENSG00000137166
-- name: Paneth cells
-  markers:
+  name: Microfold cells
+- markers:
   - DEFA5 ENSG00000164816
   - MMP7 ENSG00000137673
   - AGR2 ENSG00000106541
@@ -496,8 +480,8 @@ marker_list:
   - DEFA3 ENSG00000239839
   - MPTX1 ENSG00000215846
   - KLF15 ENSG00000163884
-- name: Parietal cells
-  markers:
+  name: Paneth cells
+- markers:
   - CD24 ENSG00000272398
   - PODXL ENSG00000128567
   - PC ENSG00000173599
@@ -513,8 +497,8 @@ marker_list:
   - AQP4 ENSG00000171885
   - ATP4B ENSG00000186009
   - BMI1 ENSG00000168283
-- name: Tuft cells
-  markers:
+  name: Parietal cells
+- markers:
   - SUCNR1 ENSG00000198829
   - FABP1 ENSG00000163586
   - POU2F3 ENSG00000137709
@@ -548,3 +532,19 @@ marker_list:
   - IL13RA1 ENSG00000131724
   - IL17RB ENSG00000056736
   - PTPRC ENSG00000081237
+  name: Tuft cells
+metadata:
+  date: 27.03.2020
+  id: '9'
+  list_name: Panglao_human_gi-tract
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: gi-tract

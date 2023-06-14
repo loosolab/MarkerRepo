@@ -1,28 +1,12 @@
-metadata:
-  id: '97'
-  list_name: Panglao_mouse_lungs
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: lungs
-    custom_tag: cell type annotation
 marker_list:
-- name: Airway epithelial cells
-  markers:
+- markers:
   - AQP1 ENSMUSG00000004655
   - ADH7 ENSMUSG00000055301
   - CDH1 ENSMUSG00000000303
   - SEC14L3 ENSMUSG00000054986
   - TAP2 ENSMUSG00000024339
-- name: Airway goblet cells
-  markers:
+  name: Airway epithelial cells
+- markers:
   - MUC5B ENSMUSG00000066108
   - MUC16 ENSMUSG00000109564
   - LTF ENSMUSG00000032496
@@ -53,8 +37,8 @@ marker_list:
   - MUC20 ENSMUSG00000035638
   - SPDEF ENSMUSG00000024215
   - DUSP4 ENSMUSG00000031530
-- name: Alveolar macrophages
-  markers:
+  name: Airway goblet cells
+- markers:
   - CHIL3 ENSMUSG00000040809
   - PLET1 ENSMUSG00000032068
   - IL1B ENSMUSG00000027398
@@ -89,8 +73,8 @@ marker_list:
   - S100A4 ENSMUSG00000001020
   - GNGT2 ENSMUSG00000038811
   - SIGLECF ENSMUSG00000039013
-- name: Ciliated cells
-  markers:
+  name: Alveolar macrophages
+- markers:
   - SEC14L3 ENSMUSG00000054986
   - TAP2 ENSMUSG00000024339
   - CCDC153 ENSMUSG00000070306
@@ -109,8 +93,8 @@ marker_list:
   - SCGB1A1 ENSMUSG00000024653
   - APPL2 ENSMUSG00000020263
   - TUBB4B ENSMUSG00000036752
-- name: Clara cells
-  markers:
+  name: Ciliated cells
+- markers:
   - SYT2 ENSMUSG00000026452
   - CYP2E1 ENSMUSG00000025479
   - SCGB1A1 ENSMUSG00000024653
@@ -136,8 +120,8 @@ marker_list:
   - CYP2B10 ENSMUSG00000030483
   - RAB3D ENSMUSG00000019066
   - SFTPD ENSMUSG00000021795
-- name: Ionocytes
-  markers:
+  name: Clara cells
+- markers:
   - FOXI1 ENSMUSG00000047861
   - CFTR ENSMUSG00000041301
   - ASCL3 ENSMUSG00000035951
@@ -150,8 +134,8 @@ marker_list:
   - KCNMA1 ENSMUSG00000063142
   - SLC9A4 ENSMUSG00000026065
   - SLC9A7 ENSMUSG00000037341
-- name: Pulmonary alveolar type I cells
-  markers:
+  name: Ionocytes
+- markers:
   - MMP11 ENSMUSG00000000901
   - ICAM1 ENSMUSG00000037405
   - CCN2 ENSMUSG00000019997
@@ -189,8 +173,8 @@ marker_list:
   - SMARCA1 ENSMUSG00000031099
   - P2RX7 ENSMUSG00000029468
   - PDPN ENSMUSG00000028583
-- name: Pulmonary alveolar type II cells
-  markers:
+  name: Pulmonary alveolar type I cells
+- markers:
   - IRX1 ENSMUSG00000060969
   - EGFL6 ENSMUSG00000000402
   - CEBPA ENSMUSG00000034957
@@ -240,3 +224,19 @@ marker_list:
   - IL1B ENSMUSG00000027398
   - INMT ENSMUSG00000003477
   - CRLF1 ENSMUSG00000007888
+  name: Pulmonary alveolar type II cells
+metadata:
+  date: 27.03.2020
+  id: '97'
+  list_name: Panglao_mouse_lungs
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: lungs

@@ -1,21 +1,5 @@
-metadata:
-  id: '32'
-  list_name: HCM_human_adipose-tissue
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: adipose-tissue
-    custom_tag: cell type annotation
 marker_list:
-- name: Mesenchymal stem cell
-  markers:
+- markers:
   - CD19 ENSG00000177455
   - CD34 ENSG00000174059
   - CD44 ENSG00000026508
@@ -42,8 +26,8 @@ marker_list:
   - NANOG ENSG00000111704
   - SOX2 ENSG00000181449
   - POU5F1 ENSG00000204531
-- name: Adipose-derived stem cell
-  markers:
+  name: Mesenchymal stem cell
+- markers:
   - CD34 ENSG00000174059
   - MCAM ENSG00000076706
   - NGFR ENSG00000064300
@@ -73,8 +57,8 @@ marker_list:
   - ICAM1 ENSG00000090339
   - TFRC ENSG00000072274
   - PDGFRB ENSG00000113721
-- name: Endothelial cell
-  markers:
+  name: Adipose-derived stem cell
+- markers:
   - CD34 ENSG00000174059
   - MCAM ENSG00000076706
   - NGFR ENSG00000064300
@@ -88,16 +72,16 @@ marker_list:
   - PDPN ENSG00000162493
   - PROX1 ENSG00000117707
   - FLT4 ENSG00000037280
-- name: Pericyte
-  markers:
+  name: Endothelial cell
+- markers:
   - CD34 ENSG00000174059
   - MCAM ENSG00000076706
   - NGFR ENSG00000064300
   - PECAM1 ENSG00000261371
   - PTPRC ENSG00000081237
   - CSPG4 ENSG00000173546
-- name: Fat cell (adipocyte)
-  markers:
+  name: Pericyte
+- markers:
   - CIDEA ENSG00000176194
   - FABP4 ENSG00000170323
   - UCP1 ENSG00000109424
@@ -119,19 +103,19 @@ marker_list:
   - SLC27A2 ENSG00000140284
   - SLC27A6 ENSG00000113396
   - SLC27A1 ENSG00000130304
-- name: Macrophage
-  markers:
+  name: Fat cell (adipocyte)
+- markers:
   - CD14 ENSG00000170458
   - CD68 ENSG00000129226
   - PTPRC ENSG00000081237
   - MRC1 ENSG00000260314
   - FCGR2A ENSG00000143226
   - FCGR3A ENSG00000203747
-- name: Stromal vascular fraction cell
-  markers:
+  name: Macrophage
+- markers:
   - CD34 ENSG00000174059
-- name: Adipose-derived stromal cell
-  markers:
+  name: Stromal vascular fraction cell
+- markers:
   - PECAM1 ENSG00000261371
   - CD34 ENSG00000174059
   - CDH5 ENSG00000179776
@@ -154,8 +138,8 @@ marker_list:
   - TFRC ENSG00000072274
   - ALCAM ENSG00000170017
   - ANPEP ENSG00000166825
-- name: Stem cell
-  markers:
+  name: Adipose-derived stromal cell
+- markers:
   - ITGB1 ENSG00000150093
   - CD44 ENSG00000026508
   - THY1 ENSG00000154096
@@ -165,50 +149,50 @@ marker_list:
   - PECAM1 ENSG00000261371
   - PTPRC ENSG00000081237
   - FABP4 ENSG00000170323
-- name: Monocyte
-  markers:
+  name: Stem cell
+- markers:
   - PTPRC ENSG00000081237
   - CD14 ENSG00000170458
   - S100A9 ENSG00000163220
   - S100A8 ENSG00000143546
-- name: Dedifferentiation adipocyte
-  markers:
+  name: Monocyte
+- markers:
   - VCAM1 ENSG00000162692
   - ITGB1 ENSG00000150093
   - PTPRC ENSG00000081237
   - CD34 ENSG00000174059
   - CD44 ENSG00000026508
-- name: Mature endothelial cell
-  markers:
+  name: Dedifferentiation adipocyte
+- markers:
   - PECAM1 ENSG00000261371
   - CD34 ENSG00000174059
-- name: Immature endothelial cell
-  markers:
+  name: Mature endothelial cell
+- markers:
   - PECAM1 ENSG00000261371
   - CD34 ENSG00000174059
-- name: Endothelial progenitor cell
-  markers:
+  name: Immature endothelial cell
+- markers:
   - CD34 ENSG00000174059
-- name: Adipose progenitor cell
-  markers:
+  name: Endothelial progenitor cell
+- markers:
   - DLK1 ENSG00000185559
   - ITGB1 ENSG00000150093
-- name: Mesenchymal progenitor cell
-  markers:
+  name: Adipose progenitor cell
+- markers:
   - MCAM ENSG00000076706
-- name: Endoderm progenitor cell
-  markers:
+  name: Mesenchymal progenitor cell
+- markers:
   - PECAM1 ENSG00000261371
   - CD34 ENSG00000174059
   - PROM1 ENSG00000007062
-- name: Neuron
-  markers:
+  name: Endoderm progenitor cell
+- markers:
   - MAP2 ENSG00000078018
-- name: Adipose multilineage-differentiating stress-enduring cell
-  markers:
+  name: Neuron
+- markers:
   - THY1 ENSG00000154096
-- name: Natural killer cell
-  markers:
+  name: Adipose multilineage-differentiating stress-enduring cell
+- markers:
   - FCGR3A ENSG00000203747
   - KLRK1 ENSG00000213809
   - KLRD1 ENSG00000134539
@@ -217,56 +201,56 @@ marker_list:
   - NCR1 ENSG00000189430
   - NKG7 ENSG00000105374
   - GNLY ENSG00000115523
-- name: Brown adipogenic precursor cell
-  markers:
+  name: Natural killer cell
+- markers:
   - EBF2 ENSG00000221818
-- name: Beige adipogenic precursor cell
-  markers:
+  name: Brown adipogenic precursor cell
+- markers:
   - EBF2 ENSG00000221818
-- name: Smooth muscle cell
-  markers:
+  name: Beige adipogenic precursor cell
+- markers:
   - PECAM1 ENSG00000261371
   - MCAM ENSG00000076706
-- name: Preadipocyte
-  markers:
+  name: Smooth muscle cell
+- markers:
   - PECAM1 ENSG00000261371
   - CD36 ENSG00000135218
   - WT1 ENSG00000184937
-- name: Multipotent mesenchymal stroma cell
-  markers:
+  name: Preadipocyte
+- markers:
   - THY1 ENSG00000154096
   - NT5E ENSG00000135318
   - PTPRC ENSG00000081237
   - CD34 ENSG00000174059
-- name: Mesenchymal stromal cell
-  markers:
+  name: Multipotent mesenchymal stroma cell
+- markers:
   - NGFR ENSG00000064300
   - SUSD2 ENSG00000099994
   - CD34 ENSG00000174059
   - CD44 ENSG00000026508
   - NT5E ENSG00000135318
   - THY1 ENSG00000154096
-- name: Stromal cell
-  markers:
+  name: Mesenchymal stromal cell
+- markers:
   - NT5E ENSG00000135318
   - CD44 ENSG00000026508
   - THY1 ENSG00000154096
   - GREM1 ENSG00000166923
-- name: Megakaryocyte progenitor cell
-  markers:
+  name: Stromal cell
+- markers:
   - TFRC ENSG00000072274
-- name: Preadipocyte progenitor cell
-  markers:
+  name: Megakaryocyte progenitor cell
+- markers:
   - CD34 ENSG00000174059
-- name: White preadipocyte
-  markers:
+  name: Preadipocyte progenitor cell
+- markers:
   - IL6 ENSG00000136244
   - CCL2 ENSG00000108691
-- name: Hematopoietic stem cell
-  markers:
+  name: White preadipocyte
+- markers:
   - PTPRC ENSG00000081237
-- name: Adipocyte progenitor cell
-  markers:
+  name: Hematopoietic stem cell
+- markers:
   - ALCAM ENSG00000170017
   - THY1 ENSG00000154096
   - PDGFRA ENSG00000134853
@@ -276,80 +260,96 @@ marker_list:
   - CFD ENSG00000197766
   - CCN5 ENSG00000064205
   - APOD ENSG00000189058
-- name: Epithelial cell
-  markers:
+  name: Adipocyte progenitor cell
+- markers:
   - VWF ENSG00000110799
   - KDR ENSG00000128052
   - EPCAM ENSG00000119888
   - KRT8 ENSG00000170421
   - KRT18 ENSG00000111057
   - CLDN3 ENSG00000165215
-- name: Fibroblast
-  markers:
+  name: Epithelial cell
+- markers:
   - LRP1 ENSG00000123384
   - PTPRC ENSG00000081237
-- name: Hematopoietic cell
-  markers:
+  name: Fibroblast
+- markers:
   - LRP1 ENSG00000123384
   - PTPRC ENSG00000081237
-- name: T helper 2(Th2) cell
-  markers:
+  name: Hematopoietic cell
+- markers:
   - PGR ENSG00000082175
-- name: Beige adipocyte
-  markers:
+  name: T helper 2(Th2) cell
+- markers:
   - TNFRSF9 ENSG00000049249
-- name: Brown adipocyte
-  markers:
+  name: Beige adipocyte
+- markers:
   - UCP1 ENSG00000109424
-- name: White adipocyte
-  markers:
+  name: Brown adipocyte
+- markers:
   - LEP ENSG00000174697
   - HOXC9 ENSG00000180806
   - HOXC8 ENSG00000037965
-- name: Progenitor cell
-  markers:
+  name: White adipocyte
+- markers:
   - PDGFRA ENSG00000134853
   - CD81 ENSG00000110651
-- name: Pan-macrophage
-  markers:
+  name: Progenitor cell
+- markers:
   - CD68 ENSG00000129226
-- name: Innate lymphoid cell 1
-  markers:
+  name: Pan-macrophage
+- markers:
   - IL2 ENSG00000109471
   - TBX21 ENSG00000073861
-- name: Mesothelial cell
-  markers:
+  name: Innate lymphoid cell 1
+- markers:
   - KRT19 ENSG00000171345
   - MSLN ENSG00000102854
   - UPK3B ENSG00000243566
-- name: M1 macrophage
-  markers:
+  name: Mesothelial cell
+- markers:
   - CD68 ENSG00000129226
   - TREM2 ENSG00000095970
-- name: B cell
-  markers:
+  name: M1 macrophage
+- markers:
   - IGKC ENSG00000211592
   - IGHG3 ENSG00000211897
-- name: Vascular smooth muscle cell(VSMC)
-  markers:
+  name: B cell
+- markers:
   - ACTA2 ENSG00000107796
   - MYH11 ENSG00000133392
   - TAGLN ENSG00000149591
-- name: Dendritic cell
-  markers:
+  name: Vascular smooth muscle cell(VSMC)
+- markers:
   - HLA-DRA ENSG00000204287
   - HLA-DRB1 ENSG00000196126
-- name: Adipocyte
-  markers:
+  name: Dendritic cell
+- markers:
   - PLIN1 ENSG00000166819
   - RBP4 ENSG00000138207
   - LEP ENSG00000174697
   - ADIPOQ ENSG00000181092
-- name: Mast cell
-  markers:
+  name: Adipocyte
+- markers:
   - CPA3 ENSG00000163751
-- name: M2 macrophage
-  markers:
+  name: Mast cell
+- markers:
   - CD163 ENSG00000177575
   - FOLR2 ENSG00000165457
   - MRC1 ENSG00000260314
+  name: M2 macrophage
+metadata:
+  date: 27.03.2020
+  id: '32'
+  list_name: HCM_human_adipose-tissue
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: adipose-tissue

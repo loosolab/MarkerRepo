@@ -1,21 +1,5 @@
-metadata:
-  id: '62'
-  list_name: HCM_human_embryo
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: embryo
-    custom_tag: cell type annotation
 marker_list:
-- name: Neuron
-  markers:
+- markers:
   - APBB1 ENSG00000166313
   - SLA ENSG00000155926
   - MAF ENSG00000178573
@@ -32,8 +16,8 @@ marker_list:
   - CSRP2 ENSG00000175183
   - NR2F1 ENSG00000175745
   - LHX2 ENSG00000106689
-- name: Germ cell
-  markers:
+  name: Neuron
+- markers:
   - ZAR1 ENSG00000182223
   - BMP15 ENSG00000130385
   - GDF9 ENSG00000164404
@@ -46,17 +30,17 @@ marker_list:
   - PRDM1 ENSG00000057657
   - TFAP2C ENSG00000087510
   - SOX17 ENSG00000164736
-- name: Primitive streak cell
-  markers:
+  name: Germ cell
+- markers:
   - MIXL1 ENSG00000185155
   - LHX1 ENSG00000273706
-- name: Pluripotent stem cell
-  markers:
+  name: Primitive streak cell
+- markers:
   - POU5F1 ENSG00000204531
   - FUT4 ENSG00000196371
   - ALPL ENSG00000162551
-- name: Endothelial cell
-  markers:
+  name: Pluripotent stem cell
+- markers:
   - PECAM1 ENSG00000261371
   - VWF ENSG00000110799
   - GNG11 ENSG00000127920
@@ -72,14 +56,14 @@ marker_list:
   - IGFBP7 ENSG00000163453
   - RUNX1 ENSG00000159216
   - PTPRC ENSG00000081237
-- name: Cancer stem cell
-  markers:
+  name: Endothelial cell
+- markers:
   - EPCAM ENSG00000119888
   - SOX2 ENSG00000181449
   - CD44 ENSG00000026508
   - PROM1 ENSG00000007062
-- name: Embryonic stem cell
-  markers:
+  name: Cancer stem cell
+- markers:
   - CDH3 ENSG00000062038
   - CD9 ENSG00000010278
   - EPCAM ENSG00000119888
@@ -111,19 +95,19 @@ marker_list:
   - KHDC1L ENSG00000256980
   - LGALS16 ENSG00000249861
   - PDGFRA ENSG00000134853
-- name: PDX1+ pancreatic progenitor cell
-  markers:
+  name: Embryonic stem cell
+- markers:
   - CD24 ENSG00000272398
   - PDX1 ENSG00000139515
-- name: Pancreatic endoderm cell
-  markers:
+  name: PDX1+ pancreatic progenitor cell
+- markers:
   - F3 ENSG00000117525
-- name: Endocrine cell
-  markers:
+  name: Pancreatic endoderm cell
+- markers:
   - CD200 ENSG00000091972
   - CDCP1 ENSG00000163814
-- name: Cardiomyocyte
-  markers:
+  name: Endocrine cell
+- markers:
   - VCAM1 ENSG00000162692
   - SIRPA ENSG00000198053
   - ALCAM ENSG00000170017
@@ -133,8 +117,8 @@ marker_list:
   - TNNT2 ENSG00000118194
   - MYL2 ENSG00000111245
   - MYH7 ENSG00000092054
-- name: Fibroblast
-  markers:
+  name: Cardiomyocyte
+- markers:
   - THY1 ENSG00000154096
   - VIM ENSG00000026025
   - FBN1 ENSG00000166147
@@ -143,11 +127,11 @@ marker_list:
   - DCN ENSG00000011465
   - COL3A1 ENSG00000168542
   - ACTA2 ENSG00000107796
-- name: Pancreatic progenitor cell
-  markers:
+  name: Fibroblast
+- markers:
   - SLC2A2 ENSG00000163581
-- name: Mesenchymal stem cell
-  markers:
+  name: Pancreatic progenitor cell
+- markers:
   - NT5E ENSG00000135318
   - CD34 ENSG00000174059
   - CD44 ENSG00000026508
@@ -155,8 +139,8 @@ marker_list:
   - ANPEP ENSG00000166825
   - MCAM ENSG00000076706
   - NGFR ENSG00000064300
-- name: Oocyte
-  markers:
+  name: Mesenchymal stem cell
+- markers:
   - METTL9 ENSG00000197006
   - NID2 ENSG00000087303
   - RHOT1 ENSG00000126858
@@ -254,8 +238,8 @@ marker_list:
   - CHIC1 ENSG00000204116
   - ABI3BP ENSG00000154175
   - POLB ENSG00000070501
-- name: 4-cell stage cell (Blastomere)
-  markers:
+  name: Oocyte
+- markers:
   - CNOT6L ENSG00000138767
   - CDCA7L ENSG00000164649
   - ZSCAN29 ENSG00000140265
@@ -289,8 +273,8 @@ marker_list:
   - ARIH1 ENSG00000166233
   - TUBB7P ENSG00000251297
   - ARHGAP17 ENSG00000140750
-- name: Morula cell (Blastomere)
-  markers:
+  name: 4-cell stage cell (Blastomere)
+- markers:
   - ARPC3 ENSG00000111229
   - AKAP12 ENSG00000131016
   - KAT14 ENSG00000149474
@@ -403,8 +387,8 @@ marker_list:
   - TMA7 ENSG00000232112
   - AGL ENSG00000162688
   - UQCRH ENSG00000173660
-- name: 1-cell stage cell (Blastomere)
-  markers:
+  name: Morula cell (Blastomere)
+- markers:
   - FDFT1 ENSG00000079459
   - CNOT11 ENSG00000158435
   - KLHDC3 ENSG00000124702
@@ -452,8 +436,8 @@ marker_list:
   - DPF2 ENSG00000133884
   - SDCCAG8 ENSG00000054282
   - H1-8 ENSG00000178804
-- name: 8-cell stage cell (Blastomere)
-  markers:
+  name: 1-cell stage cell (Blastomere)
+- markers:
   - FAM32A ENSG00000105058
   - KDM5B ENSG00000117139
   - HDAC2 ENSG00000196591
@@ -473,20 +457,20 @@ marker_list:
   - EIF1AD ENSG00000175376
   - SNU13 ENSG00000100138
   - YRDC ENSG00000196449
-- name: Astroglial progenitor cell
-  markers:
+  name: 8-cell stage cell (Blastomere)
+- markers:
   - PBXIP1 ENSG00000163346
-- name: Cardiac progenitor cell
-  markers:
+  name: Astroglial progenitor cell
+- markers:
   - SIRPA ENSG00000198053
   - VCAM1 ENSG00000162692
   - ALCAM ENSG00000170017
-- name: Primordial germ cell
-  markers:
+  name: Cardiac progenitor cell
+- markers:
   - CD38 ENSG00000004468
   - ALPL ENSG00000162551
-- name: Primitive endoderm cell
-  markers:
+  name: Primordial germ cell
+- markers:
   - HNF1B ENSG00000275410
   - PIK3R1 ENSG00000145675
   - RNASE1 ENSG00000129538
@@ -583,8 +567,8 @@ marker_list:
   - RGS5 ENSG00000232995
   - GNA13 ENSG00000120063
   - SOX17 ENSG00000164736
-- name: Trophectoderm cell
-  markers:
+  name: Primitive endoderm cell
+- markers:
   - ATP8B1 ENSG00000081923
   - FABP3 ENSG00000121769
   - CLDN4 ENSG00000189143
@@ -689,8 +673,8 @@ marker_list:
   - TFAP2C ENSG00000087510
   - KRT7 ENSG00000135480
   - CDH1 ENSG00000039068
-- name: Epiblast cell
-  markers:
+  name: Trophectoderm cell
+- markers:
   - USP28 ENSG00000048028
   - IFITM1 ENSG00000185885
   - NGEF ENSG00000066248
@@ -787,8 +771,8 @@ marker_list:
   - TDGF1P3 ENSG00000225366
   - ACE ENSG00000159640
   - HESX1 ENSG00000163666
-- name: Hematopoietic stem cell
-  markers:
+  name: Epiblast cell
+- markers:
   - ACE ENSG00000159640
   - LMO2 ENSG00000135363
   - THY1 ENSG00000154096
@@ -798,21 +782,21 @@ marker_list:
   - CD34 ENSG00000174059
   - RAB27B ENSG00000041353
   - SPINK2 ENSG00000128040
-- name: Corneal epithelial progenitor cell
-  markers:
+  name: Hematopoietic stem cell
+- markers:
   - ABCG2 ENSG00000118777
-- name: Unrestricted somatic stem cell
-  markers:
+  name: Corneal epithelial progenitor cell
+- markers:
   - THY1 ENSG00000154096
   - ALCAM ENSG00000170017
   - PTPRC ENSG00000081237
   - PECAM1 ENSG00000261371
   - CD34 ENSG00000174059
-- name: Retinal ganglion cell
-  markers:
+  name: Unrestricted somatic stem cell
+- markers:
   - THY1 ENSG00000154096
-- name: Astrocyte
-  markers:
+  name: Retinal ganglion cell
+- markers:
   - HSPB1 ENSG00000106211
   - CAMK2G ENSG00000148660
   - ETV1 ENSG00000006468
@@ -1165,8 +1149,8 @@ marker_list:
   - BTBD17 ENSG00000204347
   - STMN1 ENSG00000117632
   - PTTG1IP ENSG00000183255
-- name: Oligodendrocyte progenitor cell
-  markers:
+  name: Astrocyte
+- markers:
   - SEMA5A ENSG00000112902
   - CSPG5 ENSG00000114646
   - ELAVL4 ENSG00000162374
@@ -1281,8 +1265,8 @@ marker_list:
   - NEUROD6 ENSG00000164600
   - SLITRK2 ENSG00000185985
   - TUBB3 ENSG00000258947
-- name: Microglial cell
-  markers:
+  name: Oligodendrocyte progenitor cell
+- markers:
   - BCL11A ENSG00000119866
   - GAL3ST4 ENSG00000197093
   - GPR34 ENSG00000171659
@@ -1776,8 +1760,8 @@ marker_list:
   - MAF ENSG00000178573
   - MRC1 ENSG00000260314
   - SP100 ENSG00000067066
-- name: Neural progenitor cell
-  markers:
+  name: Microglial cell
+- markers:
   - SHTN1 ENSG00000187164
   - TPX2 ENSG00000088325
   - PBK ENSG00000168078
@@ -1950,8 +1934,8 @@ marker_list:
   - NKX2-1 ENSG00000136352
   - HES5 ENSG00000197921
   - LHX6 ENSG00000106852
-- name: Interneuron
-  markers:
+  name: Neural progenitor cell
+- markers:
   - PDE4DIP ENSG00000178104
   - LHX6 ENSG00000106852
   - HMGB2 ENSG00000164104
@@ -1987,8 +1971,8 @@ marker_list:
   - CKS2 ENSG00000123975
   - GNG5 ENSG00000174021
   - PTTG1 ENSG00000164611
-- name: Epithelial cell
-  markers:
+  name: Interneuron
+- markers:
   - TFAP2C ENSG00000087510
   - PDPN ENSG00000162493
   - DMD ENSG00000198947
@@ -2024,13 +2008,13 @@ marker_list:
   - KRT18 ENSG00000111057
   - EPCAM ENSG00000119888
   - CDH1 ENSG00000039068
-- name: Neural cell
-  markers:
+  name: Epithelial cell
+- markers:
   - FZD3 ENSG00000104290
   - OTX2 ENSG00000165588
   - PTN ENSG00000105894
-- name: Stromal cell
-  markers:
+  name: Neural cell
+- markers:
   - LUM ENSG00000139329
   - KLF6 ENSG00000067082
   - COL5A1 ENSG00000130635
@@ -2038,33 +2022,33 @@ marker_list:
   - HLA-B ENSG00000234745
   - VIM ENSG00000026025
   - THY1 ENSG00000154096
-- name: Muscle cell
-  markers:
+  name: Stromal cell
+- markers:
   - APLNR ENSG00000134817
   - ACTC1 ENSG00000159251
   - HAND1 ENSG00000113196
-- name: Hepatocyte
-  markers:
+  name: Muscle cell
+- markers:
   - FGB ENSG00000171564
   - AFP ENSG00000081051
   - TTR ENSG00000118271
-- name: Spermatogonial stem cell
-  markers:
+  name: Hepatocyte
+- markers:
   - THY1 ENSG00000154096
-- name: Endodermal cell
-  markers:
+  name: Spermatogonial stem cell
+- markers:
   - PAF1 ENSG00000006712
   - SOX17 ENSG00000164736
   - FOXA2 ENSG00000125798
-- name: Mesoderm cell
-  markers:
+  name: Endodermal cell
+- markers:
   - SNAI1 ENSG00000124216
   - TWIST2 ENSG00000233608
   - GSC ENSG00000133937
   - OSR1 ENSG00000143867
   - PAX2 ENSG00000075891
-- name: Hematopoietic cell
-  markers:
+  name: Mesoderm cell
+- markers:
   - HBE1 ENSG00000213931
   - HBB ENSG00000244734
   - PTPRC ENSG00000081237
@@ -2082,18 +2066,18 @@ marker_list:
   - RUNX1 ENSG00000159216
   - SPI1 ENSG00000066336
   - CDH5 ENSG00000179776
-- name: Smooth muscle cell
-  markers:
+  name: Hematopoietic cell
+- markers:
   - ACTG1 ENSG00000184009
   - MYH11 ENSG00000133392
   - ACTA2 ENSG00000107796
   - MYLK ENSG00000065534
-- name: Stromal progenitor cell
-  markers:
+  name: Smooth muscle cell
+- markers:
   - COL2A1 ENSG00000139219
   - SFRP2 ENSG00000145423
-- name: Progenitor cell
-  markers:
+  name: Stromal progenitor cell
+- markers:
   - HAPLN1 ENSG00000145681
   - FRZB ENSG00000162998
   - PTN ENSG00000105894
@@ -2101,8 +2085,8 @@ marker_list:
   - PAX7 ENSG00000009709
   - ISL1 ENSG00000016082
   - TBX5 ENSG00000089225
-- name: Epithelial progenitor cell
-  markers:
+  name: Progenitor cell
+- markers:
   - IGFBP5 ENSG00000115461
   - PODXL ENSG00000128567
   - KRT19 ENSG00000171345
@@ -2110,16 +2094,16 @@ marker_list:
   - CDH1 ENSG00000039068
   - KRT18 ENSG00000111057
   - TP63 ENSG00000073282
-- name: Endothelial progenitor cell
-  markers:
+  name: Epithelial progenitor cell
+- markers:
   - GDF15 ENSG00000130513
   - TAL1 ENSG00000162367
-- name: Fetal leydig progenitor cell
-  markers:
+  name: Endothelial progenitor cell
+- markers:
   - PDGFRA ENSG00000134853
   - TCF21 ENSG00000118526
-- name: Stem cell
-  markers:
+  name: Fetal leydig progenitor cell
+- markers:
   - SOX2 ENSG00000181449
   - POU5F1 ENSG00000204531
   - NANOG ENSG00000111704
@@ -2140,11 +2124,11 @@ marker_list:
   - TDGF1 ENSG00000241186
   - REXO1 ENSG00000079313
   - L1TD1 ENSG00000240563
-- name: Hematopoietic-related cell
-  markers:
+  name: Stem cell
+- markers:
   - SPINK2 ENSG00000128040
-- name: Mesenchymal cell
-  markers:
+  name: Hematopoietic-related cell
+- markers:
   - CXCL12 ENSG00000107562
   - FBLN5 ENSG00000140092
   - DLK1 ENSG00000185559
@@ -2160,8 +2144,8 @@ marker_list:
   - COL1A2 ENSG00000164692
   - CCL21 ENSG00000137077
   - CCL19 ENSG00000172724
-- name: Mesendodermal cell
-  markers:
+  name: Mesenchymal cell
+- markers:
   - MIXL1 ENSG00000185155
   - SOX17 ENSG00000164736
   - FOXA2 ENSG00000125798
@@ -2169,92 +2153,92 @@ marker_list:
   - PDGFRA ENSG00000134853
   - GBX2 ENSG00000168505
   - GATA6 ENSG00000141448
-- name: Osteoblast
-  markers:
+  name: Mesendodermal cell
+- markers:
   - SPP1 ENSG00000118785
   - BGLAP ENSG00000242252
   - ALPP ENSG00000163283
-- name: Natural killer cell
-  markers:
+  name: Osteoblast
+- markers:
   - NKG7 ENSG00000105374
   - GNLY ENSG00000115523
-- name: B cell
-  markers:
+  name: Natural killer cell
+- markers:
   - CD79A ENSG00000105369
-- name: Lymphocyte
-  markers:
+  name: B cell
+- markers:
   - LYVE1 ENSG00000133800
-- name: Visceral endodermal cell
-  markers:
+  name: Lymphocyte
+- markers:
   - HESX1 ENSG00000163666
-- name: Posterior presomitic mesoderm(pPSM) cell
-  markers:
+  name: Visceral endodermal cell
+- markers:
   - TBX6 ENSG00000149922
   - RSPO3 ENSG00000146374
   - MSGN1 ENSG00000151379
-- name: Anterior presomitic mesoderm(aPSM) cell
-  markers:
+  name: Posterior presomitic mesoderm(pPSM) cell
+- markers:
   - FOXC2 ENSG00000176692
   - MEST ENSG00000106484
-- name: Presomitic mesoderm(PSM) cell
-  markers:
+  name: Anterior presomitic mesoderm(aPSM) cell
+- markers:
   - FOXC1 ENSG00000054598
-- name: Neural crest cell
-  markers:
+  name: Presomitic mesoderm(PSM) cell
+- markers:
   - SOX10 ENSG00000100146
   - HOXC9 ENSG00000180806
   - SOX9 ENSG00000125398
   - FOXC1 ENSG00000054598
-- name: Myogenic progenitor cell
-  markers:
+  name: Neural crest cell
+- markers:
   - MYOD1 ENSG00000129152
-- name: Neural stem cell
-  markers:
+  name: Myogenic progenitor cell
+- markers:
   - LIFR ENSG00000113594
   - FABP7 ENSG00000164434
   - IL6ST ENSG00000134352
   - HOPX ENSG00000171476
   - MAP2 ENSG00000078018
   - SOX1 ENSG00000182968
-- name: Red blood cell (erythrocyte)
-  markers:
+  name: Neural stem cell
+- markers:
   - RUNX1 ENSG00000159216
   - HEMGN ENSG00000136929
-- name: Chondrocyte
-  markers:
+  name: Red blood cell (erythrocyte)
+- markers:
   - SOX9 ENSG00000125398
   - COL2A1 ENSG00000139219
-- name: Dermal progenitor cell
-  markers:
+  name: Chondrocyte
+- markers:
   - TWIST2 ENSG00000233608
-- name: Mesenchymal stromal cell
-  markers:
+  name: Dermal progenitor cell
+- markers:
   - NT5E ENSG00000135318
-- name: Dermal fibroblast
-  markers:
+  name: Mesenchymal stromal cell
+- markers:
   - TWIST2 ENSG00000233608
-- name: White blood cell
-  markers:
+  name: Dermal fibroblast
+- markers:
   - AIF1 ENSG00000204472
-- name: Schwann cell
-  markers:
+  name: White blood cell
+- markers:
   - CDH19 ENSG00000071991
-- name: Tenogenic cell
-  markers:
+  name: Schwann cell
+- markers:
   - TNMD ENSG00000000005
-- name: Fibro-adipogenic progenitor cell
-  markers:
+  name: Tenogenic cell
+- markers:
   - PDGFRA ENSG00000134853
-- name: Inner Cell
-  markers:
+  name: Fibro-adipogenic progenitor cell
+- markers:
   - KRT7 ENSG00000135480
   - GATA3 ENSG00000107485
-- name: H1 embryonic stem cell
-  markers:
+  name: Inner Cell
+- markers:
   - SOX2 ENSG00000181449
   - DNMT3B ENSG00000088305
-- name: Definitive endoderm cell
-  markers:
+  name: H1 embryonic stem cell
+- markers:
   - HDHD5-AS1 ENSG00000185837
   - LEFTY1 ENSG00000243709
   - SOX17 ENSG00000164736
@@ -2262,36 +2246,36 @@ marker_list:
   - EOMES ENSG00000163508
   - GATA6 ENSG00000141448
   - CER1 ENSG00000147869
-- name: Hofbauer cell
-  markers:
+  name: Definitive endoderm cell
+- markers:
   - LYVE1 ENSG00000133800
   - CD68 ENSG00000129226
   - CD14 ENSG00000170458
   - CD163 ENSG00000177575
   - FCGR1A ENSG00000150337
-- name: Foetal endothelial cell
-  markers:
+  name: Hofbauer cell
+- markers:
   - PECAM1 ENSG00000261371
   - CD34 ENSG00000174059
-- name: Trophoblast cell
-  markers:
+  name: Foetal endothelial cell
+- markers:
   - KRT7 ENSG00000135480
   - TFAP2C ENSG00000087510
   - GATA3 ENSG00000107485
   - TP63 ENSG00000073282
   - ELF5 ENSG00000135374
   - CGB3 ENSG00000104827
-- name: Foregut cell
-  markers:
+  name: Trophoblast cell
+- markers:
   - PAX9 ENSG00000198807
-- name: Hindgut cell
-  markers:
+  name: Foregut cell
+- markers:
   - CDX2 ENSG00000165556
-- name: Midgut cell
-  markers:
+  name: Hindgut cell
+- markers:
   - ISX ENSG00000175329
-- name: Prospermatogonia
-  markers:
+  name: Midgut cell
+- markers:
   - NANOS2 ENSG00000188425
   - PAGE2B ENSG00000238269
   - RHOXF1 ENSG00000101883
@@ -2301,58 +2285,58 @@ marker_list:
   - MORC1 ENSG00000114487
   - MAGEC2 ENSG00000046774
   - MAGEB2 ENSG00000099399
-- name: Primordial germ cell (PGC)
-  markers:
+  name: Prospermatogonia
+- markers:
   - TFAP2C ENSG00000087510
-- name: Somatic cell
-  markers:
+  name: Primordial germ cell (PGC)
+- markers:
   - SOX9 ENSG00000125398
   - PECAM1 ENSG00000261371
   - HSD3B1 ENSG00000203857
   - ACTA2 ENSG00000107796
   - NR2F2 ENSG00000185551
-- name: Sertoli cell
-  markers:
+  name: Somatic cell
+- markers:
   - SOX9 ENSG00000125398
-- name: Adult spermatogonia
-  markers:
+  name: Sertoli cell
+- markers:
   - PLPPR3 ENSG00000129951
   - DCAF4L1 ENSG00000182308
   - EGR4 ENSG00000135625
   - SIX1 ENSG00000126778
-- name: Inner cell mass cell
-  markers:
+  name: Adult spermatogonia
+- markers:
   - GDF3 ENSG00000184344
   - CUBN ENSG00000107611
   - IGF1 ENSG00000017427
-- name: Ectodermal cell
-  markers:
+  name: Inner cell mass cell
+- markers:
   - SOX2 ENSG00000181449
   - GATA6 ENSG00000141448
   - GBX2 ENSG00000168505
-- name: Macrophage
-  markers:
+  name: Ectodermal cell
+- markers:
   - CD14 ENSG00000170458
   - CD68 ENSG00000129226
-- name: Myeloid cell
-  markers:
+  name: Macrophage
+- markers:
   - GATA1 ENSG00000102145
   - NFE2 ENSG00000123405
-- name: Megakaryocyte
-  markers:
+  name: Myeloid cell
+- markers:
   - SELP ENSG00000174175
   - GP1BA ENSG00000185245
   - ITGA2B ENSG00000005961
   - CD9 ENSG00000010278
   - PF4 ENSG00000163737
-- name: Apical ectodermal ridge cell
-  markers:
+  name: Megakaryocyte
+- markers:
   - FGF8 ENSG00000107831
-- name: Osteoprogenitor cell
-  markers:
+  name: Apical ectodermal ridge cell
+- markers:
   - DLX5 ENSG00000105880
-- name: Limbal stem cell
-  markers:
+  name: Osteoprogenitor cell
+- markers:
   - KRT5 ENSG00000186081
   - KRT19 ENSG00000171345
   - ABCG2 ENSG00000118777
@@ -2361,160 +2345,176 @@ marker_list:
   - ITGA9 ENSG00000144668
   - TP63 ENSG00000073282
   - KRT14 ENSG00000186847
-- name: Presomitic mesoderm cell
-  markers:
+  name: Limbal stem cell
+- markers:
   - FGF8 ENSG00000107831
-- name: Skeletal muscle stem cell
-  markers:
+  name: Presomitic mesoderm cell
+- markers:
   - NGFR ENSG00000064300
   - PAX7 ENSG00000009709
   - CD34 ENSG00000174059
-- name: Paraxial mesoderm cell
-  markers:
+  name: Skeletal muscle stem cell
+- markers:
   - PAX3 ENSG00000135903
   - PAX7 ENSG00000009709
-- name: Neural plate cell
-  markers:
+  name: Paraxial mesoderm cell
+- markers:
   - FOXD3 ENSG00000187140
-- name: Glomerular cell
-  markers:
+  name: Neural plate cell
+- markers:
   - FXYD2 ENSG00000137731
   - WT1 ENSG00000184937
-- name: Zygote
-  markers:
+  name: Glomerular cell
+- markers:
   - H1-8 ENSG00000178804
   - ACCSL ENSG00000205126
   - CLEC10A ENSG00000132514
-- name: Trophoblast stem cell
-  markers:
+  name: Zygote
+- markers:
   - CDH1 ENSG00000039068
   - GATA3 ENSG00000107485
-- name: Hypoblast cell
-  markers:
+  name: Trophoblast stem cell
+- markers:
   - COL4A1 ENSG00000187498
   - SOX17 ENSG00000164736
   - FOXA2 ENSG00000125798
   - GATA6 ENSG00000141448
   - GATA4 ENSG00000136574
-- name: Pan-trophectoderm cell
-  markers:
+  name: Hypoblast cell
+- markers:
   - ABCG2 ENSG00000118777
   - MUC15 ENSG00000169550
   - GATA3 ENSG00000107485
   - CYP19A1 ENSG00000137869
   - GATA2 ENSG00000179348
   - OVOL1 ENSG00000172818
-- name: Hypoblast-like cell
-  markers:
+  name: Pan-trophectoderm cell
+- markers:
   - COL4A1 ENSG00000187498
   - GATA6 ENSG00000141448
-- name: Epiblast-like cell
-  markers:
+  name: Hypoblast-like cell
+- markers:
   - POU5F1 ENSG00000204531
   - SOX2 ENSG00000181449
-- name: Syncytiotrophoblast cell
-  markers:
+  name: Epiblast-like cell
+- markers:
   - SDC1 ENSG00000115884
-- name: Extravillous trophoblast cell
-  markers:
+  name: Syncytiotrophoblast cell
+- markers:
   - HLA-G ENSG00000204632
-- name: Perivascular cell
-  markers:
+  name: Extravillous trophoblast cell
+- markers:
   - CLEC4M ENSG00000104938
-- name: Cortical cell
-  markers:
+  name: Perivascular cell
+- markers:
   - SLC17A7 ENSG00000104888
   - SLC17A6 ENSG00000091664
-- name: Frontal cortex cell
-  markers:
+  name: Cortical cell
+- markers:
   - SEMA3E ENSG00000170381
   - GRP ENSG00000134443
-- name: Subplate cell
-  markers:
+  name: Frontal cortex cell
+- markers:
   - CRYM ENSG00000103316
   - HS3ST4 ENSG00000182601
   - WNT7B ENSG00000188064
-- name: Caudal cortex cell
-  markers:
+  name: Subplate cell
+- markers:
   - NEFL ENSG00000277586
   - NPY ENSG00000122585
   - LPL ENSG00000175445
-- name: Fibroblast-like cell
-  markers:
+  name: Caudal cortex cell
+- markers:
   - COL1A1 ENSG00000108821
   - COL1A2 ENSG00000164692
   - POSTN ENSG00000133110
-- name: Valvular cell
-  markers:
+  name: Fibroblast-like cell
+- markers:
   - SOX9 ENSG00000125398
-- name: T cell
-  markers:
+  name: Valvular cell
+- markers:
   - CD8A ENSG00000153563
   - CD4 ENSG00000010610
-- name: M2 macrophage
-  markers:
+  name: T cell
+- markers:
   - MERTK ENSG00000153208
   - MRC1 ENSG00000260314
   - ARG1 ENSG00000118520
-- name: Monocyte
-  markers:
+  name: M2 macrophage
+- markers:
   - ITGAM ENSG00000169896
-- name: M1 macrophage
-  markers:
+  name: Monocyte
+- markers:
   - CD38 ENSG00000004468
-- name: M2-like macrophage
-  markers:
+  name: M1 macrophage
+- markers:
   - ARG1 ENSG00000118520
   - FN1 ENSG00000115414
-- name: Somatostatin interneuron
-  markers:
+  name: M2-like macrophage
+- markers:
   - PDE1A ENSG00000115252
   - RALYL ENSG00000184672
   - SST ENSG00000157005
-- name: Oligodendrocyte precursor cell
-  markers:
+  name: Somatostatin interneuron
+- markers:
   - PDGFRA ENSG00000134853
-- name: Interneuron precursor cell
-  markers:
+  name: Oligodendrocyte precursor cell
+- markers:
   - GAD2 ENSG00000136750
-- name: Parvalbumin interneuron
-  markers:
+  name: Interneuron precursor cell
+- markers:
   - ERBB4 ENSG00000178568
   - CRABP1 ENSG00000166426
-- name: Lymphoblastoid cell
-  markers:
+  name: Parvalbumin interneuron
+- markers:
   - CD52 ENSG00000169442
   - ENTPD1 ENSG00000138185
   - FCER2 ENSG00000104921
   - CD70 ENSG00000125726
   - CD58 ENSG00000116815
-- name: Mesodermal progenitor cell
-  markers:
+  name: Lymphoblastoid cell
+- markers:
   - NES ENSG00000132688
   - MCAM ENSG00000076706
   - CSPG4 ENSG00000173546
-- name: Outer radial glia
-  markers:
+  name: Mesodermal progenitor cell
+- markers:
   - MOXD1 ENSG00000079931
   - FAM107A ENSG00000168309
   - MT3 ENSG00000087250
   - HOPX ENSG00000171476
-- name: Neuronal intermediate progenitor cell
-  markers:
+  name: Outer radial glia
+- markers:
   - PPP1R17 ENSG00000106341
   - PENK ENSG00000181195
   - NEUROG1 ENSG00000181965
-- name: Ventricular radial glial cell
-  markers:
+  name: Neuronal intermediate progenitor cell
+- markers:
   - FBXO32 ENSG00000156804
-- name: Truncated radial glial cell
-  markers:
+  name: Ventricular radial glial cell
+- markers:
   - CRYAB ENSG00000109846
   - NR4A1 ENSG00000123358
   - FOXJ1 ENSG00000129654
-- name: Podocyte precursor cell
-  markers:
+  name: Truncated radial glial cell
+- markers:
   - OLFM3 ENSG00000118733
-- name: Blood vessel cell
-  markers:
+  name: Podocyte precursor cell
+- markers:
   - PECAM1 ENSG00000261371
+  name: Blood vessel cell
+metadata:
+  date: 27.03.2020
+  id: '62'
+  list_name: HCM_human_embryo
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: embryo

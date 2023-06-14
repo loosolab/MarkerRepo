@@ -1,21 +1,5 @@
-metadata:
-  id: '112'
-  list_name: Panglao_mouse_vasculature
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: vasculature
-    custom_tag: cell type annotation
 marker_list:
-- name: Endothelial cells
-  markers:
+- markers:
   - PECAM1 ENSMUSG00000020717
   - ICAM1 ENSMUSG00000037405
   - ITGB3 ENSMUSG00000020689
@@ -210,8 +194,8 @@ marker_list:
   - FAM167B ENSMUSG00000050493
   - LTC4S ENSMUSG00000020377
   - STAB2 ENSMUSG00000035459
-- name: Endothelial cells (aorta)
-  markers:
+  name: Endothelial cells
+- markers:
   - ITGA5 ENSMUSG00000000555
   - TMTC2 ENSMUSG00000036019
   - NR1D1 ENSMUSG00000020889
@@ -305,8 +289,8 @@ marker_list:
   - GKN3 ENSMUSG00000030048
   - CYTL1 ENSMUSG00000062329
   - EHD3 ENSMUSG00000024065
-- name: Endothelial cells (blood brain barrier)
-  markers:
+  name: Endothelial cells (aorta)
+- markers:
   - ABCG2 ENSMUSG00000029802
   - GFAP ENSMUSG00000020932
   - GPR37L1 ENSMUSG00000026424
@@ -326,8 +310,8 @@ marker_list:
   - ZFP551 ENSMUSG00000034071
   - ZIC3 ENSMUSG00000067860
   - ALCAM ENSMUSG00000022636
-- name: Pericytes
-  markers:
+  name: Endothelial cells (blood brain barrier)
+- markers:
   - PECAM1 ENSMUSG00000020717
   - PDGFRB ENSMUSG00000024620
   - CSPG4 ENSMUSG00000032911
@@ -392,3 +376,19 @@ marker_list:
   - GNB4 ENSMUSG00000027669
   - MSX1 ENSMUSG00000048450
   - CCN2 ENSMUSG00000019997
+  name: Pericytes
+metadata:
+  date: 27.03.2020
+  id: '112'
+  list_name: Panglao_mouse_vasculature
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: vasculature

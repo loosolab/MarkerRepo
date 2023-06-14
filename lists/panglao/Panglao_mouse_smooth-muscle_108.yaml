@@ -1,27 +1,11 @@
-metadata:
-  id: '108'
-  list_name: Panglao_mouse_smooth-muscle
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: smooth-muscle
-    custom_tag: cell type annotation
 marker_list:
-- name: Airway smooth muscle cells
-  markers:
+- markers:
   - NOG ENSMUSG00000048616
   - ACTA2 ENSMUSG00000035783
   - FOXF1 ENSMUSG00000042812
   - GATA5 ENSMUSG00000015627
-- name: Myoepithelial cells
-  markers:
+  name: Airway smooth muscle cells
+- markers:
   - SFN ENSMUSG00000047281
   - ACTA2 ENSMUSG00000035783
   - CNN1 ENSMUSG00000001349
@@ -46,8 +30,8 @@ marker_list:
   - KRT5 ENSMUSG00000061527
   - MYLK ENSMUSG00000022836
   - MYL9 ENSMUSG00000067818
-- name: Myofibroblasts
-  markers:
+  name: Myoepithelial cells
+- markers:
   - CDH11 ENSMUSG00000031673
   - DES ENSMUSG00000026208
   - PALLD ENSMUSG00000058056
@@ -57,12 +41,12 @@ marker_list:
   - CALD1 ENSMUSG00000029761
   - MYL9 ENSMUSG00000067818
   - TAGLN ENSMUSG00000032085
-- name: Pulmonary vascular smooth muscle cells
-  markers:
+  name: Myofibroblasts
+- markers:
   - ANGPT1 ENSMUSG00000022309
   - PDGFRB ENSMUSG00000024620
-- name: Smooth muscle cells
-  markers:
+  name: Pulmonary vascular smooth muscle cells
+- markers:
   - ACTA2 ENSMUSG00000035783
   - CNN1 ENSMUSG00000001349
   - HEXIM1 ENSMUSG00000048878
@@ -143,11 +127,27 @@ marker_list:
   - SNCG ENSMUSG00000023064
   - PLN ENSMUSG00000038583
   - NRP2 ENSMUSG00000025969
-- name: Vascular smooth muscle cells
-  markers:
+  name: Smooth muscle cells
+- markers:
   - ACTA2 ENSMUSG00000035783
   - MYH11 ENSMUSG00000018830
   - PDGFRB ENSMUSG00000024620
   - SEMA3D ENSMUSG00000040254
   - TBX18 ENSMUSG00000032419
   - WT1 ENSMUSG00000016458
+  name: Vascular smooth muscle cells
+metadata:
+  date: 27.03.2020
+  id: '108'
+  list_name: Panglao_mouse_smooth-muscle
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: smooth-muscle

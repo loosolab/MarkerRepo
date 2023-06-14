@@ -1,21 +1,5 @@
-metadata:
-  id: '70'
-  list_name: HCM_human_fetal-brain
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: fetal-brain
-    custom_tag: cell type annotation
 marker_list:
-- name: Progenitor cell
-  markers:
+- markers:
   - LIX1 ENSG00000145721
   - INSM1 ENSG00000173404
   - SLC1A3 ENSG00000079215
@@ -30,8 +14,8 @@ marker_list:
   - HES1 ENSG00000114315
   - FABP7 ENSG00000164434
   - CLU ENSG00000120885
-- name: Subpallium cell
-  markers:
+  name: Progenitor cell
+- markers:
   - ANGPT2 ENSG00000091879
   - NR2F1 ENSG00000175745
   - NR2F2 ENSG00000185551
@@ -40,21 +24,37 @@ marker_list:
   - ETV1 ENSG00000006468
   - ZFHX3 ENSG00000140836
   - LHX6 ENSG00000106852
-- name: Dorsal lateral ganglionic eminence precursor cell
-  markers:
+  name: Subpallium cell
+- markers:
   - NRG1 ENSG00000157168
   - ETV1 ENSG00000006468
   - PAX6 ENSG00000007372
-- name: Lateral ganglionic eminence cell
-  markers:
+  name: Dorsal lateral ganglionic eminence precursor cell
+- markers:
   - ZFHX3 ENSG00000140836
-- name: Medial ganglionic eminence cell
-  markers:
+  name: Lateral ganglionic eminence cell
+- markers:
   - LHX6 ENSG00000106852
-- name: Ventral lateral ganglionic eminence precursor cell
-  markers:
+  name: Medial ganglionic eminence cell
+- markers:
   - ISL1 ENSG00000016082
   - EBF1 ENSG00000164330
   - IGFBP5 ENSG00000115461
   - ZNF503 ENSG00000165655
   - TAC1 ENSG00000006128
+  name: Ventral lateral ganglionic eminence precursor cell
+metadata:
+  date: 27.03.2020
+  id: '70'
+  list_name: HCM_human_fetal-brain
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: fetal-brain

@@ -1,23 +1,23 @@
-metadata:
-  id: '34'
-  list_name: HCM_human_adventitia
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: adventitia
-    custom_tag: cell type annotation
 marker_list:
-- name: Multipotent stem cell
-  markers:
+- markers:
   - CD34 ENSG00000174059
   - PTPRC ENSG00000081237
   - THY1 ENSG00000154096
   - CD44 ENSG00000026508
   - NT5E ENSG00000135318
+  name: Multipotent stem cell
+metadata:
+  date: 27.03.2020
+  id: '34'
+  list_name: HCM_human_adventitia
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: adventitia

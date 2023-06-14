@@ -1,21 +1,5 @@
-metadata:
-  id: '22'
-  list_name: Panglao_human_reproductive
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: reproductive
-    custom_tag: cell type annotation
 marker_list:
-- name: Decidual cells
-  markers:
+- markers:
   - XCL1 ENSG00000143184
   - IGFBP1 ENSG00000146678
   - XCL2 ENSG00000143185
@@ -26,8 +10,8 @@ marker_list:
   - PRL ENSG00000172179
   - CST7 ENSG00000077984
   - AREG ENSG00000109321
-- name: Germ cells
-  markers:
+  name: Decidual cells
+- markers:
   - EGFR ENSG00000146648
   - POU5F1 ENSG00000204531
   - TFAP2C ENSG00000087510
@@ -171,8 +155,8 @@ marker_list:
   - MYO1D ENSG00000176658
   - HOOK1 ENSG00000134709
   - SPATA12 ENSG00000186451
-- name: Granulosa cells
-  markers:
+  name: Germ cells
+- markers:
   - AMH ENSG00000104899
   - MCAM ENSG00000076706
   - BOK ENSG00000176720
@@ -190,8 +174,8 @@ marker_list:
   - FSHR ENSG00000170820
   - FOXL2 ENSG00000183770
   - CYP19A1 ENSG00000137869
-- name: Leydig cells
-  markers:
+  name: Granulosa cells
+- markers:
   - HSD11B2 ENSG00000176387
   - MAFB ENSG00000204103
   - ALDH1A1 ENSG00000165092
@@ -250,8 +234,8 @@ marker_list:
   - CYP19A1 ENSG00000137869
   - PLAUR ENSG00000011422
   - FABP9 ENSG00000205186
-- name: Luteal cells
-  markers:
+  name: Leydig cells
+- markers:
   - AKT1 ENSG00000142208
   - LHCGR ENSG00000138039
   - HSD3B1 ENSG00000203857
@@ -281,8 +265,8 @@ marker_list:
   - GAPDH ENSG00000111640
   - FKBP5 ENSG00000096060
   - ME1 ENSG00000065833
-- name: Peritubular myoid cells
-  markers:
+  name: Luteal cells
+- markers:
   - SAT2 ENSG00000141504
   - LAMC3 ENSG00000050555
   - APOA1 ENSG00000118137
@@ -309,8 +293,8 @@ marker_list:
   - TPM4 ENSG00000167460
   - MYL9 ENSG00000101335
   - WNT2B ENSG00000134245
-- name: Sertoli cells
-  markers:
+  name: Peritubular myoid cells
+- markers:
   - KITLG ENSG00000049130
   - AMH ENSG00000104899
   - INHBB ENSG00000163083
@@ -377,8 +361,8 @@ marker_list:
   - BCAR3 ENSG00000137936
   - SOX9 ENSG00000125398
   - SRA1 ENSG00000213523
-- name: Spermatocytes
-  markers:
+  name: Sertoli cells
+- markers:
   - CAPN1 ENSG00000014216
   - JAKMIP1 ENSG00000152969
   - SMCP ENSG00000163206
@@ -401,8 +385,8 @@ marker_list:
   - IGF2 ENSG00000167244
   - TNP1 ENSG00000118245
   - OSR2 ENSG00000164920
-- name: Spermatozoa
-  markers:
+  name: Spermatocytes
+- markers:
   - ABHD2 ENSG00000140526
   - HVCN1 ENSG00000122986
   - GPR55 ENSG00000135898
@@ -412,3 +396,19 @@ marker_list:
   - PRKAA2 ENSG00000162409
   - HSPA2 ENSG00000126803
   - ODF1 ENSG00000155087
+  name: Spermatozoa
+metadata:
+  date: 27.03.2020
+  id: '22'
+  list_name: Panglao_human_reproductive
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: reproductive

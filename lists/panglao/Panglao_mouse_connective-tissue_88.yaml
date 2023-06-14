@@ -1,21 +1,5 @@
-metadata:
-  id: '88'
-  list_name: Panglao_mouse_connective-tissue
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: connective-tissue
-    custom_tag: cell type annotation
 marker_list:
-- name: Adipocyte progenitor cells
-  markers:
+- markers:
   - CEBPA ENSMUSG00000034957
   - EGFR ENSMUSG00000020122
   - FGF10 ENSMUSG00000021732
@@ -39,8 +23,8 @@ marker_list:
   - SULT1E1 ENSMUSG00000029272
   - EBF2 ENSMUSG00000022053
   - NRG4 ENSMUSG00000032311
-- name: Adipocytes
-  markers:
+  name: Adipocyte progenitor cells
+- markers:
   - SLC36A2 ENSMUSG00000020264
   - P2RX5 ENSMUSG00000005950
   - LEP ENSMUSG00000059201
@@ -159,8 +143,8 @@ marker_list:
   - DPT ENSMUSG00000026574
   - HOXC9 ENSMUSG00000036139
   - ESM1 ENSMUSG00000042379
-- name: Chondrocytes
-  markers:
+  name: Adipocytes
+- markers:
   - PRG4 ENSMUSG00000006014
   - TNC ENSMUSG00000028364
   - CRTAC1 ENSMUSG00000042401
@@ -212,8 +196,8 @@ marker_list:
   - NOG ENSMUSG00000048616
   - AGER ENSMUSG00000015452
   - IL10RA ENSMUSG00000032089
-- name: Fibroblasts
-  markers:
+  name: Chondrocytes
+- markers:
   - IL1R1 ENSMUSG00000026072
   - FAP ENSMUSG00000000392
   - FLI1 ENSMUSG00000016087
@@ -395,8 +379,8 @@ marker_list:
   - CKAP4 ENSMUSG00000046841
   - INMT ENSMUSG00000003477
   - CXCL14 ENSMUSG00000021508
-- name: Stromal cells
-  markers:
+  name: Fibroblasts
+- markers:
   - MMP2 ENSMUSG00000031740
   - MMP9 ENSMUSG00000017737
   - TLR3 ENSMUSG00000031639
@@ -431,3 +415,19 @@ marker_list:
   - BMP4 ENSMUSG00000021835
   - WNT2 ENSMUSG00000010797
   - BMP5 ENSMUSG00000032179
+  name: Stromal cells
+metadata:
+  date: 27.03.2020
+  id: '88'
+  list_name: Panglao_mouse_connective-tissue
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: connective-tissue

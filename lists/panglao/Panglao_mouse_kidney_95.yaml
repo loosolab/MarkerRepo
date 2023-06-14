@@ -1,21 +1,5 @@
-metadata:
-  id: '95'
-  list_name: Panglao_mouse_kidney
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: kidney
-    custom_tag: cell type annotation
 marker_list:
-- name: Distal tubule cells
-  markers:
+- markers:
   - CLDN8 ENSMUSG00000050520
   - SLC12A3 ENSMUSG00000031766
   - UMOD ENSMUSG00000030963
@@ -64,8 +48,8 @@ marker_list:
   - SLC8A1 ENSMUSG00000054640
   - AQP2 ENSMUSG00000023013
   - AVPR2 ENSMUSG00000031390
-- name: Intercalated cells
-  markers:
+  name: Distal tubule cells
+- markers:
   - FOXI1 ENSMUSG00000047861
   - SLC26A11 ENSMUSG00000039908
   - CLCNKB ENSMUSG00000006216
@@ -91,8 +75,8 @@ marker_list:
   - INSRR ENSMUSG00000005640
   - JAG1 ENSMUSG00000027276
   - ADGRF5 ENSMUSG00000056492
-- name: Juxtaglomerular cells
-  markers:
+  name: Intercalated cells
+- markers:
   - TRPV4 ENSMUSG00000014158
   - TH ENSMUSG00000000214
   - REN1 ENSMUSG00000070645
@@ -100,8 +84,8 @@ marker_list:
   - ACTA2 ENSMUSG00000035783
   - MYH11 ENSMUSG00000018830
   - CNN1 ENSMUSG00000001349
-- name: Kidney progenitor cells
-  markers:
+  name: Juxtaglomerular cells
+- markers:
   - OSR1 ENSMUSG00000048387
   - PAX2 ENSMUSG00000004231
   - EYA1 ENSMUSG00000025932
@@ -109,8 +93,8 @@ marker_list:
   - SIX2 ENSMUSG00000024134
   - SALL1 ENSMUSG00000031665
   - CITED1 ENSMUSG00000051159
-- name: Loop of Henle cells
-  markers:
+  name: Kidney progenitor cells
+- markers:
   - CLDN16 ENSMUSG00000038148
   - CLDN8 ENSMUSG00000050520
   - UMOD ENSMUSG00000030963
@@ -164,8 +148,8 @@ marker_list:
   - TNNI1 ENSMUSG00000026418
   - LRRC66 ENSMUSG00000067206
   - IGF1 ENSMUSG00000020053
-- name: Mesangial cells
-  markers:
+  name: Loop of Henle cells
+- markers:
   - PDGFB ENSMUSG00000000489
   - SIS ENSMUSG00000027790
   - PDGFRB ENSMUSG00000024620
@@ -226,8 +210,8 @@ marker_list:
   - SMARCA5 ENSMUSG00000031715
   - PDE3A ENSMUSG00000041741
   - MAP3K20 ENSMUSG00000004085
-- name: Podocytes
-  markers:
+  name: Mesangial cells
+- markers:
   - PODXL ENSMUSG00000025608
   - ADAMTS13 ENSMUSG00000014852
   - LCN2 ENSMUSG00000026822
@@ -327,8 +311,8 @@ marker_list:
   - LUC7L2 ENSMUSG00000029823
   - MAPT ENSMUSG00000018411
   - CDKN1C ENSMUSG00000037664
-- name: Principal cells
-  markers:
+  name: Podocytes
+- markers:
   - AQP2 ENSMUSG00000023013
   - SCNN1A ENSMUSG00000030340
   - AQP3 ENSMUSG00000028435
@@ -375,8 +359,8 @@ marker_list:
   - TSPAN1 ENSMUSG00000028699
   - NR3C2 ENSMUSG00000031618
   - HES1 ENSMUSG00000022528
-- name: Proximal tubule cells
-  markers:
+  name: Principal cells
+- markers:
   - AQP1 ENSMUSG00000004655
   - CLDN2 ENSMUSG00000047230
   - DPP4 ENSMUSG00000035000
@@ -463,8 +447,8 @@ marker_list:
   - RBP4 ENSMUSG00000024990
   - NAPSA ENSMUSG00000002204
   - NAPA ENSMUSG00000006024
-- name: Transient cells
-  markers:
+  name: Proximal tubule cells
+- markers:
   - SLC26A4 ENSMUSG00000020651
   - CAR12 ENSMUSG00000032373
   - RHBG ENSMUSG00000104445
@@ -488,3 +472,19 @@ marker_list:
   - SEC23B ENSMUSG00000027429
   - CDC42BPB ENSMUSG00000021279
   - PIP4K2C ENSMUSG00000025417
+  name: Transient cells
+metadata:
+  date: 27.03.2020
+  id: '95'
+  list_name: Panglao_mouse_kidney
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: kidney

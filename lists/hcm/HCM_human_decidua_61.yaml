@@ -1,21 +1,5 @@
-metadata:
-  id: '61'
-  list_name: HCM_human_decidua
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: decidua
-    custom_tag: cell type annotation
 marker_list:
-- name: Macrophage
-  markers:
+- markers:
   - EGR2 ENSG00000122877
   - KLF2 ENSG00000127528
   - SELENOP ENSG00000250722
@@ -27,8 +11,8 @@ marker_list:
   - PLTP ENSG00000100979
   - FOLR2 ENSG00000165457
   - HAMP ENSG00000105697
-- name: Natural killer cell
-  markers:
+  name: Macrophage
+- markers:
   - XCL1 ENSG00000143184
   - IL2RB ENSG00000100385
   - KIR2DL3 ENSG00000243772
@@ -43,8 +27,8 @@ marker_list:
   - TNFRSF18 ENSG00000186891
   - TRDC ENSG00000211829
   - GZMB ENSG00000100453
-- name: Mast cell
-  markers:
+  name: Natural killer cell
+- markers:
   - CPA3 ENSG00000163751
   - VWA5A ENSG00000110002
   - MS4A2 ENSG00000149534
@@ -54,8 +38,8 @@ marker_list:
   - CLU ENSG00000120885
   - GATA2 ENSG00000179348
   - TPSAB1 ENSG00000172236
-- name: Monocyte
-  markers:
+  name: Mast cell
+- markers:
   - IL1B ENSG00000125538
   - S100A8 ENSG00000143546
   - OLR1 ENSG00000173391
@@ -66,8 +50,8 @@ marker_list:
   - MARCO ENSG00000019169
   - CXCL3 ENSG00000163734
   - TIMP1 ENSG00000102265
-- name: T cell
-  markers:
+  name: Monocyte
+- markers:
   - ICOS ENSG00000163600
   - TRAC ENSG00000277734
   - CD3D ENSG00000167286
@@ -77,13 +61,13 @@ marker_list:
   - CD8A ENSG00000153563
   - CCL5 ENSG00000271503
   - IFNG ENSG00000111537
-- name: B cell
-  markers:
+  name: T cell
+- markers:
   - CD79B ENSG00000007312
   - CD79A ENSG00000105369
   - MS4A1 ENSG00000156738
-- name: Dendritic cell
-  markers:
+  name: B cell
+- markers:
   - CPVL ENSG00000106066
   - HLA-DQA1 ENSG00000196735
   - LGALS2 ENSG00000100079
@@ -92,3 +76,19 @@ marker_list:
   - HLA-DRA ENSG00000204287
   - PPT1 ENSG00000131238
   - HLA-DQB1 ENSG00000179344
+  name: Dendritic cell
+metadata:
+  date: 27.03.2020
+  id: '61'
+  list_name: HCM_human_decidua
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: decidua

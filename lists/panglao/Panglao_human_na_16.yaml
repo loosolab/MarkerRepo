@@ -1,21 +1,5 @@
-metadata:
-  id: '16'
-  list_name: Panglao_human_na
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: na
-    custom_tag: cell type annotation
 marker_list:
-- name: Glomus cells
-  markers:
+- markers:
   - DRD2 ENSG00000149295
   - NOS1 ENSG00000089250
   - PHOX2B ENSG00000109132
@@ -45,8 +29,8 @@ marker_list:
   - KCNJ8 ENSG00000121361
   - ABCC8 ENSG00000006071
   - KCNK9 ENSG00000169427
-- name: Pluripotent stem cells
-  markers:
+  name: Glomus cells
+- markers:
   - PRMT8 ENSG00000111218
   - NCOA5 ENSG00000124160
   - TRIM32 ENSG00000119401
@@ -67,14 +51,14 @@ marker_list:
   - HK2 ENSG00000159399
   - SPN ENSG00000197471
   - ESRP1 ENSG00000104413
-- name: T cells naive
-  markers:
+  name: Pluripotent stem cells
+- markers:
   - CD3D ENSG00000167286
   - CD4 ENSG00000010610
   - SELL ENSG00000188404
   - CCR7 ENSG00000126353
-- name: Taste receptor cells
-  markers:
+  name: T cells naive
+- markers:
   - TAS1R1 ENSG00000173662
   - TAS1R2 ENSG00000179002
   - TAS1R3 ENSG00000169962
@@ -95,3 +79,19 @@ marker_list:
   - TAS2R4 ENSG00000127364
   - PROX1 ENSG00000117707
   - GRM4 ENSG00000124493
+  name: Taste receptor cells
+metadata:
+  date: 27.03.2020
+  id: '16'
+  list_name: Panglao_human_na
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: na

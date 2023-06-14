@@ -1,21 +1,5 @@
-metadata:
-  id: '2'
-  list_name: Panglao_human_blood
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: blood
-    custom_tag: cell type annotation
 marker_list:
-- name: Erythroblasts
-  markers:
+- markers:
   - CGA ENSG00000135346
   - TFRC ENSG00000072274
   - CDH1 ENSG00000039068
@@ -42,8 +26,8 @@ marker_list:
   - TAL1 ENSG00000162367
   - KMT5A ENSG00000183955
   - PIEZO1 ENSG00000103335
-- name: Erythroid-like and erythroid precursor cells
-  markers:
+  name: Erythroblasts
+- markers:
   - ALAS2 ENSG00000158578
   - HEXA ENSG00000213614
   - AQP1 ENSG00000240583
@@ -116,8 +100,8 @@ marker_list:
   - UROD ENSG00000126088
   - UROS ENSG00000188690
   - SNCA ENSG00000145335
-- name: Platelets
-  markers:
+  name: Erythroid-like and erythroid precursor cells
+- markers:
   - CCL5 ENSG00000271503
   - VEGFA ENSG00000112715
   - PECAM1 ENSG00000261371
@@ -249,8 +233,8 @@ marker_list:
   - CD40LG ENSG00000102245
   - ANGPT1 ENSG00000154188
   - ACKR3 ENSG00000144476
-- name: Reticulocytes
-  markers:
+  name: Platelets
+- markers:
   - RUVBL1 ENSG00000175792
   - TFRC ENSG00000072274
   - UCP3 ENSG00000175564
@@ -259,3 +243,19 @@ marker_list:
   - CD36 ENSG00000135218
   - ITGA4 ENSG00000115232
   - SLC11A2 ENSG00000110911
+  name: Reticulocytes
+metadata:
+  date: 27.03.2020
+  id: '2'
+  list_name: Panglao_human_blood
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: blood

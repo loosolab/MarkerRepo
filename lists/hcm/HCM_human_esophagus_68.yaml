@@ -1,29 +1,13 @@
-metadata:
-  id: '68'
-  list_name: HCM_human_esophagus
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: esophagus
-    custom_tag: cell type annotation
 marker_list:
-- name: Intestinal stem cell
-  markers:
+- markers:
   - DCLK1 ENSG00000133083
-- name: Stem cell
-  markers:
+  name: Intestinal stem cell
+- markers:
   - LGR5 ENSG00000139292
   - DCLK1 ENSG00000133083
   - OLFM4 ENSG00000102837
-- name: Cancer cell
-  markers:
+  name: Stem cell
+- markers:
   - TGM2 ENSG00000198959
   - CD19 ENSG00000177455
   - CD1C ENSG00000158481
@@ -44,11 +28,11 @@ marker_list:
   - CYFIP2 ENSG00000055163
   - HDAC11 ENSG00000163517
   - HOXC10 ENSG00000180818
-- name: Esophageal mucosal cell
-  markers:
+  name: Cancer cell
+- markers:
   - DCLK1 ENSG00000133083
-- name: FGFR1HighNME5- epithelial cell
-  markers:
+  name: Esophageal mucosal cell
+- markers:
   - POLL ENSG00000166169
   - CMTM3 ENSG00000140931
   - ADAM33 ENSG00000149451
@@ -253,8 +237,8 @@ marker_list:
   - SOCS2 ENSG00000120833
   - U2AF2 ENSG00000063244
   - ATXN1L ENSG00000224470
-- name: Secretory progenitor cell
-  markers:
+  name: FGFR1HighNME5- epithelial cell
+- markers:
   - AGFG2 ENSG00000106351
   - GIT2 ENSG00000139436
   - IGF2BP2-AS1 ENSG00000163915
@@ -332,8 +316,8 @@ marker_list:
   - VCPKMT ENSG00000100483
   - LIPH ENSG00000163898
   - ZNF710 ENSG00000140548
-- name: FGFR1LowNME5- epithelial cell
-  markers:
+  name: Secretory progenitor cell
+- markers:
   - ACSF3 ENSG00000176715
   - IRGQ ENSG00000167378
   - MBNL3 ENSG00000076770
@@ -386,8 +370,8 @@ marker_list:
   - DIAPH3 ENSG00000139734
   - DCAKD ENSG00000172992
   - DIPK1B ENSG00000165716
-- name: Ciliated epithelial cell
-  markers:
+  name: FGFR1LowNME5- epithelial cell
+- markers:
   - ALDH1A1 ENSG00000165092
   - IFT46 ENSG00000118096
   - TTC30A ENSG00000197557
@@ -835,15 +819,15 @@ marker_list:
   - ARMC2 ENSG00000118690
   - KIF27 ENSG00000165115
   - CFAP61 ENSG00000089101
-- name: Cancer stem cell
-  markers:
+  name: Ciliated epithelial cell
+- markers:
   - SOX9 ENSG00000125398
   - CD44 ENSG00000026508
-- name: Cancer-associated fibroblast
-  markers:
+  name: Cancer stem cell
+- markers:
   - PDPN ENSG00000162493
-- name: Regulatory T(Treg) cell
-  markers:
+  name: Cancer-associated fibroblast
+- markers:
   - CD4 ENSG00000010610
   - IL10 ENSG00000136634
   - CD40LG ENSG00000102245
@@ -852,53 +836,53 @@ marker_list:
   - MAF ENSG00000178573
   - IFNG ENSG00000111537
   - IL17A ENSG00000112115
-- name: T helper 2(Th2) cell
-  markers:
+  name: Regulatory T(Treg) cell
+- markers:
   - HPGDS ENSG00000163106
   - PTGDR2 ENSG00000183134
   - IL1RL1 ENSG00000115602
-- name: Effector Th2-like cell
-  markers:
+  name: T helper 2(Th2) cell
+- markers:
   - GATA3 ENSG00000107485
-- name: Effector Th2 cell
-  markers:
+  name: Effector Th2-like cell
+- markers:
   - HPGDS ENSG00000163106
-- name: Monocyte
-  markers:
+  name: Effector Th2 cell
+- markers:
   - VCAN ENSG00000038427
   - CD14 ENSG00000170458
   - FCN1 ENSG00000085265
   - CD68 ENSG00000129226
   - FCGR3A ENSG00000203747
-- name: Immune cell
-  markers:
+  name: Monocyte
+- markers:
   - PTPRC ENSG00000081237
-- name: Cytotoxic T cell
-  markers:
+  name: Immune cell
+- markers:
   - GZMB ENSG00000100453
   - PRF1 ENSG00000180644
   - GNLY ENSG00000115523
   - CD8A ENSG00000153563
-- name: CD8+ T cell
-  markers:
+  name: Cytotoxic T cell
+- markers:
   - CD8A ENSG00000153563
   - CD3E ENSG00000198851
   - CD4 ENSG00000010610
-- name: Conventional dendritic cell 2(cDC2)
-  markers:
+  name: CD8+ T cell
+- markers:
   - CLEC10A ENSG00000132514
   - CD1C ENSG00000158481
-- name: Endothelial cell
-  markers:
+  name: Conventional dendritic cell 2(cDC2)
+- markers:
   - CLEC14A ENSG00000176435
   - PECAM1 ENSG00000261371
   - RAMP2 ENSG00000131477
   - VWF ENSG00000110799
-- name: Stratified keratinocyte
-  markers:
+  name: Endothelial cell
+- markers:
   - KRT4 ENSG00000170477
-- name: B cell
-  markers:
+  name: Stratified keratinocyte
+- markers:
   - IGHD ENSG00000211898
   - CD27 ENSG00000139193
   - TNFRSF13B ENSG00000240505
@@ -907,62 +891,62 @@ marker_list:
   - TCL1A ENSG00000100721
   - CD79A ENSG00000105369
   - IGKC ENSG00000211592
-- name: CD4+ T cell
-  markers:
+  name: B cell
+- markers:
   - CD8A ENSG00000153563
   - CD3E ENSG00000198851
   - CD4 ENSG00000010610
-- name: Vascular cell
-  markers:
+  name: CD4+ T cell
+- markers:
   - VWF ENSG00000110799
   - CCL21 ENSG00000137077
-- name: Gland ductal cell
-  markers:
+  name: Vascular cell
+- markers:
   - KRT7 ENSG00000135480
   - KRT23 ENSG00000108244
-- name: Gland cell
-  markers:
+  name: Gland ductal cell
+- markers:
   - TFF3 ENSG00000160180
   - MUC5B ENSG00000117983
-- name: Natural killer cell
-  markers:
+  name: Gland cell
+- markers:
   - NCR1 ENSG00000189430
   - NCAM1 ENSG00000149294
-- name: Stromal cell
-  markers:
+  name: Natural killer cell
+- markers:
   - COL1A2 ENSG00000164692
   - DCN ENSG00000011465
   - FBLN1 ENSG00000077942
-- name: Mast cell
-  markers:
+  name: Stromal cell
+- markers:
   - TPSB2 ENSG00000197253
   - KIT ENSG00000157404
   - CPA3 ENSG00000163751
-- name: Macrophage
-  markers:
+  name: Mast cell
+- markers:
   - APOE ENSG00000130203
   - SIGLEC1 ENSG00000088827
   - MARCO ENSG00000019169
   - CD163 ENSG00000177575
-- name: Dividing cell
-  markers:
+  name: Macrophage
+- markers:
   - MKI67 ENSG00000148773
-- name: Basal epithelial cell
-  markers:
+  name: Dividing cell
+- markers:
   - ITGA6 ENSG00000091409
   - SCPEP1 ENSG00000121064
   - KRT5 ENSG00000186081
-- name: M1 macrophage
-  markers:
+  name: Basal epithelial cell
+- markers:
   - CD40 ENSG00000101017
-- name: Epithelial-mesenchymal cell
-  markers:
+  name: M1 macrophage
+- markers:
   - CDH11 ENSG00000140937
   - CDH2 ENSG00000170558
   - ZEB1 ENSG00000148516
   - VIM ENSG00000026025
-- name: Epithelial cell
-  markers:
+  name: Epithelial-mesenchymal cell
+- markers:
   - PPL ENSG00000118898
   - JUP ENSG00000173801
   - SPRR3 ENSG00000163209
@@ -970,16 +954,16 @@ marker_list:
   - EPCAM ENSG00000119888
   - CDH1 ENSG00000039068
   - TFF3 ENSG00000160180
-- name: Myofibroblast
-  markers:
+  name: Epithelial cell
+- markers:
   - PLN ENSG00000198523
   - SERPINE1 ENSG00000106366
   - CCN2 ENSG00000118523
   - COL1A1 ENSG00000108821
   - TAGLN ENSG00000149591
   - ACTA2 ENSG00000107796
-- name: Fibroblast
-  markers:
+  name: Myofibroblast
+- markers:
   - CCN2 ENSG00000118523
   - SERPINE1 ENSG00000106366
   - ACTA2 ENSG00000107796
@@ -991,79 +975,95 @@ marker_list:
   - VIM ENSG00000026025
   - WNT2B ENSG00000134245
   - THY1 ENSG00000154096
-- name: Conventional dendritic cell(cDC)
-  markers:
+  name: Fibroblast
+- markers:
   - FCER1A ENSG00000179639
   - HLA-DQA1 ENSG00000196735
-- name: Plasmacytoid dendritic cell(pDC)
-  markers:
+  name: Conventional dendritic cell(cDC)
+- markers:
   - LILRA4 ENSG00000239961
-- name: Langerhans cell
-  markers:
+  name: Plasmacytoid dendritic cell(pDC)
+- markers:
   - CD207 ENSG00000116031
   - CD1A ENSG00000158477
-- name: Classical barretts esophagus cell
-  markers:
+  name: Langerhans cell
+- markers:
   - KRT20 ENSG00000171431
   - KRT7 ENSG00000135480
   - AGR2 ENSG00000106541
   - VIL1 ENSG00000127831
   - KRT8 ENSG00000170421
-- name: T cell
-  markers:
+  name: Classical barretts esophagus cell
+- markers:
   - CD3D ENSG00000167286
   - CD3E ENSG00000198851
   - TRBC2 ENSG00000211772
-- name: Plasma cell
-  markers:
+  name: T cell
+- markers:
   - IGHG4 ENSG00000211892
   - IGHG1 ENSG00000211896
   - IGHA1 ENSG00000211895
-- name: Naive T(Th0) cell
-  markers:
+  name: Plasma cell
+- markers:
   - CCR7 ENSG00000126353
   - LEF1 ENSG00000138795
   - TCF7 ENSG00000081059
-- name: Myeloid cell
-  markers:
+  name: Naive T(Th0) cell
+- markers:
   - C1QB ENSG00000173369
   - LYZ ENSG00000090382
   - CSF1R ENSG00000182578
-- name: Follicular B cell
-  markers:
+  name: Myeloid cell
+- markers:
   - MS4A1 ENSG00000156738
-- name: Residual embryonic cell
-  markers:
+  name: Follicular B cell
+- markers:
   - KRT7 ENSG00000135480
   - MUC4 ENSG00000145113
-- name: Transitional basal progenitor cell
-  markers:
+  name: Residual embryonic cell
+- markers:
   - KRT7 ENSG00000135480
   - KRT5 ENSG00000186081
-- name: Duodenal epithelial cell
-  markers:
+  name: Transitional basal progenitor cell
+- markers:
   - PIGR ENSG00000162896
-- name: Granulocyte
-  markers:
+  name: Duodenal epithelial cell
+- markers:
   - CLC ENSG00000105205
-- name: Esophageal epithelial cell
-  markers:
+  name: Granulocyte
+- markers:
   - KRT5 ENSG00000186081
-- name: Goblet cell
-  markers:
+  name: Esophageal epithelial cell
+- markers:
   - TFF2 ENSG00000160181
   - MUC5AC ENSG00000215182
   - TFF1 ENSG00000160182
   - MUC2 ENSG00000198788
   - TFF3 ENSG00000160180
-- name: Glandular Barrett's esophagus cell
-  markers:
+  name: Goblet cell
+- markers:
   - TFF3 ENSG00000160180
-- name: Stratified esophageal cell
-  markers:
+  name: Glandular Barrett's esophagus cell
+- markers:
   - TP63 ENSG00000073282
-- name: Basal cell
-  markers:
+  name: Stratified esophageal cell
+- markers:
   - ITGB4 ENSG00000132470
   - SHOC2 ENSG00000108061
   - NT5E ENSG00000135318
+  name: Basal cell
+metadata:
+  date: 27.03.2020
+  id: '68'
+  list_name: HCM_human_esophagus
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: esophagus

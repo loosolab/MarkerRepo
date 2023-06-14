@@ -1,21 +1,5 @@
-metadata:
-  id: '101'
-  list_name: Panglao_mouse_oral-cavity
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: oral-cavity
-    custom_tag: cell type annotation
 marker_list:
-- name: Salivary mucous cells
-  markers:
+- markers:
   - SMGC ENSMUSG00000047295
   - SCGB2B27 ENSMUSG00000066584
   - SCGB1B27 ENSMUSG00000066583
@@ -30,3 +14,19 @@ marker_list:
   - CAR6 ENSMUSG00000028972
   - MYH11 ENSMUSG00000018830
   - KRT17 ENSMUSG00000035557
+  name: Salivary mucous cells
+metadata:
+  date: 27.03.2020
+  id: '101'
+  list_name: Panglao_mouse_oral-cavity
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: oral-cavity

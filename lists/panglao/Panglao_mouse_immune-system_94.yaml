@@ -1,21 +1,5 @@
-metadata:
-  id: '94'
-  list_name: Panglao_mouse_immune-system
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: immune-system
-    custom_tag: cell type annotation
 marker_list:
-- name: B cells
-  markers:
+- markers:
   - CD2 ENSMUSG00000027863
   - CD5 ENSMUSG00000024669
   - MS4A1 ENSMUSG00000024673
@@ -120,8 +104,8 @@ marker_list:
   - TLR9 ENSMUSG00000045322
   - SWAP70 ENSMUSG00000031015
   - HMGA1 ENSMUSG00000046711
-- name: B cells memory
-  markers:
+  name: B cells
+- markers:
   - CD38 ENSMUSG00000029084
   - CD80 ENSMUSG00000075122
   - CD84 ENSMUSG00000038147
@@ -181,8 +165,8 @@ marker_list:
   - TRAF4 ENSMUSG00000017386
   - VPREB3 ENSMUSG00000000903
   - ZBTB32 ENSMUSG00000006310
-- name: B cells naive
-  markers:
+  name: B cells memory
+- markers:
   - CD19 ENSMUSG00000030724
   - CD2 ENSMUSG00000027863
   - CD72 ENSMUSG00000028459
@@ -241,8 +225,8 @@ marker_list:
   - STAG3 ENSMUSG00000036928
   - BIRC3 ENSMUSG00000032000
   - CD74 ENSMUSG00000024610
-- name: Basophils
-  markers:
+  name: B cells naive
+- markers:
   - CD69 ENSMUSG00000030156
   - IL3RA ENSMUSG00000068758
   - CCR3 ENSMUSG00000035448
@@ -321,8 +305,8 @@ marker_list:
   - UNC93A ENSMUSG00000067049
   - WRN ENSMUSG00000031583
   - ID1 ENSMUSG00000042745
-- name: Dendritic cells
-  markers:
+  name: Basophils
+- markers:
   - IL6 ENSMUSG00000025746
   - CD86 ENSMUSG00000022901
   - CD83 ENSMUSG00000015396
@@ -433,8 +417,8 @@ marker_list:
   - SLURP1 ENSMUSG00000022596
   - ARSB ENSMUSG00000042082
   - SERPINB9 ENSMUSG00000045827
-- name: Eosinophils
-  markers:
+  name: Dendritic cells
+- markers:
   - C3AR1 ENSMUSG00000040552
   - FUT4 ENSMUSG00000049307
   - C5AR1 ENSMUSG00000049130
@@ -461,8 +445,8 @@ marker_list:
   - CSF2 ENSMUSG00000018916
   - IL5RA ENSMUSG00000005364
   - SIGLECF ENSMUSG00000039013
-- name: Gamma delta T cells
-  markers:
+  name: Eosinophils
+- markers:
   - PTGDS ENSMUSG00000015090
   - GZMB ENSMUSG00000015437
   - S100B ENSMUSG00000033208
@@ -507,8 +491,8 @@ marker_list:
   - TRDJ2 ENSMUSG00000076871
   - TRDV1 ENSMUSG00000076864
   - TRDV3 ENSMUSG00000105823
-- name: Macrophages
-  markers:
+  name: Gamma delta T cells
+- markers:
   - ITGAL ENSMUSG00000030830
   - ITGAM ENSMUSG00000030786
   - CD14 ENSMUSG00000051439
@@ -660,8 +644,8 @@ marker_list:
   - SLC7A7 ENSMUSG00000000958
   - RUNX3 ENSMUSG00000070691
   - SYK ENSMUSG00000021457
-- name: Mast cells
-  markers:
+  name: Macrophages
+- markers:
   - KIT ENSMUSG00000005672
   - ENPP3 ENSMUSG00000019989
   - IL2RA ENSMUSG00000026770
@@ -821,8 +805,8 @@ marker_list:
   - DGKI ENSMUSG00000038665
   - DDC ENSMUSG00000020182
   - DCLK3 ENSMUSG00000032500
-- name: Megakaryocytes
-  markers:
+  name: Mast cells
+- markers:
   - ITGA2B ENSMUSG00000034664
   - GP1BA ENSMUSG00000050675
   - ITGB3 ENSMUSG00000020689
@@ -872,8 +856,8 @@ marker_list:
   - VEGFA ENSMUSG00000023951
   - TGFB1 ENSMUSG00000002603
   - GP9 ENSMUSG00000030054
-- name: Monocytes
-  markers:
+  name: Megakaryocytes
+- markers:
   - RGS1 ENSMUSG00000026358
   - CD7 ENSMUSG00000025163
   - TET2 ENSMUSG00000040943
@@ -964,8 +948,8 @@ marker_list:
   - IL1B ENSMUSG00000027398
   - CFP ENSMUSG00000001128
   - CD36 ENSMUSG00000002944
-- name: Myeloid-derived suppressor cells
-  markers:
+  name: Monocytes
+- markers:
   - ITGAM ENSMUSG00000030786
   - FUT4 ENSMUSG00000049307
   - CD33 ENSMUSG00000004609
@@ -979,8 +963,8 @@ marker_list:
   - MIF ENSMUSG00000033307
   - S100A4 ENSMUSG00000001020
   - S100A8 ENSMUSG00000056054
-- name: Natural killer T cells
-  markers:
+  name: Myeloid-derived suppressor cells
+- markers:
   - IL12RB2 ENSMUSG00000018341
   - IL17RA ENSMUSG00000002897
   - IL12RB1 ENSMUSG00000000791
@@ -1007,8 +991,8 @@ marker_list:
   - ZFP683 ENSMUSG00000049410
   - CXCR4 ENSMUSG00000045382
   - CD44 ENSMUSG00000005087
-- name: Neutrophils
-  markers:
+  name: Natural killer T cells
+- markers:
   - MME ENSMUSG00000027820
   - ITGAM ENSMUSG00000030786
   - ITGAX ENSMUSG00000030789
@@ -1082,8 +1066,8 @@ marker_list:
   - NLRP3 ENSMUSG00000032691
   - AVP ENSMUSG00000037727
   - CSF3R ENSMUSG00000028859
-- name: NK cells
-  markers:
+  name: Neutrophils
+- markers:
   - ITGAM ENSMUSG00000030786
   - ITGAX ENSMUSG00000030789
   - CD69 ENSMUSG00000030156
@@ -1170,8 +1154,8 @@ marker_list:
   - SPON2 ENSMUSG00000037379
   - HOPX ENSMUSG00000059325
   - CD8A ENSMUSG00000053977
-- name: Nuocytes
-  markers:
+  name: NK cells
+- markers:
   - ICOS ENSMUSG00000026009
   - IL1RL1 ENSMUSG00000026069
   - RORA ENSMUSG00000032238
@@ -1186,8 +1170,8 @@ marker_list:
   - BCL11B ENSMUSG00000048251
   - IL5 ENSMUSG00000036117
   - IL13 ENSMUSG00000020383
-- name: Plasma cells
-  markers:
+  name: Nuocytes
+- markers:
   - SDC1 ENSMUSG00000020592
   - IRF4 ENSMUSG00000021356
   - CD38 ENSMUSG00000029084
@@ -1255,8 +1239,8 @@ marker_list:
   - IL16 ENSMUSG00000001741
   - BHLHA15 ENSMUSG00000052271
   - PPIB ENSMUSG00000032383
-- name: Plasmacytoid dendritic cells
-  markers:
+  name: Plasma cells
+- markers:
   - CD4 ENSMUSG00000023274
   - CD8A ENSMUSG00000053977
   - CD40 ENSMUSG00000017652
@@ -1314,8 +1298,8 @@ marker_list:
   - CCR9 ENSMUSG00000029530
   - IRF5 ENSMUSG00000029771
   - BST2 ENSMUSG00000046718
-- name: Red pulp macrophages
-  markers:
+  name: Plasmacytoid dendritic cells
+- markers:
   - HMOX1 ENSMUSG00000005413
   - TREML4 ENSMUSG00000051682
   - CD86 ENSMUSG00000022901
@@ -1328,8 +1312,8 @@ marker_list:
   - SLC40A1 ENSMUSG00000025993
   - VCAM1 ENSMUSG00000027962
   - SIGLEC1 ENSMUSG00000027322
-- name: T cells
-  markers:
+  name: Red pulp macrophages
+- markers:
   - CD3D ENSMUSG00000032094
   - CD3G ENSMUSG00000002033
   - CD3E ENSMUSG00000032093
@@ -1425,8 +1409,8 @@ marker_list:
   - IFNG ENSMUSG00000055170
   - CD52 ENSMUSG00000000682
   - BRAF ENSMUSG00000002413
-- name: T cytotoxic cells
-  markers:
+  name: T cells
+- markers:
   - CD2 ENSMUSG00000027863
   - CD27 ENSMUSG00000030336
   - CD28 ENSMUSG00000026012
@@ -1435,8 +1419,8 @@ marker_list:
   - CD8A ENSMUSG00000053977
   - GZMB ENSMUSG00000015437
   - TRAC ENSMUSG00000076928
-- name: T follicular helper cells
-  markers:
+  name: T cytotoxic cells
+- markers:
   - BCL6 ENSMUSG00000022508
   - CD3D ENSMUSG00000032094
   - CD4 ENSMUSG00000023274
@@ -1449,8 +1433,8 @@ marker_list:
   - PDCD1 ENSMUSG00000026285
   - CD200 ENSMUSG00000022661
   - P2RX7 ENSMUSG00000029468
-- name: T helper cells
-  markers:
+  name: T follicular helper cells
+- markers:
   - IFNG ENSMUSG00000055170
   - IL2 ENSMUSG00000027720
   - TBX21 ENSMUSG00000001444
@@ -1515,8 +1499,8 @@ marker_list:
   - NFKB1 ENSMUSG00000028163
   - NR3C1 ENSMUSG00000024431
   - PPARG ENSMUSG00000000440
-- name: T memory cells
-  markers:
+  name: T helper cells
+- markers:
   - SELL ENSMUSG00000026581
   - CCR7 ENSMUSG00000037944
   - CD4 ENSMUSG00000023274
@@ -1580,8 +1564,8 @@ marker_list:
   - CCR6 ENSMUSG00000040899
   - ITGAE ENSMUSG00000005947
   - ENPP1 ENSMUSG00000037370
-- name: T regulatory cells
-  markers:
+  name: T memory cells
+- markers:
   - FOXP3 ENSMUSG00000039521
   - IKZF2 ENSMUSG00000025997
   - CD4 ENSMUSG00000023274
@@ -1604,3 +1588,19 @@ marker_list:
   - ITGB8 ENSMUSG00000025321
   - LRRC32 ENSMUSG00000090958
   - FOLR1 ENSMUSG00000001827
+  name: T regulatory cells
+metadata:
+  date: 27.03.2020
+  id: '94'
+  list_name: Panglao_mouse_immune-system
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: immune-system

@@ -1,21 +1,5 @@
-metadata:
-  id: '8'
-  list_name: Panglao_human_eye
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: eye
-    custom_tag: cell type annotation
 marker_list:
-- name: "M\xFCller cells"
-  markers:
+- markers:
   - TLR2 ENSG00000137462
   - IL6 ENSG00000136244
   - CNR2 ENSG00000188822
@@ -67,8 +51,8 @@ marker_list:
   - GSTM5 ENSG00000134201
   - SLC6A1 ENSG00000157103
   - SFTPA1 ENSG00000122852
-- name: Photoreceptor cells
-  markers:
+  name: "M\xFCller cells"
+- markers:
   - RCVRN ENSG00000109047
   - PDC ENSG00000116703
   - NRL ENSG00000129535
@@ -122,8 +106,8 @@ marker_list:
   - B3GALT2 ENSG00000162630
   - ISL1 ENSG00000016082
   - PCP2 ENSG00000174788
-- name: Retinal progenitor cells
-  markers:
+  name: Photoreceptor cells
+- markers:
   - PAX6 ENSG00000007372
   - CALB2 ENSG00000172137
   - SIX6 ENSG00000184302
@@ -138,3 +122,19 @@ marker_list:
   - MSI1 ENSG00000135097
   - SOX9 ENSG00000125398
   - SRA1 ENSG00000213523
+  name: Retinal progenitor cells
+metadata:
+  date: 27.03.2020
+  id: '8'
+  list_name: Panglao_human_eye
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: eye

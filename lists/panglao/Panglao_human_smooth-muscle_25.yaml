@@ -1,27 +1,11 @@
-metadata:
-  id: '25'
-  list_name: Panglao_human_smooth-muscle
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: smooth-muscle
-    custom_tag: cell type annotation
 marker_list:
-- name: Airway smooth muscle cells
-  markers:
+- markers:
   - NOG ENSG00000183691
   - ACTA2 ENSG00000107796
   - FOXF1 ENSG00000103241
   - GATA5 ENSG00000130700
-- name: Myoepithelial cells
-  markers:
+  name: Airway smooth muscle cells
+- markers:
   - SFN ENSG00000175793
   - ACTA2 ENSG00000107796
   - CNN1 ENSG00000130176
@@ -48,8 +32,8 @@ marker_list:
   - KRT5 ENSG00000186081
   - MYLK ENSG00000065534
   - MYL9 ENSG00000101335
-- name: Myofibroblasts
-  markers:
+  name: Myoepithelial cells
+- markers:
   - CDH11 ENSG00000140937
   - DES ENSG00000175084
   - PALLD ENSG00000129116
@@ -59,12 +43,12 @@ marker_list:
   - CALD1 ENSG00000122786
   - MYL9 ENSG00000101335
   - TAGLN ENSG00000149591
-- name: Pulmonary vascular smooth muscle cells
-  markers:
+  name: Myofibroblasts
+- markers:
   - ANGPT1 ENSG00000154188
   - PDGFRB ENSG00000113721
-- name: Smooth muscle cells
-  markers:
+  name: Pulmonary vascular smooth muscle cells
+- markers:
   - ACTA2 ENSG00000107796
   - CNN1 ENSG00000130176
   - HEXIM1 ENSG00000186834
@@ -146,11 +130,27 @@ marker_list:
   - SNCG ENSG00000173267
   - PLN ENSG00000198523
   - NRP2 ENSG00000118257
-- name: Vascular smooth muscle cells
-  markers:
+  name: Smooth muscle cells
+- markers:
   - ACTA2 ENSG00000107796
   - MYH11 ENSG00000133392
   - PDGFRB ENSG00000113721
   - SEMA3D ENSG00000153993
   - TBX18 ENSG00000112837
   - WT1 ENSG00000184937
+  name: Vascular smooth muscle cells
+metadata:
+  date: 27.03.2020
+  id: '25'
+  list_name: Panglao_human_smooth-muscle
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: smooth-muscle

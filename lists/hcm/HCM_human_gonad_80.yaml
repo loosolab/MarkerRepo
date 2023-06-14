@@ -1,25 +1,9 @@
-metadata:
-  id: '80'
-  list_name: HCM_human_gonad
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: gonad
-    custom_tag: cell type annotation
 marker_list:
-- name: Germ cell
-  markers:
+- markers:
   - SYCP3 ENSG00000139351
   - POU5F1 ENSG00000204531
-- name: Retinoid acid signaling-responsive fetal germ cell
-  markers:
+  name: Germ cell
+- markers:
   - A1BG ENSG00000121410
   - DGUOK ENSG00000114956
   - THRA1/BTR ENSG00000235300
@@ -246,8 +230,8 @@ marker_list:
   - ELOVL2 ENSG00000197977
   - SAP25 ENSG00000205307
   - VPS13C ENSG00000129003
-- name: Oogenesis phase fetal germ cell
-  markers:
+  name: Retinoid acid signaling-responsive fetal germ cell
+- markers:
   - SVEP1 ENSG00000165124
   - ADSS2 ENSG00000035687
   - CRYBG1 ENSG00000112297
@@ -1153,8 +1137,8 @@ marker_list:
   - ZNF106 ENSG00000103994
   - TBL1XR1 ENSG00000177565
   - PXK ENSG00000168297
-- name: Meiotic prophase fetal germ cell
-  markers:
+  name: Oogenesis phase fetal germ cell
+- markers:
   - ADSS2 ENSG00000035687
   - C10ORF88 ENSG00000119965
   - PHTF1 ENSG00000116793
@@ -2274,8 +2258,8 @@ marker_list:
   - UCHL5 ENSG00000116750
   - ENKD1 ENSG00000124074
   - SCCPDH ENSG00000143653
-- name: Endothelial cell
-  markers:
+  name: Meiotic prophase fetal germ cell
+- markers:
   - A2M ENSG00000175899
   - ABCB7 ENSG00000131269
   - ACYP1 ENSG00000119640
@@ -2490,8 +2474,8 @@ marker_list:
   - FANCI ENSG00000140525
   - PSMB3 ENSG00000277791
   - JAM3 ENSG00000166086
-- name: Gonadal endothelial cell
-  markers:
+  name: Endothelial cell
+- markers:
   - A2M ENSG00000175899
   - TRAF3IP2 ENSG00000056972
   - NUP50 ENSG00000093000
@@ -2968,8 +2952,8 @@ marker_list:
   - ABHD2 ENSG00000140526
   - FSTL1 ENSG00000163430
   - CCDC167 ENSG00000198937
-- name: Leydig cell
-  markers:
+  name: Gonadal endothelial cell
+- markers:
   - VEGFA ENSG00000112715
   - ACACA ENSG00000278540
   - MTHFD2 ENSG00000065911
@@ -3378,8 +3362,8 @@ marker_list:
   - NEURL4 ENSG00000215041
   - HSD11B1L ENSG00000167733
   - ZRANB3 ENSG00000121988
-- name: Mitotic arrest phase fetal germ cell
-  markers:
+  name: Leydig cell
+- markers:
   - RFPL3 ENSG00000128276
   - ZNF25 ENSG00000175395
   - ABCA3 ENSG00000167972
@@ -4384,8 +4368,8 @@ marker_list:
   - SCCPDH ENSG00000143653
   - ANKRD27 ENSG00000105186
   - NT5M ENSG00000205309
-- name: Mitotic fetal germ cell
-  markers:
+  name: Mitotic arrest phase fetal germ cell
+- markers:
   - ABCA1 ENSG00000165029
   - VIM ENSG00000026025
   - ACADS ENSG00000122971
@@ -5077,8 +5061,8 @@ marker_list:
   - C5ORF15 ENSG00000113583
   - IMP3 ENSG00000177971
   - RPS10 ENSG00000124614
-- name: Leydig precursor cell
-  markers:
+  name: Mitotic fetal germ cell
+- markers:
   - NEFL ENSG00000277586
   - VIM ENSG00000026025
   - BICC1 ENSG00000122870
@@ -5306,8 +5290,8 @@ marker_list:
   - LHX9 ENSG00000143355
   - FBLIM1 ENSG00000162458
   - TFPI ENSG00000003436
-- name: Migration phase fetal germ cell
-  markers:
+  name: Leydig precursor cell
+- markers:
   - NQO1 ENSG00000181019
   - ACTC1 ENSG00000159251
   - ACTG2 ENSG00000163017
@@ -5479,8 +5463,8 @@ marker_list:
   - PTN ENSG00000105894
   - SERPINB9 ENSG00000170542
   - SPATA6 ENSG00000132122
-- name: Gonadal mitotic phase fetal germ cell
-  markers:
+  name: Migration phase fetal germ cell
+- markers:
   - NEU1 ENSG00000204386
   - ACADS ENSG00000122971
   - ACP5 ENSG00000102575
@@ -5785,8 +5769,8 @@ marker_list:
   - TUBB3 ENSG00000258947
   - RPL11 ENSG00000142676
   - SLC35A2 ENSG00000102100
-- name: Sertoli cell
-  markers:
+  name: Gonadal mitotic phase fetal germ cell
+- markers:
   - DMD ENSG00000198947
   - GPRC5B ENSG00000167191
   - CORO2A ENSG00000106789
@@ -6248,8 +6232,8 @@ marker_list:
   - GET4 ENSG00000239857
   - PDK3 ENSG00000067992
   - VCL ENSG00000035403
-- name: Granulosa cell
-  markers:
+  name: Sertoli cell
+- markers:
   - NFKBIA ENSG00000100906
   - OPA3 ENSG00000125741
   - TET1 ENSG00000138336
@@ -6442,3 +6426,19 @@ marker_list:
   - TMEM45A ENSG00000181458
   - TFRC ENSG00000072274
   - RPS11 ENSG00000142534
+  name: Granulosa cell
+metadata:
+  date: 27.03.2020
+  id: '80'
+  list_name: HCM_human_gonad
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: gonad

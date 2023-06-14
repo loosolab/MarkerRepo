@@ -1,21 +1,5 @@
-metadata:
-  id: '53'
-  list_name: HCM_human_bronchi
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: bronchi
-    custom_tag: cell type annotation
 marker_list:
-- name: Goblet cell
-  markers:
+- markers:
   - TSPAN13 ENSG00000106537
   - AGR2 ENSG00000106541
   - TFF3 ENSG00000160180
@@ -23,15 +7,31 @@ marker_list:
   - SPDEF ENSG00000124664
   - CLDN10 ENSG00000134873
   - TSPAN8 ENSG00000127324
-- name: White blood cell
-  markers:
+  name: Goblet cell
+- markers:
   - PTPRC ENSG00000081237
-- name: Basal cell
-  markers:
+  name: White blood cell
+- markers:
   - KRT5 ENSG00000186081
-- name: Club cell (Clara cell)
-  markers:
+  name: Basal cell
+- markers:
   - SCGB1A1 ENSG00000149021
-- name: Ciliated cell
-  markers:
+  name: Club cell (Clara cell)
+- markers:
   - FOXJ1 ENSG00000129654
+  name: Ciliated cell
+metadata:
+  date: 27.03.2020
+  id: '53'
+  list_name: HCM_human_bronchi
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: bronchi

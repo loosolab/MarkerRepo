@@ -1,21 +1,5 @@
-metadata:
-  id: '59'
-  list_name: HCM_human_colon
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: colon
-    custom_tag: cell type annotation
 marker_list:
-- name: Cancer stem cell
-  markers:
+- markers:
   - ALCAM ENSG00000170017
   - PROM1 ENSG00000007062
   - ALDH1A1 ENSG00000165092
@@ -29,15 +13,31 @@ marker_list:
   - CD24 ENSG00000272398
   - NANOG ENSG00000111704
   - POU5F1 ENSG00000204531
-- name: Intestinal stem cell
-  markers:
+  name: Cancer stem cell
+- markers:
   - DCLK1 ENSG00000133083
-- name: Tumor endothelial cell
-  markers:
+  name: Intestinal stem cell
+- markers:
   - SBSN ENSG00000189001
-- name: Colonic stem cell
-  markers:
+  name: Tumor endothelial cell
+- markers:
   - PTK7 ENSG00000112655
-- name: CD4+ T cell
-  markers:
+  name: Colonic stem cell
+- markers:
   - CCR6 ENSG00000112486
+  name: CD4+ T cell
+metadata:
+  date: 27.03.2020
+  id: '59'
+  list_name: HCM_human_colon
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: colon

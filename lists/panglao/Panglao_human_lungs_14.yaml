@@ -1,28 +1,12 @@
-metadata:
-  id: '14'
-  list_name: Panglao_human_lungs
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: lungs
-    custom_tag: cell type annotation
 marker_list:
-- name: Airway epithelial cells
-  markers:
+- markers:
   - AQP1 ENSG00000240583
   - ADH7 ENSG00000196344
   - CDH1 ENSG00000039068
   - SEC14L3 ENSG00000100012
   - TAP2 ENSG00000204267
-- name: Airway goblet cells
-  markers:
+  name: Airway epithelial cells
+- markers:
   - MUC5B ENSG00000117983
   - MUC16 ENSG00000181143
   - LTF ENSG00000012223
@@ -48,8 +32,8 @@ marker_list:
   - MUC20 ENSG00000176945
   - SPDEF ENSG00000124664
   - DUSP4 ENSG00000120875
-- name: Alveolar macrophages
-  markers:
+  name: Airway goblet cells
+- markers:
   - PLET1 ENSG00000188771
   - IL1B ENSG00000125538
   - CCL3 ENSG00000277632
@@ -74,8 +58,8 @@ marker_list:
   - OLR1 ENSG00000173391
   - S100A4 ENSG00000196154
   - GNGT2 ENSG00000167083
-- name: Ciliated cells
-  markers:
+  name: Alveolar macrophages
+- markers:
   - SEC14L3 ENSG00000100012
   - TAP2 ENSG00000204267
   - CCDC153 ENSG00000248712
@@ -91,8 +75,8 @@ marker_list:
   - SCGB1A1 ENSG00000149021
   - APPL2 ENSG00000136044
   - TUBB4B ENSG00000188229
-- name: Clara cells
-  markers:
+  name: Ciliated cells
+- markers:
   - SYT2 ENSG00000143858
   - CYP2E1 ENSG00000130649
   - SCGB1A1 ENSG00000149021
@@ -116,8 +100,8 @@ marker_list:
   - CARM1 ENSG00000142453
   - RAB3D ENSG00000105514
   - SFTPD ENSG00000133661
-- name: Ionocytes
-  markers:
+  name: Clara cells
+- markers:
   - FOXI1 ENSG00000168269
   - CFTR ENSG00000001626
   - ASCL3 ENSG00000176009
@@ -129,8 +113,8 @@ marker_list:
   - KCNMA1 ENSG00000156113
   - SLC9A4 ENSG00000180251
   - SLC9A7 ENSG00000065923
-- name: Pulmonary alveolar type I cells
-  markers:
+  name: Ionocytes
+- markers:
   - MMP11 ENSG00000099953
   - ICAM1 ENSG00000090339
   - CCN2 ENSG00000118523
@@ -166,8 +150,8 @@ marker_list:
   - SMARCA1 ENSG00000102038
   - P2RX7 ENSG00000089041
   - PDPN ENSG00000162493
-- name: Pulmonary alveolar type II cells
-  markers:
+  name: Pulmonary alveolar type I cells
+- markers:
   - IRX1 ENSG00000170549
   - EGFL6 ENSG00000198759
   - CEBPA ENSG00000245848
@@ -210,3 +194,19 @@ marker_list:
   - IL1B ENSG00000125538
   - INMT ENSG00000241644
   - CRLF1 ENSG00000006016
+  name: Pulmonary alveolar type II cells
+metadata:
+  date: 27.03.2020
+  id: '14'
+  list_name: Panglao_human_lungs
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: lungs

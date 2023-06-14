@@ -1,21 +1,5 @@
-metadata:
-  id: '105'
-  list_name: Panglao_mouse_reproductive
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: reproductive
-    custom_tag: cell type annotation
 marker_list:
-- name: Decidual cells
-  markers:
+- markers:
   - XCL1 ENSMUSG00000026573
   - IGFBP1 ENSMUSG00000020429
   - CTSW ENSMUSG00000024910
@@ -24,8 +8,8 @@ marker_list:
   - PRL ENSMUSG00000021342
   - CST7 ENSMUSG00000068129
   - AREG ENSMUSG00000029378
-- name: Germ cells
-  markers:
+  name: Decidual cells
+- markers:
   - EGFR ENSMUSG00000020122
   - POU5F1 ENSMUSG00000024406
   - TFAP2C ENSMUSG00000028640
@@ -186,8 +170,8 @@ marker_list:
   - CREM ENSMUSG00000063889
   - MYO1D ENSMUSG00000035441
   - HOOK1 ENSMUSG00000028572
-- name: Granulosa cells
-  markers:
+  name: Germ cells
+- markers:
   - AMH ENSMUSG00000035262
   - MCAM ENSMUSG00000032135
   - KITL ENSMUSG00000019966
@@ -207,8 +191,8 @@ marker_list:
   - FSHR ENSMUSG00000032937
   - FOXL2 ENSMUSG00000050397
   - CYP19A1 ENSMUSG00000032274
-- name: Leydig cells
-  markers:
+  name: Granulosa cells
+- markers:
   - HSD11B2 ENSMUSG00000031891
   - MAFB ENSMUSG00000074622
   - ALDH1A1 ENSMUSG00000053279
@@ -268,8 +252,8 @@ marker_list:
   - CYP19A1 ENSMUSG00000032274
   - PLAUR ENSMUSG00000046223
   - FABP9 ENSMUSG00000027528
-- name: Luteal cells
-  markers:
+  name: Leydig cells
+- markers:
   - AKT1 ENSMUSG00000001729
   - LHCGR ENSMUSG00000024107
   - HSD3B1 ENSMUSG00000027871
@@ -300,8 +284,8 @@ marker_list:
   - GAPDH ENSMUSG00000057666
   - FKBP5 ENSMUSG00000024222
   - ME1 ENSMUSG00000032418
-- name: Peritubular myoid cells
-  markers:
+  name: Luteal cells
+- markers:
   - SAT2 ENSMUSG00000069835
   - LAMC3 ENSMUSG00000026840
   - APOA1 ENSMUSG00000032083
@@ -328,8 +312,8 @@ marker_list:
   - TPM4 ENSMUSG00000031799
   - MYL9 ENSMUSG00000067818
   - WNT2B ENSMUSG00000027840
-- name: Sertoli cells
-  markers:
+  name: Peritubular myoid cells
+- markers:
   - AMH ENSMUSG00000035262
   - INHBB ENSMUSG00000037035
   - SHBG ENSMUSG00000005202
@@ -402,8 +386,8 @@ marker_list:
   - BCAR3 ENSMUSG00000028121
   - SOX9 ENSMUSG00000000567
   - SRA1 ENSMUSG00000006050
-- name: Spermatocytes
-  markers:
+  name: Sertoli cells
+- markers:
   - CAPN1 ENSMUSG00000024942
   - JAKMIP1 ENSMUSG00000063646
   - SMCP ENSMUSG00000074435
@@ -424,8 +408,8 @@ marker_list:
   - IGF2 ENSMUSG00000048583
   - TNP1 ENSMUSG00000026182
   - OSR2 ENSMUSG00000022330
-- name: Spermatozoa
-  markers:
+  name: Spermatocytes
+- markers:
   - ABHD2 ENSMUSG00000039202
   - HVCN1 ENSMUSG00000064267
   - GPR55 ENSMUSG00000049608
@@ -435,3 +419,19 @@ marker_list:
   - PRKAA2 ENSMUSG00000028518
   - HSPA2 ENSMUSG00000059970
   - ODF1 ENSMUSG00000061923
+  name: Spermatozoa
+metadata:
+  date: 27.03.2020
+  id: '105'
+  list_name: Panglao_mouse_reproductive
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: reproductive

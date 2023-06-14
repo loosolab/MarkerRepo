@@ -1,27 +1,11 @@
-metadata:
-  id: '64'
-  list_name: HCM_human_endometrium
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: endometrium
-    custom_tag: cell type annotation
 marker_list:
-- name: Trophoblast cell
-  markers:
+- markers:
   - CEACAM1 ENSG00000079385
-- name: Cytotrophoblast
-  markers:
+  name: Trophoblast cell
+- markers:
   - CEACAM1 ENSG00000079385
-- name: Stem cell
-  markers:
+  name: Cytotrophoblast
+- markers:
   - KIT ENSG00000157404
   - POU5F1 ENSG00000204531
   - NANOG ENSG00000111704
@@ -34,8 +18,8 @@ marker_list:
   - THY1 ENSG00000154096
   - NT5E ENSG00000135318
   - LGR5 ENSG00000139292
-- name: Endometrial stem cell
-  markers:
+  name: Stem cell
+- markers:
   - MSI1 ENSG00000135097
   - IPO13 ENSG00000117408
   - ICAM1 ENSG00000090339
@@ -55,44 +39,60 @@ marker_list:
   - MCAM ENSG00000076706
   - CD34 ENSG00000174059
   - LGR5 ENSG00000139292
-- name: Endometrial progenitor cell
-  markers:
+  name: Endometrial stem cell
+- markers:
   - IPO13 ENSG00000117408
-- name: Somatic stem cell
-  markers:
+  name: Endometrial progenitor cell
+- markers:
   - LGR5 ENSG00000139292
-- name: Mesenchymal stem cell
-  markers:
+  name: Somatic stem cell
+- markers:
   - THY1 ENSG00000154096
   - PTPRC ENSG00000081237
   - CD34 ENSG00000174059
   - NT5E ENSG00000135318
   - ALCAM ENSG00000170017
   - CD14 ENSG00000170458
-- name: Epithelial cell
-  markers:
+  name: Mesenchymal stem cell
+- markers:
   - FUT4 ENSG00000196371
-- name: Cancer stem cell
-  markers:
+  name: Epithelial cell
+- markers:
   - CD44 ENSG00000026508
   - PROM1 ENSG00000007062
-- name: Cancer stem-like cell
-  markers:
+  name: Cancer stem cell
+- markers:
   - PROM1 ENSG00000007062
   - CXCR4 ENSG00000121966
-- name: Basal epithelial progenitor cell
-  markers:
+  name: Cancer stem-like cell
+- markers:
   - FUT4 ENSG00000196371
-- name: Plasma cell
-  markers:
+  name: Basal epithelial progenitor cell
+- markers:
   - SDC1 ENSG00000115884
-- name: Mullerian duct epithelial cell
-  markers:
+  name: Plasma cell
+- markers:
   - CTH ENSG00000116761
-- name: Endothelial progenitor cell
-  markers:
+  name: Mullerian duct epithelial cell
+- markers:
   - AXIN2 ENSG00000168646
-- name: Ciliated cell
-  markers:
+  name: Endothelial progenitor cell
+- markers:
   - RSPH4A ENSG00000111834
   - CTH ENSG00000116761
+  name: Ciliated cell
+metadata:
+  date: 27.03.2020
+  id: '64'
+  list_name: HCM_human_endometrium
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: endometrium

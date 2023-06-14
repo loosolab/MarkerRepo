@@ -1,21 +1,5 @@
-metadata:
-  id: '6'
-  list_name: Panglao_human_embryo
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: embryo
-    custom_tag: cell type annotation
 marker_list:
-- name: Epiblast cells
-  markers:
+- markers:
   - NANOG ENSG00000111704
   - POU5F1 ENSG00000204531
   - ERAS ENSG00000187682
@@ -33,12 +17,12 @@ marker_list:
   - BCL11A ENSG00000119866
   - INA ENSG00000148798
   - MFAP2 ENSG00000117122
-- name: Hemangioblasts
-  markers:
+  name: Epiblast cells
+- markers:
   - ETV2 ENSG00000105672
   - TAL1 ENSG00000162367
-- name: Trophoblast cells
-  markers:
+  name: Hemangioblasts
+- markers:
   - CD4 ENSG00000010610
   - TTPA ENSG00000137561
   - TNFRSF9 ENSG00000049249
@@ -72,11 +56,27 @@ marker_list:
   - PARP1 ENSG00000143799
   - ERVFRD-1 ENSG00000244476
   - HLA-G ENSG00000204632
-- name: Trophoblast progenitor cells
-  markers:
+  name: Trophoblast cells
+- markers:
   - ISG20 ENSG00000172183
   - FOXO4 ENSG00000184481
   - TFAP2C ENSG00000087510
-- name: Trophoblast stem cells
-  markers:
+  name: Trophoblast progenitor cells
+- markers:
   - TFAP2C ENSG00000087510
+  name: Trophoblast stem cells
+metadata:
+  date: 27.03.2020
+  id: '6'
+  list_name: Panglao_human_embryo
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: embryo

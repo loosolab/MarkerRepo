@@ -1,21 +1,5 @@
-metadata:
-  id: '17'
-  list_name: Panglao_human_olfactory-system
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: olfactory-system
-    custom_tag: cell type annotation
 marker_list:
-- name: Olfactory epithelial cells
-  markers:
+- markers:
   - ANO2 ENSG00000047617
   - RARG ENSG00000172819
   - LRRC45 ENSG00000169683
@@ -147,3 +131,19 @@ marker_list:
   - CARTPT ENSG00000164326
   - STOML3 ENSG00000133115
   - OMP ENSG00000254550
+  name: Olfactory epithelial cells
+metadata:
+  date: 27.03.2020
+  id: '17'
+  list_name: Panglao_human_olfactory-system
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: olfactory-system

@@ -1,21 +1,5 @@
-metadata:
-  id: '92'
-  list_name: Panglao_mouse_gi-tract
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: gi-tract
-    custom_tag: cell type annotation
 marker_list:
-- name: Crypt cells
-  markers:
+- markers:
   - KCNE3 ENSMUSG00000035165
   - KCNQ1 ENSMUSG00000009545
   - OLFM4 ENSMUSG00000022026
@@ -34,8 +18,8 @@ marker_list:
   - TNFRSF19 ENSMUSG00000060548
   - SLC12A2 ENSMUSG00000024597
   - AXIN2 ENSMUSG00000000142
-- name: Enteric glia cells
-  markers:
+  name: Crypt cells
+- markers:
   - GFRA3 ENSMUSG00000024366
   - MPZ ENSMUSG00000056569
   - LGI4 ENSMUSG00000036560
@@ -53,8 +37,8 @@ marker_list:
   - FOXD3 ENSMUSG00000067261
   - ALDH1A3 ENSMUSG00000015134
   - SLC18A2 ENSMUSG00000025094
-- name: Enteric neurons
-  markers:
+  name: Enteric glia cells
+- markers:
   - HIVEP3 ENSMUSG00000028634
   - PLEKHA5 ENSMUSG00000030231
   - IGF2BP3 ENSMUSG00000029814
@@ -124,8 +108,8 @@ marker_list:
   - NMU ENSMUSG00000029236
   - VIP ENSMUSG00000019772
   - CCK ENSMUSG00000032532
-- name: Enterochromaffin cells
-  markers:
+  name: Enteric neurons
+- markers:
   - REG4 ENSMUSG00000027876
   - AFP ENSMUSG00000054932
   - SLC18A1 ENSMUSG00000036330
@@ -139,8 +123,8 @@ marker_list:
   - TPH1 ENSMUSG00000040046
   - CRH ENSMUSG00000049796
   - GJB1 ENSMUSG00000047797
-- name: Enterocytes
-  markers:
+  name: Enterochromaffin cells
+- markers:
   - GATA4 ENSMUSG00000021944
   - LYPD8 ENSMUSG00000013643
   - NLRP6 ENSMUSG00000038745
@@ -295,8 +279,8 @@ marker_list:
   - MAOA ENSMUSG00000025037
   - DGAT1 ENSMUSG00000022555
   - DGAT2 ENSMUSG00000030747
-- name: Enteroendocrine cells
-  markers:
+  name: Enterocytes
+- markers:
   - NPSR1 ENSMUSG00000043659
   - FFAR3 ENSMUSG00000019429
   - SCN3A ENSMUSG00000057182
@@ -346,8 +330,8 @@ marker_list:
   - TAS1R2 ENSMUSG00000028738
   - TAS1R3 ENSMUSG00000029072
   - GNAT3 ENSMUSG00000028777
-- name: Foveolar cells
-  markers:
+  name: Enteroendocrine cells
+- markers:
   - MUC1 ENSMUSG00000042784
   - ANXA10 ENSMUSG00000031635
   - MUC5AC ENSMUSG00000037974
@@ -374,8 +358,8 @@ marker_list:
   - AKR1B10 ENSMUSG00000061758
   - ARL1 ENSMUSG00000060904
   - IL33 ENSMUSG00000024810
-- name: Gastric chief cells
-  markers:
+  name: Foveolar cells
+- markers:
   - ANPEP ENSMUSG00000039062
   - BHLHA15 ENSMUSG00000052271
   - RAB3D ENSMUSG00000019066
@@ -385,8 +369,8 @@ marker_list:
   - EGFR ENSMUSG00000020122
   - PRKCZ ENSMUSG00000029053
   - CHRM3 ENSMUSG00000046159
-- name: Goblet cells
-  markers:
+  name: Gastric chief cells
+- markers:
   - CREB3L1 ENSMUSG00000027230
   - NLRP6 ENSMUSG00000038745
   - PAN3 ENSMUSG00000029647
@@ -426,8 +410,8 @@ marker_list:
   - MANF ENSMUSG00000032575
   - CCL9 ENSMUSG00000019122
   - SPINK4 ENSMUSG00000028415
-- name: Microfold cells
-  markers:
+  name: Goblet cells
+- markers:
   - GP2 ENSMUSG00000030954
   - SPIB ENSMUSG00000008193
   - PGLYRP1 ENSMUSG00000030413
@@ -462,8 +446,8 @@ marker_list:
   - ZFP553 ENSMUSG00000045598
   - NFIB ENSMUSG00000008575
   - FOXP4 ENSMUSG00000023991
-- name: Paneth cells
-  markers:
+  name: Microfold cells
+- markers:
   - DEFA5 ENSMUSG00000074439
   - MMP7 ENSMUSG00000018623
   - AGR2 ENSMUSG00000020581
@@ -515,8 +499,8 @@ marker_list:
   - MPTX1 ENSMUSG00000026531
   - KLF15 ENSMUSG00000030087
   - DEFA20 ENSMUSG00000095066
-- name: Parietal cells
-  markers:
+  name: Paneth cells
+- markers:
   - PODXL ENSMUSG00000025608
   - KCNQ1 ENSMUSG00000009545
   - PTCH1 ENSMUSG00000021466
@@ -530,8 +514,8 @@ marker_list:
   - AQP4 ENSMUSG00000024411
   - ATP4B ENSMUSG00000031449
   - BMI1 ENSMUSG00000026739
-- name: Tuft cells
-  markers:
+  name: Parietal cells
+- markers:
   - SUCNR1 ENSMUSG00000027762
   - FABP1 ENSMUSG00000054422
   - POU2F3 ENSMUSG00000032015
@@ -571,3 +555,19 @@ marker_list:
   - IL13RA1 ENSMUSG00000017057
   - IL17RB ENSMUSG00000015966
   - PTPRC ENSMUSG00000026395
+  name: Tuft cells
+metadata:
+  date: 27.03.2020
+  id: '92'
+  list_name: Panglao_mouse_gi-tract
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: gi-tract

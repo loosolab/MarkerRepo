@@ -1,21 +1,5 @@
-metadata:
-  id: '84'
-  list_name: Panglao_mouse_adrenal-glands
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: adrenal-glands
-    custom_tag: cell type annotation
 marker_list:
-- name: Chromaffin cells
-  markers:
+- markers:
   - SLC26A4 ENSMUSG00000020651
   - AGRP ENSMUSG00000005705
   - IGF2 ENSMUSG00000048583
@@ -42,3 +26,19 @@ marker_list:
   - SLC12A2 ENSMUSG00000024597
   - CHGA ENSMUSG00000021194
   - PLAT ENSMUSG00000031538
+  name: Chromaffin cells
+metadata:
+  date: 27.03.2020
+  id: '84'
+  list_name: Panglao_mouse_adrenal-glands
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: adrenal-glands

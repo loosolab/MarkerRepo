@@ -1,21 +1,5 @@
-metadata:
-  id: '104'
-  list_name: Panglao_mouse_placenta
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: placenta
-    custom_tag: cell type annotation
 marker_list:
-- name: Undefined placental cells
-  markers:
+- markers:
   - BATF3 ENSMUSG00000026630
   - DIO3 ENSMUSG00000075707
   - DKKL1 ENSMUSG00000030792
@@ -38,3 +22,19 @@ marker_list:
   - TFRC ENSMUSG00000022797
   - TPBPA ENSMUSG00000033834
   - KRT23 ENSMUSG00000006777
+  name: Undefined placental cells
+metadata:
+  date: 27.03.2020
+  id: '104'
+  list_name: Panglao_mouse_placenta
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: placenta

@@ -1,21 +1,5 @@
-metadata:
-  id: '91'
-  list_name: Panglao_mouse_eye
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: eye
-    custom_tag: cell type annotation
 marker_list:
-- name: "M\xFCller cells"
-  markers:
+- markers:
   - TLR2 ENSMUSG00000027995
   - IL6 ENSMUSG00000025746
   - CNR2 ENSMUSG00000062585
@@ -70,8 +54,8 @@ marker_list:
   - GSTM5 ENSMUSG00000004032
   - SLC6A1 ENSMUSG00000030310
   - SFTPA1 ENSMUSG00000021789
-- name: Photoreceptor cells
-  markers:
+  name: "M\xFCller cells"
+- markers:
   - RCVRN ENSMUSG00000020907
   - PDC ENSMUSG00000006007
   - NRL ENSMUSG00000040632
@@ -127,8 +111,8 @@ marker_list:
   - B3GALT2 ENSMUSG00000033849
   - ISL1 ENSMUSG00000042258
   - PCP2 ENSMUSG00000004630
-- name: Retinal progenitor cells
-  markers:
+  name: Photoreceptor cells
+- markers:
   - PAX6 ENSMUSG00000027168
   - CALB2 ENSMUSG00000003657
   - SIX6 ENSMUSG00000021099
@@ -143,3 +127,19 @@ marker_list:
   - MSI1 ENSMUSG00000054256
   - SOX9 ENSMUSG00000000567
   - SRA1 ENSMUSG00000006050
+  name: Retinal progenitor cells
+metadata:
+  date: 27.03.2020
+  id: '91'
+  list_name: Panglao_mouse_eye
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: eye

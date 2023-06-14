@@ -1,21 +1,5 @@
-metadata:
-  id: '93'
-  list_name: Panglao_mouse_heart
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: heart
-    custom_tag: cell type annotation
 marker_list:
-- name: Cardiac stem and precursor cells
-  markers:
+- markers:
   - MYH6 ENSMUSG00000040752
   - WT1 ENSMUSG00000016458
   - TBX18 ENSMUSG00000032419
@@ -33,8 +17,8 @@ marker_list:
   - TBX4 ENSMUSG00000000094
   - WNT5A ENSMUSG00000021994
   - ANKRD1 ENSMUSG00000024803
-- name: Cardiomyocytes
-  markers:
+  name: Cardiac stem and precursor cells
+- markers:
   - TNNC1 ENSMUSG00000091898
   - ADM ENSMUSG00000030790
   - NPPA ENSMUSG00000041616
@@ -143,15 +127,31 @@ marker_list:
   - BMP4 ENSMUSG00000021835
   - CASQ2 ENSMUSG00000027861
   - TPM1 ENSMUSG00000032366
-- name: His bundle cells
-  markers:
+  name: Cardiomyocytes
+- markers:
   - GJA5 ENSMUSG00000057123
   - GJC1 ENSMUSG00000034520
   - KCNK3 ENSMUSG00000049265
-- name: Purkinje fiber cells
-  markers:
+  name: His bundle cells
+- markers:
   - GJA5 ENSMUSG00000057123
   - B3GAT1 ENSMUSG00000045994
   - GJC1 ENSMUSG00000034520
   - KCNK3 ENSMUSG00000049265
   - NEFM ENSMUSG00000022054
+  name: Purkinje fiber cells
+metadata:
+  date: 27.03.2020
+  id: '93'
+  list_name: Panglao_mouse_heart
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: heart

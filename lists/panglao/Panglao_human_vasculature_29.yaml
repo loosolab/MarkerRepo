@@ -1,21 +1,5 @@
-metadata:
-  id: '29'
-  list_name: Panglao_human_vasculature
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: vasculature
-    custom_tag: cell type annotation
 marker_list:
-- name: Endothelial cells
-  markers:
+- markers:
   - PECAM1 ENSG00000261371
   - ICAM1 ENSG00000090339
   - ITGB3 ENSG00000259207
@@ -210,8 +194,8 @@ marker_list:
   - FAM167B ENSG00000183615
   - LTC4S ENSG00000213316
   - STAB2 ENSG00000136011
-- name: Endothelial cells (aorta)
-  markers:
+  name: Endothelial cells
+- markers:
   - ITGA5 ENSG00000161638
   - TMTC2 ENSG00000179104
   - NR1D1 ENSG00000126368
@@ -301,8 +285,8 @@ marker_list:
   - GXYLT2 ENSG00000172986
   - CYTL1 ENSG00000170891
   - EHD3 ENSG00000013016
-- name: Endothelial cells (blood brain barrier)
-  markers:
+  name: Endothelial cells (aorta)
+- markers:
   - ABCG2 ENSG00000118777
   - GFAP ENSG00000131095
   - GPR37L1 ENSG00000170075
@@ -321,8 +305,8 @@ marker_list:
   - PPARD ENSG00000112033
   - ZIC3 ENSG00000156925
   - ALCAM ENSG00000170017
-- name: Pericytes
-  markers:
+  name: Endothelial cells (blood brain barrier)
+- markers:
   - PECAM1 ENSG00000261371
   - PDGFRB ENSG00000113721
   - CSPG4 ENSG00000173546
@@ -385,3 +369,19 @@ marker_list:
   - GNB4 ENSG00000114450
   - MSX1 ENSG00000163132
   - CCN2 ENSG00000118523
+  name: Pericytes
+metadata:
+  date: 27.03.2020
+  id: '29'
+  list_name: Panglao_human_vasculature
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: vasculature

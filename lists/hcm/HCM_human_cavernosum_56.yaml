@@ -1,25 +1,25 @@
-metadata:
-  id: '56'
-  list_name: HCM_human_cavernosum
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: cavernosum
-    custom_tag: cell type annotation
 marker_list:
-- name: Mural cell
-  markers:
+- markers:
   - PDGFRB ENSG00000113721
   - ACTA2 ENSG00000107796
-- name: Endothelial cell
-  markers:
+  name: Mural cell
+- markers:
   - VWF ENSG00000110799
   - CDH5 ENSG00000179776
   - CLDN5 ENSG00000184113
+  name: Endothelial cell
+metadata:
+  date: 27.03.2020
+  id: '56'
+  list_name: HCM_human_cavernosum
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: cavernosum

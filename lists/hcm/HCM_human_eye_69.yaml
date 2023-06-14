@@ -1,32 +1,16 @@
-metadata:
-  id: '69'
-  list_name: HCM_human_eye
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: eye
-    custom_tag: cell type annotation
 marker_list:
-- name: Macrophage
-  markers:
+- markers:
   - CD68 ENSG00000129226
   - AIF1 ENSG00000204472
   - CD163 ENSG00000177575
   - CD14 ENSG00000170458
   - ITGAM ENSG00000169896
   - CD74 ENSG00000019582
-- name: T helper cell
-  markers:
+  name: Macrophage
+- markers:
   - CD4 ENSG00000010610
-- name: Epithelial cell
-  markers:
+  name: T helper cell
+- markers:
   - KLF6 ENSG00000067082
   - MITF ENSG00000187098
   - RPE65 ENSG00000116745
@@ -38,8 +22,8 @@ marker_list:
   - RLBP1 ENSG00000140522
   - CRX ENSG00000105392
   - RAX ENSG00000134438
-- name: T cell
-  markers:
+  name: Epithelial cell
+- markers:
   - IL2RA ENSG00000134460
   - CD69 ENSG00000110848
   - CD2 ENSG00000116824
@@ -47,8 +31,8 @@ marker_list:
   - CD3D ENSG00000167286
   - LCK ENSG00000182866
   - CD3E ENSG00000198851
-- name: Stem cell
-  markers:
+  name: T cell
+- markers:
   - NOTCH1 ENSG00000148400
   - ABCG2 ENSG00000118777
   - CD34 ENSG00000174059
@@ -57,41 +41,41 @@ marker_list:
   - NANOG ENSG00000111704
   - THY1 ENSG00000154096
   - PROM1 ENSG00000007062
-- name: Limbal stem cell
-  markers:
+  name: Stem cell
+- markers:
   - SOD2 ENSG00000112096
   - KRT15 ENSG00000171346
   - ABCG2 ENSG00000118777
   - KRT14 ENSG00000186847
-- name: Muller glia precursor cell
-  markers:
+  name: Limbal stem cell
+- markers:
   - CD44 ENSG00000026508
-- name: Corneal limbal stem cell
-  markers:
+  name: Muller glia precursor cell
+- markers:
   - LGR5 ENSG00000139292
-- name: Cancer stem cell
-  markers:
+  name: Corneal limbal stem cell
+- markers:
   - EPCAM ENSG00000119888
-- name: Limbal epithelial stem cell
-  markers:
+  name: Cancer stem cell
+- markers:
   - ALCAM ENSG00000170017
   - MCAM ENSG00000076706
   - CXCR4 ENSG00000121966
   - KIT ENSG00000157404
   - CDH5 ENSG00000179776
-- name: Corneal epithelial stem cell
-  markers:
+  name: Limbal epithelial stem cell
+- markers:
   - KRT3 ENSG00000186442
   - KRT14 ENSG00000186847
-- name: Corneal endothelial cell
-  markers:
+  name: Corneal epithelial stem cell
+- markers:
   - CD200 ENSG00000091972
   - GPC4 ENSG00000076716
   - VEGFA ENSG00000112715
   - PROM1 ENSG00000007062
   - FLT1 ENSG00000102755
-- name: Amacrine cell
-  markers:
+  name: Corneal endothelial cell
+- markers:
   - CRABP1 ENSG00000166426
   - CALB1 ENSG00000104327
   - CHAT ENSG00000070748
@@ -99,8 +83,8 @@ marker_list:
   - C1QL2 ENSG00000144119
   - TFAP2B ENSG00000008196
   - GAD2 ENSG00000136750
-- name: Bipolar cell
-  markers:
+  name: Amacrine cell
+- markers:
   - PRKCA ENSG00000154229
   - OTX2 ENSG00000165588
   - VSX2 ENSG00000119614
@@ -112,18 +96,18 @@ marker_list:
   - VSX1 ENSG00000100987
   - RCVRN ENSG00000109047
   - PCP2 ENSG00000174788
-- name: Pigment epithelial cell
-  markers:
+  name: Bipolar cell
+- markers:
   - RPE65 ENSG00000116745
-- name: Hematopoietic stem cell
-  markers:
+  name: Pigment epithelial cell
+- markers:
   - CD34 ENSG00000174059
   - PROM1 ENSG00000007062
-- name: Limbal mesenchymal cell
-  markers:
+  name: Hematopoietic stem cell
+- markers:
   - CD34 ENSG00000174059
-- name: Endothelial cell
-  markers:
+  name: Limbal mesenchymal cell
+- markers:
   - PECAM1 ENSG00000261371
   - VWF ENSG00000110799
   - CD34 ENSG00000174059
@@ -141,18 +125,18 @@ marker_list:
   - CDH2 ENSG00000170558
   - ATP1A1 ENSG00000163399
   - COL8A1 ENSG00000144810
-- name: Muller cell
-  markers:
+  name: Endothelial cell
+- markers:
   - APC ENSG00000134982
-- name: Photoreceptor cell
-  markers:
+  name: Muller cell
+- markers:
   - PRRT2 ENSG00000167371
   - CRX ENSG00000105392
   - RPE65 ENSG00000116745
   - OTX2 ENSG00000165588
   - RCVRN ENSG00000109047
-- name: Cone photoreceptor cell
-  markers:
+  name: Photoreceptor cell
+- markers:
   - PDE6C ENSG00000095464
   - GNAT2 ENSG00000134183
   - PDE6H ENSG00000139053
@@ -163,18 +147,18 @@ marker_list:
   - RXRG ENSG00000143171
   - OPN1LW ENSG00000102076
   - ARR3 ENSG00000120500
-- name: Horizontal cell
-  markers:
+  name: Cone photoreceptor cell
+- markers:
   - ONECUT1 ENSG00000169856
   - ONECUT2 ENSG00000119547
   - LHX1 ENSG00000273706
-- name: Mller glial cell
-  markers:
+  name: Horizontal cell
+- markers:
   - RLBP1 ENSG00000140522
   - GLUL ENSG00000135821
   - CLU ENSG00000120885
-- name: Retinal ganglion cell
-  markers:
+  name: Mller glial cell
+- markers:
   - NEFL ENSG00000277586
   - SNCG ENSG00000173267
   - GAP43 ENSG00000172020
@@ -182,11 +166,11 @@ marker_list:
   - SLC17A6 ENSG00000091664
   - RBPMS ENSG00000157110
   - KCNIP2 ENSG00000120049
-- name: Retinal astrocyte
-  markers:
+  name: Retinal ganglion cell
+- markers:
   - GFAP ENSG00000131095
-- name: Rod cell
-  markers:
+  name: Retinal astrocyte
+- markers:
   - CNGA1 ENSG00000198515
   - PDE6A ENSG00000132915
   - RHO ENSG00000163914
@@ -196,8 +180,8 @@ marker_list:
   - GNGT1 ENSG00000127928
   - GNAT1 ENSG00000114349
   - SAG ENSG00000130561
-- name: Neurogenic retinal progenitor cell
-  markers:
+  name: Rod cell
+- markers:
   - NEUROG2 ENSG00000178403
   - EFNB2 ENSG00000125266
   - ASCL1 ENSG00000139352
@@ -208,8 +192,8 @@ marker_list:
   - ISLR2 ENSG00000167178
   - GPM6B ENSG00000046653
   - FZD3 ENSG00000104290
-- name: Multipotent retinal progenitor cell
-  markers:
+  name: Neurogenic retinal progenitor cell
+- markers:
   - LIN28B ENSG00000187772
   - IGFBP5 ENSG00000115461
   - LIN28A ENSG00000131914
@@ -219,8 +203,8 @@ marker_list:
   - GJA1 ENSG00000152661
   - ATP1A2 ENSG00000018625
   - JAG1 ENSG00000101384
-- name: Neuron
-  markers:
+  name: Multipotent retinal progenitor cell
+- markers:
   - DCX ENSG00000077279
   - SEMA5A ENSG00000112902
   - NRCAM ENSG00000091129
@@ -232,12 +216,12 @@ marker_list:
   - TUBB3 ENSG00000258947
   - POU5F1 ENSG00000204531
   - RB1 ENSG00000139687
-- name: Adult neural stem cell
-  markers:
+  name: Neuron
+- markers:
   - GJA1 ENSG00000152661
   - ATP1A2 ENSG00000018625
-- name: Microglial cell
-  markers:
+  name: Adult neural stem cell
+- markers:
   - CD163 ENSG00000177575
   - TMEM119 ENSG00000183160
   - C1QA ENSG00000173372
@@ -252,15 +236,15 @@ marker_list:
   - ACTB ENSG00000075624
   - C1QB ENSG00000173369
   - SPP1 ENSG00000118785
-- name: Vascular cell
-  markers:
+  name: Microglial cell
+- markers:
   - RGS5 ENSG00000232995
   - TM4SF1 ENSG00000169908
   - CD34 ENSG00000174059
   - ADAMTS9 ENSG00000163638
   - CDH5 ENSG00000179776
-- name: Cone cell
-  markers:
+  name: Vascular cell
+- markers:
   - OPN1SW ENSG00000128617
   - OPN1MW ENSG00000268221
   - GNAT2 ENSG00000134183
@@ -272,23 +256,23 @@ marker_list:
   - GUCA1B ENSG00000112599
   - GUCA1A ENSG00000048545
   - GNGT2 ENSG00000167083
-- name: Astrocyte
-  markers:
+  name: Cone cell
+- markers:
   - GLUL ENSG00000135821
   - GFAP ENSG00000131095
   - CLU ENSG00000120885
   - SPARCL1 ENSG00000152583
-- name: Macroglial cell
-  markers:
+  name: Astrocyte
+- markers:
   - COL4A3 ENSG00000169031
   - FOS ENSG00000170345
   - FTL ENSG00000087086
-- name: Artery cell
-  markers:
+  name: Macroglial cell
+- markers:
   - SEMA3G ENSG00000010319
   - HEY1 ENSG00000164683
-- name: Retinal pigment epithelial cell
-  markers:
+  name: Artery cell
+- markers:
   - RPE65 ENSG00000116745
   - BEST1 ENSG00000167995
   - RBP1 ENSG00000114115
@@ -307,97 +291,97 @@ marker_list:
   - PMEL ENSG00000185664
   - PLTP ENSG00000100979
   - TTR ENSG00000118271
-- name: Nonmyelinating schwann cell
-  markers:
+  name: Retinal pigment epithelial cell
+- markers:
   - SCN7A ENSG00000136546
   - NGFR ENSG00000064300
   - L1CAM ENSG00000198910
   - NCAM1 ENSG00000149294
-- name: Fibroblast
-  markers:
+  name: Nonmyelinating schwann cell
+- markers:
   - FBLN1 ENSG00000077942
   - MYOC ENSG00000034971
   - MGP ENSG00000111341
-- name: Vein cell
-  markers:
+  name: Fibroblast
+- markers:
   - MMRN1 ENSG00000138722
   - ACKR1 ENSG00000213088
-- name: Mast cell
-  markers:
+  name: Vein cell
+- markers:
   - KIT ENSG00000157404
   - CPA3 ENSG00000163751
-- name: Leukocyte
-  markers:
+  name: Mast cell
+- markers:
   - PTPRC ENSG00000081237
-- name: Melanocyte
-  markers:
+  name: Leukocyte
+- markers:
   - DCT ENSG00000080166
   - MLANA ENSG00000120215
   - PMEL ENSG00000185664
   - TYRP1 ENSG00000107165
-- name: Myelinating schwann cell
-  markers:
+  name: Melanocyte
+- markers:
   - MBP ENSG00000197971
   - MPZ ENSG00000158887
-- name: Smooth muscle cell
-  markers:
+  name: Myelinating schwann cell
+- markers:
   - RGS5 ENSG00000232995
   - MYH11 ENSG00000133392
   - MYL9 ENSG00000101335
-- name: Choriocapillaris cell
-  markers:
+  name: Smooth muscle cell
+- markers:
   - PLVAP ENSG00000130300
   - CA4 ENSG00000167434
-- name: Schwann cell
-  markers:
+  name: Choriocapillaris cell
+- markers:
   - PLP1 ENSG00000123560
   - CD9 ENSG00000010278
   - LGI4 ENSG00000153902
-- name: Pericyte
-  markers:
+  name: Schwann cell
+- markers:
   - RGS5 ENSG00000232995
-- name: Natural killer cell
-  markers:
+  name: Pericyte
+- markers:
   - CD2 ENSG00000116824
   - GNLY ENSG00000115523
   - IL7R ENSG00000168685
-- name: B cell
-  markers:
+  name: Natural killer cell
+- markers:
   - CD79A ENSG00000105369
-- name: Mueller glia cell
-  markers:
+  name: B cell
+- markers:
   - SLC1A3 ENSG00000079215
   - DKK3 ENSG00000050165
   - CRABP1 ENSG00000166426
-- name: Tip cell
-  markers:
+  name: Mueller glia cell
+- markers:
   - CXCR4 ENSG00000121966
   - DLL4 ENSG00000128917
-- name: CD8+ T cell
-  markers:
+  name: Tip cell
+- markers:
   - LAG3 ENSG00000089692
   - CD8A ENSG00000153563
   - TRBC2 ENSG00000211772
-- name: Later-stage progenitor cell
-  markers:
+  name: CD8+ T cell
+- markers:
   - RGS16 ENSG00000143333
   - FABP7 ENSG00000164434
-- name: Glial cell
-  markers:
+  name: Later-stage progenitor cell
+- markers:
   - SLC1A3 ENSG00000079215
   - RLBP1 ENSG00000140522
-- name: Forebrain cell
-  markers:
+  name: Glial cell
+- markers:
   - SOX1 ENSG00000182968
-- name: Progenitor cell
-  markers:
+  name: Forebrain cell
+- markers:
   - SOX2 ENSG00000181449
   - VSX2 ENSG00000119614
-- name: T helper 1(Th1) cell
-  markers:
+  name: Progenitor cell
+- markers:
   - ATOH7 ENSG00000179774
-- name: Ganglion cell
-  markers:
+  name: T helper 1(Th1) cell
+- markers:
   - SNCG ENSG00000173267
   - NEFM ENSG00000104722
   - ALCAM ENSG00000170017
@@ -407,161 +391,177 @@ marker_list:
   - EBF1 ENSG00000164330
   - GAP43 ENSG00000172020
   - POU4F2 ENSG00000151615
-- name: Vascular endothelial cell
-  markers:
+  name: Ganglion cell
+- markers:
   - KDR ENSG00000128052
   - VWF ENSG00000110799
   - EFNB2 ENSG00000125266
   - DLL4 ENSG00000128917
   - FLT1 ENSG00000102755
   - EPHB4 ENSG00000196411
-- name: Lymphatic endothelial cell
-  markers:
+  name: Vascular endothelial cell
+- markers:
   - PECAM1 ENSG00000261371
   - LYVE1 ENSG00000133800
   - MMRN1 ENSG00000138722
   - FLT4 ENSG00000037280
   - PROX1 ENSG00000117707
-- name: Trabecular meshwork cell
-  markers:
+  name: Lymphatic endothelial cell
+- markers:
   - CHI3L1 ENSG00000133048
   - MYOC ENSG00000034971
   - MGP ENSG00000111341
-- name: Neural retina cell
-  markers:
+  name: Trabecular meshwork cell
+- markers:
   - RIMS3 ENSG00000117016
-- name: Effector T(Teff) cell
-  markers:
+  name: Neural retina cell
+- markers:
   - CD2 ENSG00000116824
   - NKG7 ENSG00000105374
   - CD8B ENSG00000172116
-- name: Effector natural killer cell
-  markers:
+  name: Effector T(Teff) cell
+- markers:
   - CD2 ENSG00000116824
   - NKG7 ENSG00000105374
   - CD8B ENSG00000172116
-- name: Retina cell
-  markers:
+  name: Effector natural killer cell
+- markers:
   - SPP1 ENSG00000118785
   - STAC2 ENSG00000141750
   - PCDH9 ENSG00000184226
-- name: Ductal cell
-  markers:
+  name: Retina cell
+- markers:
   - LCN2 ENSG00000148346
   - WFDC2 ENSG00000101443
-- name: Myoepithelial cell
-  markers:
+  name: Ductal cell
+- markers:
   - MYH11 ENSG00000133392
   - TPM2 ENSG00000198467
   - KRT5 ENSG00000186081
   - ACTA2 ENSG00000107796
   - MYLK ENSG00000065534
-- name: Acinar cell
-  markers:
+  name: Myoepithelial cell
+- markers:
   - PRR27 ENSG00000187533
   - HTN1 ENSG00000126550
   - LTF ENSG00000012223
   - SCGB2A1 ENSG00000124939
-- name: Lymphocyte
-  markers:
+  name: Acinar cell
+- markers:
   - PTPRC ENSG00000081237
   - CD2 ENSG00000116824
-- name: M2 macrophage
-  markers:
+  name: Lymphocyte
+- markers:
   - CD163 ENSG00000177575
   - MRC1 ENSG00000260314
-- name: M1 macrophage
-  markers:
+  name: M2 macrophage
+- markers:
   - TLR2 ENSG00000137462
   - TLR4 ENSG00000136869
   - CD86 ENSG00000114013
-- name: Pan leukocyte
-  markers:
+  name: M1 macrophage
+- markers:
   - PTPRC ENSG00000081237
-- name: Haematopoietic progenitor cell
-  markers:
+  name: Pan leukocyte
+- markers:
   - CD34 ENSG00000174059
-- name: Monocyte
-  markers:
+  name: Haematopoietic progenitor cell
+- markers:
   - LYZ ENSG00000090382
   - CD74 ENSG00000019582
   - CD14 ENSG00000170458
-- name: Platelet
-  markers:
+  name: Monocyte
+- markers:
   - TUBB1 ENSG00000101162
-- name: Iris puttative stem cell
-  markers:
+  name: Platelet
+- markers:
   - ZIC2 ENSG00000043355
   - LHX2 ENSG00000106689
   - RAX ENSG00000134438
-- name: Corneal epithelial cell
-  markers:
+  name: Iris puttative stem cell
+- markers:
   - KRT12 ENSG00000187242
   - KRT14 ENSG00000186847
   - TGFBI ENSG00000120708
-- name: Retina ganglion cell
-  markers:
+  name: Corneal epithelial cell
+- markers:
   - POU4F1 ENSG00000152192
   - SNCG ENSG00000173267
-- name: Activated T cell
-  markers:
+  name: Retina ganglion cell
+- markers:
   - CD69 ENSG00000110848
-- name: Ciliary body cell
-  markers:
+  name: Activated T cell
+- markers:
   - AQP1 ENSG00000240583
-- name: Classical dendritic cell a(cDCa)
-  markers:
+  name: Ciliary body cell
+- markers:
   - ITGAX ENSG00000140678
   - AXL ENSG00000167601
-- name: Granulocyte
-  markers:
+  name: Classical dendritic cell a(cDCa)
+- markers:
   - CD33 ENSG00000105383
   - S100A12 ENSG00000163221
-- name: Mature dendritic cell
-  markers:
+  name: Granulocyte
+- markers:
   - CD83 ENSG00000112149
   - LAMP3 ENSG00000078081
-- name: Gamma delta(??) T cell
-  markers:
+  name: Mature dendritic cell
+- markers:
   - TRDC ENSG00000211829
   - NKG7 ENSG00000105374
-- name: Regulatory T(Treg) cell
-  markers:
+  name: Gamma delta(??) T cell
+- markers:
   - IL2RA ENSG00000134460
   - FOXP3 ENSG00000049768
-- name: Myeloid cell
-  markers:
+  name: Regulatory T(Treg) cell
+- markers:
   - S100A8 ENSG00000143546
   - CCL2 ENSG00000108691
-- name: CD4+ T cell
-  markers:
+  name: Myeloid cell
+- markers:
   - CD4 ENSG00000010610
   - CD3G ENSG00000160654
-- name: Plasmacytoid dendritic cell(pDC)
-  markers:
+  name: CD4+ T cell
+- markers:
   - CLEC4C ENSG00000198178
   - IL3RA ENSG00000185291
-- name: Classical dendritic cell b(cDCb)
-  markers:
+  name: Plasmacytoid dendritic cell(pDC)
+- markers:
   - MRC1 ENSG00000260314
   - CLEC10A ENSG00000132514
-- name: Plasma cell
-  markers:
+  name: Classical dendritic cell b(cDCb)
+- markers:
   - IGHG1 ENSG00000211896
-- name: Naive B cell
-  markers:
+  name: Plasma cell
+- markers:
   - MS4A1 ENSG00000156738
-- name: Retinal cell
-  markers:
+  name: Naive B cell
+- markers:
   - OTX2 ENSG00000165588
-- name: Retinal Mller glia cell
-  markers:
+  name: Retinal cell
+- markers:
   - DDIT4 ENSG00000168209
   - DDIT4L ENSG00000145358
-- name: Effector memory T cell
-  markers:
+  name: Retinal Mller glia cell
+- markers:
   - TNFRSF1A ENSG00000067182
   - PDCD1 ENSG00000188389
   - CTLA4 ENSG00000163599
   - RIPK3 ENSG00000129465
   - RIPK1 ENSG00000137275
+  name: Effector memory T cell
+metadata:
+  date: 27.03.2020
+  id: '69'
+  list_name: HCM_human_eye
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: eye

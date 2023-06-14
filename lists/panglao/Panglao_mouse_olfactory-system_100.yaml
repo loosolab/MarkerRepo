@@ -1,21 +1,5 @@
-metadata:
-  id: '100'
-  list_name: Panglao_mouse_olfactory-system
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: olfactory-system
-    custom_tag: cell type annotation
 marker_list:
-- name: Olfactory epithelial cells
-  markers:
+- markers:
   - ANO2 ENSMUSG00000038115
   - RARG ENSMUSG00000001288
   - LRRC45 ENSMUSG00000025145
@@ -152,3 +136,19 @@ marker_list:
   - CARTPT ENSMUSG00000021647
   - STOML3 ENSMUSG00000027744
   - OMP ENSMUSG00000074006
+  name: Olfactory epithelial cells
+metadata:
+  date: 27.03.2020
+  id: '100'
+  list_name: Panglao_mouse_olfactory-system
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: olfactory-system

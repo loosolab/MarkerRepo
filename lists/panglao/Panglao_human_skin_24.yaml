@@ -1,21 +1,5 @@
-metadata:
-  id: '24'
-  list_name: Panglao_human_skin
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: skin
-    custom_tag: cell type annotation
 marker_list:
-- name: Keratinocytes
-  markers:
+- markers:
   - CALML5 ENSG00000178372
   - CD24 ENSG00000272398
   - FLG ENSG00000143631
@@ -66,8 +50,8 @@ marker_list:
   - SBSN ENSG00000189001
   - KRT84 ENSG00000161849
   - KRT36 ENSG00000126337
-- name: Langerhans cells
-  markers:
+  name: Keratinocytes
+- markers:
   - ACHE ENSG00000087085
   - CD1A ENSG00000158477
   - FCGR1A ENSG00000150337
@@ -98,8 +82,8 @@ marker_list:
   - FCGR2A ENSG00000143226
   - CCR6 ENSG00000112486
   - CLDN1 ENSG00000163347
-- name: Melanocytes
-  markers:
+  name: Langerhans cells
+- markers:
   - AHR ENSG00000106546
   - MC1R ENSG00000258839
   - PMEL ENSG00000185664
@@ -144,8 +128,8 @@ marker_list:
   - PPARD ENSG00000112033
   - PPARG ENSG00000132170
   - PRKCA ENSG00000154229
-- name: Merkel cells
-  markers:
+  name: Melanocytes
+- markers:
   - CHGA ENSG00000100604
   - KRT20 ENSG00000171431
   - FLI1 ENSG00000151702
@@ -162,8 +146,8 @@ marker_list:
   - GFI1 ENSG00000162676
   - KRT8 ENSG00000170421
   - KRT18 ENSG00000111057
-- name: Sebocytes
-  markers:
+  name: Merkel cells
+- markers:
   - CAMP ENSG00000164047
   - IHH ENSG00000163501
   - CRHR1 ENSG00000120088
@@ -190,11 +174,27 @@ marker_list:
   - FFAR3 ENSG00000185897
   - MUC1 ENSG00000185499
   - HRH1 ENSG00000196639
-- name: Trichocytes
-  markers:
+  name: Sebocytes
+- markers:
   - KRT86 ENSG00000170442
   - DSG2 ENSG00000046604
   - KRT81 ENSG00000205426
   - DSG4 ENSG00000175065
   - KRT37 ENSG00000108417
   - HOXC13 ENSG00000123364
+  name: Trichocytes
+metadata:
+  date: 27.03.2020
+  id: '24'
+  list_name: Panglao_human_skin
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: skin

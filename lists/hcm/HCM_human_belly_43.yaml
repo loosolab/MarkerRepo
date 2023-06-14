@@ -1,41 +1,41 @@
-metadata:
-  id: '43'
-  list_name: HCM_human_belly
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: belly
-    custom_tag: cell type annotation
 marker_list:
-- name: T cell
-  markers:
+- markers:
   - IL7R ENSG00000168685
   - CD28 ENSG00000178562
-- name: Myeloid cell
-  markers:
+  name: T cell
+- markers:
   - CD33 ENSG00000105383
-- name: Myeloid derived suppressor cell (MDSC)
-  markers:
+  name: Myeloid cell
+- markers:
   - CD33 ENSG00000105383
   - CD14 ENSG00000170458
   - CD34 ENSG00000174059
-- name: Myeloid dendritic cell
-  markers:
+  name: Myeloid derived suppressor cell (MDSC)
+- markers:
   - CLEC10A ENSG00000132514
-- name: Stromal cell
-  markers:
+  name: Myeloid dendritic cell
+- markers:
   - CD44 ENSG00000026508
-- name: M1 macrophage
-  markers:
+  name: Stromal cell
+- markers:
   - CD40 ENSG00000101017
-- name: Macrophage
-  markers:
+  name: M1 macrophage
+- markers:
   - MARCO ENSG00000019169
   - SIGLEC1 ENSG00000088827
+  name: Macrophage
+metadata:
+  date: 27.03.2020
+  id: '43'
+  list_name: HCM_human_belly
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: belly

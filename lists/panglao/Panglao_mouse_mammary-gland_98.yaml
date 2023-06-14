@@ -1,21 +1,5 @@
-metadata:
-  id: '98'
-  list_name: Panglao_mouse_mammary-gland
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: mammary-gland
-    custom_tag: cell type annotation
 marker_list:
-- name: Luminal epithelial cells
-  markers:
+- markers:
   - FGFR2 ENSMUSG00000030849
   - FGG ENSMUSG00000033860
   - KRT18 ENSMUSG00000023043
@@ -60,8 +44,8 @@ marker_list:
   - CDH1 ENSMUSG00000000303
   - MUC1 ENSMUSG00000042784
   - ANPEP ENSMUSG00000039062
-- name: Mammary epithelial cells
-  markers:
+  name: Luminal epithelial cells
+- markers:
   - CSN2 ENSMUSG00000063157
   - CSN1S2A ENSMUSG00000061937
   - BTN1A1 ENSMUSG00000000706
@@ -107,3 +91,19 @@ marker_list:
   - KRT8 ENSMUSG00000049382
   - KRT18 ENSMUSG00000023043
   - WFDC18 ENSMUSG00000000983
+  name: Mammary epithelial cells
+metadata:
+  date: 27.03.2020
+  id: '98'
+  list_name: Panglao_mouse_mammary-gland
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: mammary-gland

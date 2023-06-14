@@ -1,28 +1,28 @@
-metadata:
-  id: '83'
-  list_name: HCM_human_head-and-neck
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: head-and-neck
-    custom_tag: cell type annotation
 marker_list:
-- name: Cancer stem cell
-  markers:
+- markers:
   - CD44 ENSG00000026508
   - ALCAM ENSG00000170017
-- name: Conventional CD4 T cell
-  markers:
+  name: Cancer stem cell
+- markers:
   - CD3E ENSG00000198851
   - CD3G ENSG00000160654
   - CD3D ENSG00000167286
-- name: Mesenchymal cell
-  markers:
+  name: Conventional CD4 T cell
+- markers:
   - AXL ENSG00000167601
+  name: Mesenchymal cell
+metadata:
+  date: 27.03.2020
+  id: '83'
+  list_name: HCM_human_head-and-neck
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: head-and-neck

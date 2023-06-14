@@ -1,21 +1,5 @@
-metadata:
-  id: '4'
-  list_name: Panglao_human_brain
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: brain
-    custom_tag: cell type annotation
 marker_list:
-- name: Adrenergic neurons
-  markers:
+- markers:
   - TH ENSG00000180176
   - DDC ENSG00000132437
   - DBH ENSG00000123454
@@ -24,8 +8,8 @@ marker_list:
   - NPFF ENSG00000139574
   - SLC12A7 ENSG00000113504
   - SYT1 ENSG00000067715
-- name: Anterior pituitary gland cells
-  markers:
+  name: Adrenergic neurons
+- markers:
   - AGA ENSG00000038002
   - ANGPT1 ENSG00000154188
   - CHGA ENSG00000100604
@@ -60,8 +44,8 @@ marker_list:
   - TSHB ENSG00000134200
   - PAX7 ENSG00000009709
   - LHB ENSG00000104826
-- name: Astrocytes
-  markers:
+  name: Anterior pituitary gland cells
+- markers:
   - S100B ENSG00000160307
   - SLC1A2 ENSG00000110436
   - GFAP ENSG00000131095
@@ -129,8 +113,8 @@ marker_list:
   - SLIT3 ENSG00000184347
   - SNPH ENSG00000101298
   - IL23A ENSG00000110944
-- name: Bergmann glia
-  markers:
+  name: Astrocytes
+- markers:
   - GFAP ENSG00000131095
   - GDF10 ENSG00000266524
   - GJB6 ENSG00000121742
@@ -172,8 +156,8 @@ marker_list:
   - GRIN3A ENSG00000198785
   - DAO ENSG00000110887
   - ITGB1 ENSG00000150093
-- name: Cajal-Retzius cells
-  markers:
+  name: Bergmann glia
+- markers:
   - RELN ENSG00000189056
   - DIABLO ENSG00000184047
   - ST3GAL5 ENSG00000115525
@@ -259,8 +243,8 @@ marker_list:
   - EOMES ENSG00000163508
   - CNR1 ENSG00000118432
   - HAR1A ENSG00000225978
-- name: Cholinergic neurons
-  markers:
+  name: Cajal-Retzius cells
+- markers:
   - CHAT ENSG00000070748
   - SLC18A3 ENSG00000187714
   - ACHE ENSG00000087085
@@ -268,8 +252,8 @@ marker_list:
   - TAC1 ENSG00000006128
   - BRCA1 ENSG00000012048
   - ACLY ENSG00000131473
-- name: Choroid plexus cells
-  markers:
+  name: Cholinergic neurons
+- markers:
   - TTR ENSG00000118271
   - KL ENSG00000133116
   - SOSTDC1 ENSG00000171243
@@ -293,8 +277,8 @@ marker_list:
   - SLC23A1 ENSG00000170482
   - SLC26A11 ENSG00000181045
   - CHMP1A ENSG00000131165
-- name: Dopaminergic neurons
-  markers:
+  name: Choroid plexus cells
+- markers:
   - TH ENSG00000180176
   - SLC6A3 ENSG00000142319
   - FOXA2 ENSG00000125798
@@ -317,8 +301,8 @@ marker_list:
   - NEUROD6 ENSG00000164600
   - SMAD3 ENSG00000166949
   - PITX3 ENSG00000107859
-- name: Ependymal cells
-  markers:
+  name: Dopaminergic neurons
+- markers:
   - FOXJ1 ENSG00000129654
   - TRIM71 ENSG00000206557
   - SIX3 ENSG00000138083
@@ -375,8 +359,8 @@ marker_list:
   - AK8 ENSG00000165695
   - CFAP44 ENSG00000206530
   - TM4SF1 ENSG00000169908
-- name: GABAergic neurons
-  markers:
+  name: Ependymal cells
+- markers:
   - SLC6A1 ENSG00000157103
   - GABBR2 ENSG00000136928
   - GAD1 ENSG00000128683
@@ -392,8 +376,8 @@ marker_list:
   - MYBPC1 ENSG00000196091
   - PARM1 ENSG00000169116
   - DLX1 ENSG00000144355
-- name: Glutaminergic neurons
-  markers:
+  name: GABAergic neurons
+- markers:
   - SLC17A7 ENSG00000104888
   - SLC17A6 ENSG00000091664
   - GRIN1 ENSG00000176884
@@ -404,12 +388,12 @@ marker_list:
   - SLC1A1 ENSG00000106688
   - SLC1A2 ENSG00000110436
   - SLC1A6 ENSG00000105143
-- name: Glycinergic neurons
-  markers:
+  name: Glutaminergic neurons
+- markers:
   - SLC6A9 ENSG00000196517
   - SLC32A1 ENSG00000101438
-- name: Immature neurons
-  markers:
+  name: Glycinergic neurons
+- markers:
   - PAX6 ENSG00000007372
   - PCLO ENSG00000186472
   - CUX2 ENSG00000111249
@@ -448,8 +432,8 @@ marker_list:
   - ICAM5 ENSG00000105376
   - SSTR2 ENSG00000180616
   - NEUROG2 ENSG00000178403
-- name: Interneurons
-  markers:
+  name: Immature neurons
+- markers:
   - CALB1 ENSG00000104327
   - CCK ENSG00000187094
   - CHAT ENSG00000070748
@@ -674,8 +658,8 @@ marker_list:
   - DLX5 ENSG00000105880
   - ARX ENSG00000004848
   - NDNF ENSG00000173376
-- name: Meningeal cells
-  markers:
+  name: Interneurons
+- markers:
   - FOXC1 ENSG00000054598
   - FOXC2 ENSG00000176692
   - BMP7 ENSG00000101144
@@ -694,8 +678,8 @@ marker_list:
   - NNAT ENSG00000053438
   - CCN3 ENSG00000136999
   - SLC47A1 ENSG00000142494
-- name: Microglia
-  markers:
+  name: Meningeal cells
+- markers:
   - ITGAM ENSG00000169896
   - ITGAX ENSG00000140678
   - C5AR1 ENSG00000197405
@@ -768,8 +752,8 @@ marker_list:
   - CSF1R ENSG00000182578
   - SKI ENSG00000157933
   - C1QB ENSG00000173369
-- name: Motor neurons
-  markers:
+  name: Microglia
+- markers:
   - ISL1 ENSG00000016082
   - MNX1 ENSG00000130675
   - ISL2 ENSG00000159556
@@ -783,8 +767,8 @@ marker_list:
   - NKX6-1 ENSG00000163623
   - NGFR ENSG00000064300
   - SIM1 ENSG00000112246
-- name: Neural stem/precursor cells
-  markers:
+  name: Motor neurons
+- markers:
   - SOX1 ENSG00000182968
   - PROM1 ENSG00000007062
   - IGF1R ENSG00000140443
@@ -843,8 +827,8 @@ marker_list:
   - CCND2 ENSG00000118971
   - DLX1 ENSG00000144355
   - S100A6 ENSG00000197956
-- name: Neuroblasts
-  markers:
+  name: Neural stem/precursor cells
+- markers:
   - NTNG1 ENSG00000162631
   - TSHZ1 ENSG00000179981
   - SP9 ENSG00000217236
@@ -896,8 +880,8 @@ marker_list:
   - ZBED4 ENSG00000100426
   - PROS1 ENSG00000184500
   - CNR1 ENSG00000118432
-- name: Neuroendocrine cells
-  markers:
+  name: Neuroblasts
+- markers:
   - PPP1R1B ENSG00000131771
   - CLASP2 ENSG00000163539
   - FXYD7 ENSG00000221946
@@ -924,8 +908,8 @@ marker_list:
   - PRSS12 ENSG00000164099
   - SERPINI1 ENSG00000163536
   - NKX2-2 ENSG00000125820
-- name: Neurons
-  markers:
+  name: Neuroendocrine cells
+- markers:
   - ENO2 ENSG00000111674
   - RBFOX3 ENSG00000167281
   - CHAT ENSG00000070748
@@ -1131,8 +1115,8 @@ marker_list:
   - SLC17A6 ENSG00000091664
   - TUBB3 ENSG00000258947
   - ELAVL3 ENSG00000196361
-- name: Noradrenergic neurons
-  markers:
+  name: Neurons
+- markers:
   - TH ENSG00000180176
   - DDC ENSG00000132437
   - DBH ENSG00000123454
@@ -1142,8 +1126,8 @@ marker_list:
   - SLC6A5 ENSG00000165970
   - SLC39A11 ENSG00000133195
   - SLC9B2 ENSG00000164038
-- name: Oligodendrocyte progenitor cells
-  markers:
+  name: Noradrenergic neurons
+- markers:
   - CSPG4 ENSG00000173546
   - PDGFRA ENSG00000134853
   - SOX10 ENSG00000100146
@@ -1174,8 +1158,8 @@ marker_list:
   - SLK ENSG00000065613
   - NKX6-2 ENSG00000148826
   - CNP ENSG00000173786
-- name: Oligodendrocytes
-  markers:
+  name: Oligodendrocyte progenitor cells
+- markers:
   - GALC ENSG00000054983
   - MOG ENSG00000204655
   - OLIG1 ENSG00000184221
@@ -1268,8 +1252,8 @@ marker_list:
   - PLP1 ENSG00000123560
   - ITPR2 ENSG00000123104
   - MBP ENSG00000197971
-- name: Pinealocytes
-  markers:
+  name: Oligodendrocytes
+- markers:
   - ASMT ENSG00000196433
   - ADRB1 ENSG00000043591
   - TPH1 ENSG00000129167
@@ -1296,8 +1280,8 @@ marker_list:
   - PDE10A ENSG00000112541
   - PMEPA1 ENSG00000124225
   - STAG1 ENSG00000118007
-- name: Purkinje neurons
-  markers:
+  name: Pinealocytes
+- markers:
   - CALB1 ENSG00000104327
   - ABAT ENSG00000183044
   - GRIN1 ENSG00000176884
@@ -1359,8 +1343,8 @@ marker_list:
   - GRID2 ENSG00000152208
   - GLUD2 ENSG00000182890
   - GAD2 ENSG00000136750
-- name: Pyramidal cells
-  markers:
+  name: Purkinje neurons
+- markers:
   - CD3E ENSG00000198851
   - DLG4 ENSG00000132535
   - CAMK2A ENSG00000070808
@@ -1398,8 +1382,8 @@ marker_list:
   - CCK ENSG00000187094
   - KCND2 ENSG00000184408
   - KCND3 ENSG00000171385
-- name: Radial glia cells
-  markers:
+  name: Pyramidal cells
+- markers:
   - PAX6 ENSG00000007372
   - SLC1A3 ENSG00000079215
   - PDGFD ENSG00000170962
@@ -1414,8 +1398,8 @@ marker_list:
   - SPRY1 ENSG00000164056
   - AXIN2 ENSG00000168646
   - RIIAD1 ENSG00000178796
-- name: Retinal ganglion cells
-  markers:
+  name: Radial glia cells
+- markers:
   - PRKCA ENSG00000154229
   - NGF ENSG00000134259
   - POU4F2 ENSG00000151615
@@ -1487,8 +1471,8 @@ marker_list:
   - FXYD7 ENSG00000221946
   - NEFM ENSG00000104722
   - SNCG ENSG00000173267
-- name: Satellite glial cells
-  markers:
+  name: Retinal ganglion cells
+- markers:
   - GLUL ENSG00000135821
   - GFAP ENSG00000131095
   - EDNRB ENSG00000136160
@@ -1513,8 +1497,8 @@ marker_list:
   - P2RX7 ENSG00000089041
   - SLC1A3 ENSG00000079215
   - IL17A ENSG00000112115
-- name: Schwann cells
-  markers:
+  name: Satellite glial cells
+- markers:
   - MPZ ENSG00000158887
   - ITGB4 ENSG00000132470
   - LAMC1 ENSG00000135862
@@ -1564,8 +1548,8 @@ marker_list:
   - GPR37L1 ENSG00000170075
   - NRN1 ENSG00000124785
   - STMN1 ENSG00000117632
-- name: Serotonergic neurons
-  markers:
+  name: Schwann cells
+- markers:
   - TPH1 ENSG00000129167
   - SLC6A4 ENSG00000108576
   - HTT ENSG00000197386
@@ -1575,8 +1559,8 @@ marker_list:
   - SLC18A2 ENSG00000165646
   - ESM1 ENSG00000164283
   - SLC22A3 ENSG00000146477
-- name: Tanycytes
-  markers:
+  name: Serotonergic neurons
+- markers:
   - GPR50 ENSG00000102195
   - DRD2 ENSG00000149295
   - DIO2 ENSG00000211448
@@ -1603,8 +1587,8 @@ marker_list:
   - RGS7BP ENSG00000186479
   - CCN2 ENSG00000118523
   - TGFB2 ENSG00000092969
-- name: Trigeminal neurons
-  markers:
+  name: Tanycytes
+- markers:
   - CREBRF ENSG00000164463
   - PRKX ENSG00000183943
   - PRDM12 ENSG00000130711
@@ -1652,3 +1636,19 @@ marker_list:
   - PIEZO2 ENSG00000154864
   - VAMP1 ENSG00000139190
   - SCN10A ENSG00000185313
+  name: Trigeminal neurons
+metadata:
+  date: 27.03.2020
+  id: '4'
+  list_name: Panglao_human_brain
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: brain

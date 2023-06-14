@@ -1,21 +1,5 @@
-metadata:
-  id: '13'
-  list_name: Panglao_human_liver
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: liver
-    custom_tag: cell type annotation
 marker_list:
-- name: Cholangiocytes
-  markers:
+- markers:
   - SSTR2 ENSG00000180616
   - SLC4A2 ENSG00000164889
   - SCTR ENSG00000080293
@@ -59,8 +43,8 @@ marker_list:
   - SPP1 ENSG00000118785
   - MUC5B ENSG00000117983
   - LGALS4 ENSG00000171747
-- name: Hepatic stellate cells
-  markers:
+  name: Cholangiocytes
+- markers:
   - ADAMTS13 ENSG00000160323
   - CYGB ENSG00000161544
   - PPARG ENSG00000132170
@@ -106,8 +90,8 @@ marker_list:
   - CCL2 ENSG00000108691
   - COLEC11 ENSG00000118004
   - HGF ENSG00000019991
-- name: Hepatoblasts
-  markers:
+  name: Hepatic stellate cells
+- markers:
   - AFP ENSG00000081051
   - ALB ENSG00000163631
   - CEBPA ENSG00000245848
@@ -126,8 +110,8 @@ marker_list:
   - HNF1B ENSG00000275410
   - HHEX ENSG00000152804
   - MET ENSG00000105976
-- name: Hepatocytes
-  markers:
+  name: Hepatoblasts
+- markers:
   - FOSL1 ENSG00000175592
   - EPPK1 ENSG00000261150
   - UCP2 ENSG00000175567
@@ -279,8 +263,8 @@ marker_list:
   - PHLDA1 ENSG00000139289
   - WTAP ENSG00000146457
   - ACADM ENSG00000117054
-- name: Kupffer cells
-  markers:
+  name: Hepatocytes
+- markers:
   - TNF ENSG00000232810
   - LYZ ENSG00000090382
   - MPO ENSG00000005381
@@ -327,3 +311,19 @@ marker_list:
   - C1QA ENSG00000173372
   - C1QB ENSG00000173369
   - CLEC4E ENSG00000166523
+  name: Kupffer cells
+metadata:
+  date: 27.03.2020
+  id: '13'
+  list_name: Panglao_human_liver
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: liver

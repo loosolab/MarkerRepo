@@ -1,19 +1,19 @@
+marker_list:
+- markers:
+  - SPINK1 ENSG00000164266
+  name: Progenitor cell
 metadata:
+  date: 27.03.2020
   id: '71'
   list_name: HCM_human_fetal-liver
+  marker_type: Genes
   organism:
     organism_name: human
     taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
   source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
   tags:
+    list_type: Cell type annotation
     tissue: fetal-liver
-    custom_tag: cell type annotation
-marker_list:
-- name: Progenitor cell
-  markers:
-  - SPINK1 ENSG00000164266

@@ -1,21 +1,5 @@
-metadata:
-  id: '11'
-  list_name: Panglao_human_immune-system
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: immune-system
-    custom_tag: cell type annotation
 marker_list:
-- name: B cells
-  markers:
+- markers:
   - CD2 ENSG00000116824
   - CD5 ENSG00000110448
   - MS4A1 ENSG00000156738
@@ -113,8 +97,8 @@ marker_list:
   - TLR9 ENSG00000239732
   - SWAP70 ENSG00000133789
   - HMGA1 ENSG00000137309
-- name: B cells memory
-  markers:
+  name: B cells
+- markers:
   - CD38 ENSG00000004468
   - CD80 ENSG00000121594
   - CD84 ENSG00000066294
@@ -183,8 +167,8 @@ marker_list:
   - TRAF4 ENSG00000076604
   - VPREB3 ENSG00000128218
   - ZBTB32 ENSG00000011590
-- name: B cells naive
-  markers:
+  name: B cells memory
+- markers:
   - CD19 ENSG00000177455
   - CD2 ENSG00000116824
   - CD72 ENSG00000137101
@@ -257,8 +241,8 @@ marker_list:
   - STAG3 ENSG00000066923
   - BIRC3 ENSG00000023445
   - CD74 ENSG00000019582
-- name: Basophils
-  markers:
+  name: B cells naive
+- markers:
   - CD69 ENSG00000110848
   - IL3RA ENSG00000185291
   - CCR3 ENSG00000183625
@@ -332,8 +316,8 @@ marker_list:
   - UNC93A ENSG00000112494
   - WRN ENSG00000165392
   - ID1 ENSG00000125968
-- name: Dendritic cells
-  markers:
+  name: Basophils
+- markers:
   - IL6 ENSG00000136244
   - CD86 ENSG00000114013
   - CD83 ENSG00000112149
@@ -458,8 +442,8 @@ marker_list:
   - HLA-C ENSG00000204525
   - HLA-DRB5 ENSG00000198502
   - SERPINB9 ENSG00000170542
-- name: Eosinophils
-  markers:
+  name: Dendritic cells
+- markers:
   - C3AR1 ENSG00000171860
   - FUT4 ENSG00000196371
   - FCER2 ENSG00000104921
@@ -490,8 +474,8 @@ marker_list:
   - CCL5 ENSG00000271503
   - CSF2 ENSG00000164400
   - IL5RA ENSG00000091181
-- name: Gamma delta T cells
-  markers:
+  name: Eosinophils
+- markers:
   - GNLY ENSG00000115523
   - PTGDS ENSG00000107317
   - GZMB ENSG00000100453
@@ -557,8 +541,8 @@ marker_list:
   - TRDV1 ENSG00000211804
   - TRDV2 ENSG00000211821
   - TRDV3 ENSG00000256590
-- name: Macrophages
-  markers:
+  name: Gamma delta T cells
+- markers:
   - ITGAL ENSG00000005844
   - ITGAM ENSG00000169896
   - CD14 ENSG00000170458
@@ -693,8 +677,8 @@ marker_list:
   - SLC7A7 ENSG00000155465
   - RUNX3 ENSG00000020633
   - SYK ENSG00000165025
-- name: Mast cells
-  markers:
+  name: Macrophages
+- markers:
   - KIT ENSG00000157404
   - ENPP3 ENSG00000154269
   - IL2RA ENSG00000134460
@@ -836,8 +820,8 @@ marker_list:
   - DGKI ENSG00000157680
   - DDC ENSG00000132437
   - DCLK3 ENSG00000163673
-- name: Megakaryocytes
-  markers:
+  name: Mast cells
+- markers:
   - ITGA2B ENSG00000005961
   - GP1BA ENSG00000185245
   - ITGB3 ENSG00000259207
@@ -887,8 +871,8 @@ marker_list:
   - VEGFA ENSG00000112715
   - TGFB1 ENSG00000105329
   - GP9 ENSG00000169704
-- name: Monocytes
-  markers:
+  name: Megakaryocytes
+- markers:
   - RGS1 ENSG00000090104
   - APOBEC3A ENSG00000128383
   - CD7 ENSG00000173762
@@ -992,8 +976,8 @@ marker_list:
   - IL1B ENSG00000125538
   - CFP ENSG00000126759
   - CD36 ENSG00000135218
-- name: Myeloid-derived suppressor cells
-  markers:
+  name: Monocytes
+- markers:
   - ITGAM ENSG00000169896
   - FUT4 ENSG00000196371
   - CD33 ENSG00000105383
@@ -1010,8 +994,8 @@ marker_list:
   - MIF ENSG00000240972
   - S100A4 ENSG00000196154
   - S100A8 ENSG00000143546
-- name: Natural killer T cells
-  markers:
+  name: Myeloid-derived suppressor cells
+- markers:
   - IL12RB2 ENSG00000081985
   - IL17RA ENSG00000177663
   - IL12RB1 ENSG00000096996
@@ -1038,8 +1022,8 @@ marker_list:
   - SLAMF7 ENSG00000026751
   - CXCR4 ENSG00000121966
   - CD44 ENSG00000026508
-- name: Neutrophils
-  markers:
+  name: Natural killer T cells
+- markers:
   - MME ENSG00000196549
   - ITGAM ENSG00000169896
   - ITGAX ENSG00000140678
@@ -1111,8 +1095,8 @@ marker_list:
   - NLRP3 ENSG00000162711
   - AVP ENSG00000101200
   - CSF3R ENSG00000119535
-- name: NK cells
-  markers:
+  name: Neutrophils
+- markers:
   - ITGAM ENSG00000169896
   - ITGAX ENSG00000140678
   - FCGR3A ENSG00000203747
@@ -1194,8 +1178,8 @@ marker_list:
   - LAIR2 ENSG00000167618
   - HOPX ENSG00000171476
   - CD8A ENSG00000153563
-- name: Nuocytes
-  markers:
+  name: NK cells
+- markers:
   - ICOS ENSG00000163600
   - IL1RL1 ENSG00000115602
   - RORA ENSG00000069667
@@ -1210,8 +1194,8 @@ marker_list:
   - BCL11B ENSG00000127152
   - IL5 ENSG00000113525
   - IL13 ENSG00000169194
-- name: Plasma cells
-  markers:
+  name: Nuocytes
+- markers:
   - SDC1 ENSG00000115884
   - IRF4 ENSG00000137265
   - CD38 ENSG00000004468
@@ -1298,8 +1282,8 @@ marker_list:
   - IL16 ENSG00000172349
   - BHLHA15 ENSG00000180535
   - PPIB ENSG00000166794
-- name: Plasmacytoid dendritic cells
-  markers:
+  name: Plasma cells
+- markers:
   - CD4 ENSG00000010610
   - CD8A ENSG00000153563
   - CD40 ENSG00000101017
@@ -1356,8 +1340,8 @@ marker_list:
   - CCR9 ENSG00000173585
   - IRF5 ENSG00000128604
   - BST2 ENSG00000130303
-- name: Red pulp macrophages
-  markers:
+  name: Plasmacytoid dendritic cells
+- markers:
   - HMOX1 ENSG00000100292
   - TREML4 ENSG00000188056
   - CD86 ENSG00000114013
@@ -1370,8 +1354,8 @@ marker_list:
   - SLC40A1 ENSG00000138449
   - VCAM1 ENSG00000162692
   - SIGLEC1 ENSG00000088827
-- name: T cells
-  markers:
+  name: Red pulp macrophages
+- markers:
   - CD3D ENSG00000167286
   - CD3G ENSG00000160654
   - CD3E ENSG00000198851
@@ -1468,8 +1452,8 @@ marker_list:
   - IFNG ENSG00000111537
   - CD52 ENSG00000169442
   - BRAF ENSG00000157764
-- name: T cytotoxic cells
-  markers:
+  name: T cells
+- markers:
   - CD2 ENSG00000116824
   - CD27 ENSG00000139193
   - CD28 ENSG00000178562
@@ -1478,8 +1462,8 @@ marker_list:
   - CD8A ENSG00000153563
   - GZMB ENSG00000100453
   - TRAC ENSG00000277734
-- name: T follicular helper cells
-  markers:
+  name: T cytotoxic cells
+- markers:
   - BCL6 ENSG00000113916
   - CD3D ENSG00000167286
   - CD4 ENSG00000010610
@@ -1493,8 +1477,8 @@ marker_list:
   - PDCD1 ENSG00000188389
   - CD200 ENSG00000091972
   - P2RX7 ENSG00000089041
-- name: T helper cells
-  markers:
+  name: T follicular helper cells
+- markers:
   - IFNG ENSG00000111537
   - IL2 ENSG00000109471
   - TBX21 ENSG00000073861
@@ -1558,8 +1542,8 @@ marker_list:
   - NFKB1 ENSG00000109320
   - NR3C1 ENSG00000113580
   - PPARG ENSG00000132170
-- name: T memory cells
-  markers:
+  name: T helper cells
+- markers:
   - SELL ENSG00000188404
   - CCR7 ENSG00000126353
   - CD4 ENSG00000010610
@@ -1615,8 +1599,8 @@ marker_list:
   - CCR6 ENSG00000112486
   - ITGAE ENSG00000083457
   - ENPP1 ENSG00000197594
-- name: T regulatory cells
-  markers:
+  name: T memory cells
+- markers:
   - FOXP3 ENSG00000049768
   - IKZF2 ENSG00000030419
   - CD4 ENSG00000010610
@@ -1639,3 +1623,19 @@ marker_list:
   - ITGB8 ENSG00000105855
   - LRRC32 ENSG00000137507
   - FOLR1 ENSG00000110195
+  name: T regulatory cells
+metadata:
+  date: 27.03.2020
+  id: '11'
+  list_name: Panglao_human_immune-system
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: immune-system

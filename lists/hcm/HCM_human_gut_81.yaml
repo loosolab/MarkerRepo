@@ -1,21 +1,21 @@
-metadata:
-  id: '81'
-  list_name: HCM_human_gut
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: gut
-    custom_tag: cell type annotation
 marker_list:
-- name: Regulatory T(Treg) cell
-  markers:
+- markers:
   - IL10 ENSG00000136634
   - IL23R ENSG00000162594
   - IL1R1 ENSG00000115594
+  name: Regulatory T(Treg) cell
+metadata:
+  date: 27.03.2020
+  id: '81'
+  list_name: HCM_human_gut
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: gut

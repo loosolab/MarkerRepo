@@ -1,21 +1,5 @@
-metadata:
-  id: '109'
-  list_name: Panglao_mouse_thymus
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: thymus
-    custom_tag: cell type annotation
 marker_list:
-- name: Thymocytes
-  markers:
+- markers:
   - NOTCH1 ENSMUSG00000026923
   - CD38 ENSMUSG00000029084
   - CXCR4 ENSMUSG00000045382
@@ -36,3 +20,19 @@ marker_list:
   - BCL6 ENSMUSG00000022508
   - CIDEA ENSMUSG00000024526
   - EZR ENSMUSG00000052397
+  name: Thymocytes
+metadata:
+  date: 27.03.2020
+  id: '109'
+  list_name: Panglao_mouse_thymus
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: thymus

@@ -1,21 +1,5 @@
-metadata:
-  id: '78'
-  list_name: HCM_human_germ
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: germ
-    custom_tag: cell type annotation
 marker_list:
-- name: Mesoderm cell
-  markers:
+- markers:
   - CD5 ENSG00000110448
   - CD14 ENSG00000170458
   - CD44 ENSG00000026508
@@ -31,8 +15,8 @@ marker_list:
   - TFRC ENSG00000072274
   - THY1 ENSG00000154096
   - VCAM1 ENSG00000162692
-- name: Embryonic stem cell
-  markers:
+  name: Mesoderm cell
+- markers:
   - CD9 ENSG00000010278
   - CCR4 ENSG00000183813
   - CD24 ENSG00000272398
@@ -43,32 +27,32 @@ marker_list:
   - ITGB1 ENSG00000150093
   - PROM1 ENSG00000007062
   - ABCG2 ENSG00000118777
-- name: Myeloblast
-  markers:
+  name: Embryonic stem cell
+- markers:
   - CD33 ENSG00000105383
   - ANPEP ENSG00000166825
   - CSF2RA ENSG00000198223
   - CSF3R ENSG00000119535
   - FUT4 ENSG00000196371
   - LRP1 ENSG00000123384
-- name: Common lymphoid progenitor cell
-  markers:
+  name: Myeloblast
+- markers:
   - CD34 ENSG00000174059
   - CD38 ENSG00000004468
   - MME ENSG00000196549
-- name: Endothelial cell
-  markers:
+  name: Common lymphoid progenitor cell
+- markers:
   - CD34 ENSG00000174059
   - PECAM1 ENSG00000261371
   - SELE ENSG00000007908
   - VCAM1 ENSG00000162692
-- name: Granulocyte-monocyte progenitor
-  markers:
+  name: Endothelial cell
+- markers:
   - CD34 ENSG00000174059
   - CD38 ENSG00000004468
   - IL3RA ENSG00000185291
-- name: Hemangioblast
-  markers:
+  name: Granulocyte-monocyte progenitor
+- markers:
   - CD34 ENSG00000174059
   - EPHB4 ENSG00000196411
   - CDH1 ENSG00000039068
@@ -77,8 +61,8 @@ marker_list:
   - KDR ENSG00000128052
   - PECAM1 ENSG00000261371
   - PROM1 ENSG00000007062
-- name: Hematopoietic stem cell
-  markers:
+  name: Hemangioblast
+- markers:
   - CD34 ENSG00000174059
   - CD38 ENSG00000004468
   - NOTCH1 ENSG00000148400
@@ -89,25 +73,25 @@ marker_list:
   - CXCR4 ENSG00000121966
   - PROM1 ENSG00000007062
   - ABCG2 ENSG00000118777
-- name: Megakaryocyte-erythroid progenitor
-  markers:
+  name: Hematopoietic stem cell
+- markers:
   - CD34 ENSG00000174059
   - CD38 ENSG00000004468
   - IL3RA ENSG00000185291
-- name: Mesodermal embryonic stem cell
-  markers:
+  name: Megakaryocyte-erythroid progenitor
+- markers:
   - CD34 ENSG00000174059
   - CDH2 ENSG00000170558
   - PECAM1 ENSG00000261371
-- name: Mesenchymal stem cell
-  markers:
+  name: Mesodermal embryonic stem cell
+- markers:
   - CD44 ENSG00000026508
   - ALCAM ENSG00000170017
   - NT5E ENSG00000135318
   - PTPRC ENSG00000081237
   - THY1 ENSG00000154096
-- name: Neural tube cell
-  markers:
+  name: Mesenchymal stem cell
+- markers:
   - CD81 ENSG00000110651
   - NOTCH1 ENSG00000148400
   - ABCG2 ENSG00000118777
@@ -120,28 +104,44 @@ marker_list:
   - FZD9 ENSG00000188763
   - B3GAT1 ENSG00000109956
   - TLR8 ENSG00000101916
-- name: Ectoderm cell
-  markers:
+  name: Neural tube cell
+- markers:
   - NOTCH1 ENSG00000148400
   - NCAM1 ENSG00000149294
-- name: Neural crest cell
-  markers:
+  name: Ectoderm cell
+- markers:
   - NOTCH1 ENSG00000148400
   - NGFR ENSG00000064300
   - B3GAT1 ENSG00000109956
-- name: Primitive endoderm cell
-  markers:
+  name: Neural crest cell
+- markers:
   - CDH2 ENSG00000170558
-- name: Proerythroblast
-  markers:
+  name: Primitive endoderm cell
+- markers:
   - SPI1 ENSG00000066336
   - TFRC ENSG00000072274
-- name: Definitive endoderm cell
-  markers:
+  name: Proerythroblast
+- markers:
   - CXCR4 ENSG00000121966
-- name: Primordial germ cell
-  markers:
+  name: Definitive endoderm cell
+- markers:
   - DDX4 ENSG00000152670
   - DNMT3L ENSG00000142182
   - DPPA2 ENSG00000163530
   - DPPA3 ENSG00000187569
+  name: Primordial germ cell
+metadata:
+  date: 27.03.2020
+  id: '78'
+  list_name: HCM_human_germ
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: germ

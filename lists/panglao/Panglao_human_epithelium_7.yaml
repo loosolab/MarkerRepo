@@ -1,21 +1,5 @@
-metadata:
-  id: '7'
-  list_name: Panglao_human_epithelium
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: epithelium
-    custom_tag: cell type annotation
 marker_list:
-- name: Basal cells
-  markers:
+- markers:
   - KRT5 ENSG00000186081
   - KRT17 ENSG00000128422
   - BCL2 ENSG00000171791
@@ -72,8 +56,8 @@ marker_list:
   - LAMC2 ENSG00000058085
   - BMP7 ENSG00000101144
   - MYLK ENSG00000065534
-- name: Epithelial cells
-  markers:
+  name: Basal cells
+- markers:
   - CD24 ENSG00000272398
   - CEACAM1 ENSG00000079385
   - ST6GAL1 ENSG00000073849
@@ -205,8 +189,8 @@ marker_list:
   - CLDN1 ENSG00000163347
   - OCLN ENSG00000197822
   - MUC5AC ENSG00000215182
-- name: Mesothelial cells
-  markers:
+  name: Epithelial cells
+- markers:
   - CALB2 ENSG00000172137
   - MUC16 ENSG00000181143
   - KRT5 ENSG00000186081
@@ -261,3 +245,19 @@ marker_list:
   - FRAS1 ENSG00000138759
   - RSPO1 ENSG00000169218
   - RARRES2 ENSG00000106538
+  name: Mesothelial cells
+metadata:
+  date: 27.03.2020
+  id: '7'
+  list_name: Panglao_human_epithelium
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: epithelium

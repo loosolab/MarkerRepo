@@ -1,45 +1,29 @@
-metadata:
-  id: '76'
-  list_name: HCM_human_gastrointestinal-tract
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: gastrointestinal-tract
-    custom_tag: cell type annotation
 marker_list:
-- name: Stem cell
-  markers:
+- markers:
   - BMI1 ENSG00000168283
   - ALCAM ENSG00000170017
   - PROM1 ENSG00000007062
   - SOX9 ENSG00000125398
-- name: Intestinal stem cell
-  markers:
+  name: Stem cell
+- markers:
   - LGR5 ENSG00000139292
-- name: Cancer stem cell
-  markers:
+  name: Intestinal stem cell
+- markers:
   - ALCAM ENSG00000170017
-- name: Cytotoxic T cell
-  markers:
+  name: Cancer stem cell
+- markers:
   - CD8A ENSG00000153563
   - IDO1 ENSG00000131203
-- name: Regulatory T(Treg) cell
-  markers:
+  name: Cytotoxic T cell
+- markers:
   - FOXP3 ENSG00000049768
   - IL2RA ENSG00000134460
-- name: Nave or central memory  T cell
-  markers:
+  name: Regulatory T(Treg) cell
+- markers:
   - CCR7 ENSG00000126353
   - SELL ENSG00000188404
-- name: Cytotoxic cell
-  markers:
+  name: Nave or central memory  T cell
+- markers:
   - NKG7 ENSG00000105374
   - GZMA ENSG00000145649
   - KLRD1 ENSG00000134539
@@ -50,12 +34,12 @@ marker_list:
   - CTSW ENSG00000172543
   - GNLY ENSG00000115523
   - KLRB1 ENSG00000111796
-- name: CD8 T cell
-  markers:
+  name: Cytotoxic cell
+- markers:
   - CD8B ENSG00000172116
   - CD8A ENSG00000153563
-- name: Fibroblast
-  markers:
+  name: CD8 T cell
+- markers:
   - THY1 ENSG00000154096
   - DCN ENSG00000011465
   - LUM ENSG00000139329
@@ -67,41 +51,41 @@ marker_list:
   - COL3A1 ENSG00000168542
   - FN1 ENSG00000115414
   - COL6A1 ENSG00000142156
-- name: Smooth muscle cell
-  markers:
+  name: Fibroblast
+- markers:
   - ACTA2 ENSG00000107796
-- name: Gastric neuroendocrine cell
-  markers:
+  name: Smooth muscle cell
+- markers:
   - GAST ENSG00000184502
   - CHGA ENSG00000100604
   - EPCAM ENSG00000119888
   - SST ENSG00000157005
   - TFF3 ENSG00000160180
-- name: Endothelial cell
-  markers:
+  name: Gastric neuroendocrine cell
+- markers:
   - VWF ENSG00000110799
   - SELP ENSG00000174175
   - PECAM1 ENSG00000261371
   - SELE ENSG00000007908
   - ENG ENSG00000106991
   - CDH5 ENSG00000179776
-- name: Macrophage
-  markers:
+  name: Endothelial cell
+- markers:
   - CD14 ENSG00000170458
   - CD68 ENSG00000129226
   - CD163 ENSG00000177575
   - FCGR3A ENSG00000203747
-- name: Intestinal epithelial cell
-  markers:
+  name: Macrophage
+- markers:
   - MUC2 ENSG00000198788
-- name: Pericyte
-  markers:
+  name: Intestinal epithelial cell
+- markers:
   - PDGFRB ENSG00000113721
   - RGS5 ENSG00000232995
   - ACTA2 ENSG00000107796
   - MCAM ENSG00000076706
-- name: Myofibroblast
-  markers:
+  name: Pericyte
+- markers:
   - ACTA2 ENSG00000107796
   - THY1 ENSG00000154096
   - CAV1 ENSG00000105974
@@ -109,54 +93,54 @@ marker_list:
   - COL14A1 ENSG00000187955
   - COL1A1 ENSG00000108821
   - LUM ENSG00000139329
-- name: Natural killer cell
-  markers:
+  name: Myofibroblast
+- markers:
   - GNLY ENSG00000115523
   - NCR1 ENSG00000189430
   - XCL2 ENSG00000143185
   - NKG7 ENSG00000105374
-- name: Antrum gastric epithelial cell
-  markers:
+  name: Natural killer cell
+- markers:
   - PDX1 ENSG00000139515
   - GAST ENSG00000184502
-- name: Dendritic cell
-  markers:
+  name: Antrum gastric epithelial cell
+- markers:
   - CLEC4C ENSG00000198178
   - CD83 ENSG00000112149
   - IRF4 ENSG00000137265
   - ID2 ENSG00000115738
   - HLA-DQA2 ENSG00000237541
   - IL3RA ENSG00000185291
-- name: Mast cell
-  markers:
+  name: Dendritic cell
+- markers:
   - CPA3 ENSG00000163751
   - TPSAB1 ENSG00000172236
   - MS4A2 ENSG00000149534
   - TPSB2 ENSG00000197253
-- name: Gastric parietal cell
-  markers:
+  name: Mast cell
+- markers:
   - CBLIF ENSG00000134812
-- name: T cell
-  markers:
+  name: Gastric parietal cell
+- markers:
   - CD3D ENSG00000167286
   - CD3E ENSG00000198851
   - CD3G ENSG00000160654
   - CD2 ENSG00000116824
-- name: Tissue resident effector memory T cell
-  markers:
+  name: T cell
+- markers:
   - CD69 ENSG00000110848
   - ITGAE ENSG00000083457
   - ITGA1 ENSG00000213949
-- name: Monocyte
-  markers:
+  name: Tissue resident effector memory T cell
+- markers:
   - FCGR3A ENSG00000203747
   - CD14 ENSG00000170458
-- name: Gastric stem cell
-  markers:
+  name: Monocyte
+- markers:
   - LGR5 ENSG00000139292
   - TNFRSF19 ENSG00000127863
-- name: Epithelial cell
-  markers:
+  name: Gastric stem cell
+- markers:
   - MUC5AC ENSG00000215182
   - TFF2 ENSG00000160181
   - TFF1 ENSG00000160182
@@ -168,28 +152,28 @@ marker_list:
   - SFN ENSG00000175793
   - KRT5 ENSG00000186081
   - KRT14 ENSG00000186847
-- name: Plasma cell
-  markers:
+  name: Epithelial cell
+- markers:
   - SDC1 ENSG00000115884
-- name: B cell
-  markers:
+  name: Plasma cell
+- markers:
   - MS4A1 ENSG00000156738
   - CD19 ENSG00000177455
   - CD79A ENSG00000105369
   - MZB1 ENSG00000170476
   - JCHAIN ENSG00000132465
-- name: Endocrine cell
-  markers:
+  name: B cell
+- markers:
   - CHGA ENSG00000100604
-- name: Parietal cell
-  markers:
+  name: Endocrine cell
+- markers:
   - ATP4A ENSG00000105675
-- name: Cancer cell
-  markers:
+  name: Parietal cell
+- markers:
   - ANO1 ENSG00000131620
   - KIT ENSG00000157404
-- name: Myeloid cell
-  markers:
+  name: Cancer cell
+- markers:
   - IL3RA ENSG00000185291
   - LYZ ENSG00000090382
   - LAMP3 ENSG00000078081
@@ -197,7 +181,23 @@ marker_list:
   - CD14 ENSG00000170458
   - TPSAB1 ENSG00000172236
   - CD68 ENSG00000129226
-- name: Fibroblastic reticular cell
-  markers:
+  name: Myeloid cell
+- markers:
   - PDPN ENSG00000162493
   - CCL21 ENSG00000137077
+  name: Fibroblastic reticular cell
+metadata:
+  date: 27.03.2020
+  id: '76'
+  list_name: HCM_human_gastrointestinal-tract
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: gastrointestinal-tract

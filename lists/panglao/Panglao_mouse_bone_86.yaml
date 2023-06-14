@@ -1,21 +1,5 @@
-metadata:
-  id: '86'
-  list_name: Panglao_mouse_bone
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: bone
-    custom_tag: cell type annotation
 marker_list:
-- name: Hematopoietic stem cells
-  markers:
+- markers:
   - THY1 ENSMUSG00000032011
   - MPL ENSMUSG00000006389
   - KIT ENSMUSG00000005672
@@ -103,8 +87,8 @@ marker_list:
   - TRPC6 ENSMUSG00000031997
   - HOXB5 ENSMUSG00000038700
   - TET2 ENSMUSG00000040943
-- name: Osteoblasts
-  markers:
+  name: Hematopoietic stem cells
+- markers:
   - SLC6A6 ENSMUSG00000030096
   - VDR ENSMUSG00000022479
   - LRP4 ENSMUSG00000027253
@@ -170,8 +154,8 @@ marker_list:
   - PENK ENSMUSG00000045573
   - NPNT ENSMUSG00000040998
   - OLFML1 ENSMUSG00000051041
-- name: Osteoclast precursor cells
-  markers:
+  name: Osteoblasts
+- markers:
   - MITF ENSMUSG00000035158
   - NFKB1 ENSMUSG00000028163
   - NFKB2 ENSMUSG00000025225
@@ -180,8 +164,8 @@ marker_list:
   - TREM2 ENSMUSG00000023992
   - CYSLTR1 ENSMUSG00000052821
   - TLR4 ENSMUSG00000039005
-- name: Osteoclasts
-  markers:
+  name: Osteoclast precursor cells
+- markers:
   - SOST ENSMUSG00000001494
   - ZBTB7A ENSMUSG00000035011
   - SEMA4D ENSMUSG00000021451
@@ -232,10 +216,26 @@ marker_list:
   - GRM8 ENSMUSG00000024211
   - SMAD4 ENSMUSG00000024515
   - SPP1 ENSMUSG00000029304
-- name: Osteocytes
-  markers:
+  name: Osteoclasts
+- markers:
   - SOST ENSMUSG00000001494
   - PFN1 ENSMUSG00000018293
   - EFNB2 ENSMUSG00000001300
   - PDPN ENSMUSG00000028583
   - FGF23 ENSMUSG00000000182
+  name: Osteocytes
+metadata:
+  date: 27.03.2020
+  id: '86'
+  list_name: Panglao_mouse_bone
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: bone

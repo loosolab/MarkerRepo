@@ -1,21 +1,5 @@
-metadata:
-  id: '23'
-  list_name: Panglao_human_skeletal-muscle
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: skeletal-muscle
-    custom_tag: cell type annotation
 marker_list:
-- name: Myoblasts
-  markers:
+- markers:
   - MYOG ENSG00000122180
   - LIF ENSG00000128342
   - NGF ENSG00000134259
@@ -50,8 +34,8 @@ marker_list:
   - ZBTB16 ENSG00000109906
   - SIX1 ENSG00000126778
   - PDZRN3 ENSG00000121440
-- name: Myocytes
-  markers:
+  name: Myoblasts
+- markers:
   - ACTC1 ENSG00000159251
   - FHL2 ENSG00000115641
   - ACTA1 ENSG00000143632
@@ -141,8 +125,8 @@ marker_list:
   - PYGM ENSG00000068976
   - ENO3 ENSG00000108515
   - THBS4 ENSG00000113296
-- name: Satellite cells
-  markers:
+  name: Myocytes
+- markers:
   - PAX7 ENSG00000009709
   - DMD ENSG00000198947
   - CDH1 ENSG00000039068
@@ -187,3 +171,19 @@ marker_list:
   - GAL ENSG00000069482
   - NCAM1 ENSG00000149294
   - CAV1 ENSG00000105974
+  name: Satellite cells
+metadata:
+  date: 27.03.2020
+  id: '23'
+  list_name: Panglao_human_skeletal-muscle
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: skeletal-muscle

@@ -1,21 +1,5 @@
-metadata:
-  id: '12'
-  list_name: Panglao_human_kidney
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: kidney
-    custom_tag: cell type annotation
 marker_list:
-- name: Distal tubule cells
-  markers:
+- markers:
   - CLDN8 ENSG00000156284
   - SLC12A3 ENSG00000070915
   - UMOD ENSG00000169344
@@ -58,8 +42,8 @@ marker_list:
   - SLC8A1 ENSG00000183023
   - AQP2 ENSG00000167580
   - AVPR2 ENSG00000126895
-- name: Intercalated cells
-  markers:
+  name: Distal tubule cells
+- markers:
   - FOXI1 ENSG00000168269
   - SLC26A11 ENSG00000181045
   - CLCNKB ENSG00000184908
@@ -85,16 +69,16 @@ marker_list:
   - INSRR ENSG00000027644
   - JAG1 ENSG00000101384
   - ADGRF5 ENSG00000069122
-- name: Juxtaglomerular cells
-  markers:
+  name: Intercalated cells
+- markers:
   - TRPV4 ENSG00000111199
   - REN ENSG00000143839
   - TH ENSG00000180176
   - ACTA2 ENSG00000107796
   - MYH11 ENSG00000133392
   - CNN1 ENSG00000130176
-- name: Kidney progenitor cells
-  markers:
+  name: Juxtaglomerular cells
+- markers:
   - OSR1 ENSG00000143867
   - PAX2 ENSG00000075891
   - EYA1 ENSG00000104313
@@ -102,8 +86,8 @@ marker_list:
   - SIX2 ENSG00000170577
   - SALL1 ENSG00000103449
   - CITED1 ENSG00000125931
-- name: Loop of Henle cells
-  markers:
+  name: Kidney progenitor cells
+- markers:
   - CLDN16 ENSG00000113946
   - CLDN8 ENSG00000156284
   - UMOD ENSG00000169344
@@ -157,8 +141,8 @@ marker_list:
   - TNNI1 ENSG00000159173
   - LRRC66 ENSG00000188993
   - IGF1 ENSG00000017427
-- name: Mesangial cells
-  markers:
+  name: Loop of Henle cells
+- markers:
   - PDGFB ENSG00000100311
   - PDGFRB ENSG00000113721
   - ACTA2 ENSG00000107796
@@ -218,8 +202,8 @@ marker_list:
   - SMARCA5 ENSG00000153147
   - PDE3A ENSG00000172572
   - MAP3K20 ENSG00000091436
-- name: Podocytes
-  markers:
+  name: Mesangial cells
+- markers:
   - PODXL ENSG00000128567
   - PC ENSG00000173599
   - ADAMTS13 ENSG00000160323
@@ -318,8 +302,8 @@ marker_list:
   - LUC7L2 ENSG00000146963
   - MAPT ENSG00000186868
   - CDKN1C ENSG00000129757
-- name: Principal cells
-  markers:
+  name: Podocytes
+- markers:
   - AQP2 ENSG00000167580
   - SCNN1A ENSG00000111319
   - AQP3 ENSG00000165272
@@ -365,8 +349,8 @@ marker_list:
   - TSPAN1 ENSG00000117472
   - NR3C2 ENSG00000151623
   - HES1 ENSG00000114315
-- name: Proximal tubule cells
-  markers:
+  name: Principal cells
+- markers:
   - AQP1 ENSG00000240583
   - CLDN2 ENSG00000165376
   - DPP4 ENSG00000197635
@@ -446,8 +430,8 @@ marker_list:
   - RBP4 ENSG00000138207
   - NAPSA ENSG00000131400
   - NAPA ENSG00000105402
-- name: Transient cells
-  markers:
+  name: Proximal tubule cells
+- markers:
   - SLC26A4 ENSG00000091137
   - RHBG ENSG00000132677
   - HEPACAM2 ENSG00000188175
@@ -470,3 +454,19 @@ marker_list:
   - SEC23B ENSG00000101310
   - CDC42BPB ENSG00000198752
   - PIP4K2C ENSG00000166908
+  name: Transient cells
+metadata:
+  date: 27.03.2020
+  id: '12'
+  list_name: Panglao_human_kidney
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: kidney

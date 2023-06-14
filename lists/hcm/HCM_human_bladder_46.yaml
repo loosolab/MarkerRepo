@@ -1,21 +1,5 @@
-metadata:
-  id: '46'
-  list_name: HCM_human_bladder
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: bladder
-    custom_tag: cell type annotation
 marker_list:
-- name: Epithelial cell
-  markers:
+- markers:
   - ETFA ENSG00000140374
   - KRT5 ENSG00000186081
   - CDH3 ENSG00000062038
@@ -30,8 +14,8 @@ marker_list:
   - CDH12 ENSG00000154162
   - KRT13 ENSG00000171401
   - CDH18 ENSG00000145526
-- name: Cancer stem cell
-  markers:
+  name: Epithelial cell
+- markers:
   - ETFA ENSG00000140374
   - CD44 ENSG00000026508
   - CD47 ENSG00000196776
@@ -42,8 +26,8 @@ marker_list:
   - KRT5 ENSG00000186081
   - KRT20 ENSG00000171431
   - SOX2 ENSG00000181449
-- name: Endothelial cell
-  markers:
+  name: Cancer stem cell
+- markers:
   - CD34 ENSG00000174059
   - CDH5 ENSG00000179776
   - PECAM1 ENSG00000261371
@@ -51,28 +35,28 @@ marker_list:
   - VCAM1 ENSG00000162692
   - FLT1 ENSG00000102755
   - VWF ENSG00000110799
-- name: Smooth muscle cell
-  markers:
+  name: Endothelial cell
+- markers:
   - TPM2 ENSG00000198467
   - DES ENSG00000175084
   - TAGLN ENSG00000149591
   - ACTG2 ENSG00000163017
   - CNN1 ENSG00000130176
-- name: Dendritic cell
-  markers:
+  name: Smooth muscle cell
+- markers:
   - CD209 ENSG00000090659
   - CD1C ENSG00000158481
   - CCR7 ENSG00000126353
   - LAMP3 ENSG00000078081
   - CLEC10A ENSG00000132514
-- name: B cell
-  markers:
+  name: Dendritic cell
+- markers:
   - MZB1 ENSG00000170476
   - CD79A ENSG00000105369
   - MS4A1 ENSG00000156738
   - CD19 ENSG00000177455
-- name: Basal cell
-  markers:
+  name: B cell
+- markers:
   - KRT5 ENSG00000186081
   - KRT17 ENSG00000128422
   - KRT14 ENSG00000186847
@@ -87,8 +71,8 @@ marker_list:
   - TFAP2C ENSG00000087510
   - STAT3 ENSG00000168610
   - KRT6A ENSG00000205420
-- name: Fibroblast
-  markers:
+  name: Basal cell
+- markers:
   - COL3A1 ENSG00000168542
   - S100A4 ENSG00000196154
   - COL1A1 ENSG00000108821
@@ -96,48 +80,48 @@ marker_list:
   - DCN ENSG00000011465
   - PLA2G2A ENSG00000188257
   - CALD1 ENSG00000122786
-- name: Myofibroblast
-  markers:
+  name: Fibroblast
+- markers:
   - ACTA2 ENSG00000107796
-- name: Monocyte
-  markers:
+  name: Myofibroblast
+- markers:
   - LYZ ENSG00000090382
   - MS4A7 ENSG00000166927
   - CD14 ENSG00000170458
   - S100A8 ENSG00000143546
   - S100A9 ENSG00000163220
-- name: Interstitial cell
-  markers:
+  name: Monocyte
+- markers:
   - VIM ENSG00000026025
-- name: T cell
-  markers:
+  name: Interstitial cell
+- markers:
   - CD3D ENSG00000167286
   - CD3E ENSG00000198851
   - CD247 ENSG00000198821
-- name: Umbrella cell
-  markers:
+  name: T cell
+- markers:
   - KRT20 ENSG00000171431
   - UPK2 ENSG00000110375
   - UPK3A ENSG00000100373
-- name: Neuron
-  markers:
+  name: Umbrella cell
+- markers:
   - GPM6A ENSG00000150625
-- name: Tumor-infiltrating lymphocyte(TIL)
-  markers:
+  name: Neuron
+- markers:
   - CD8A ENSG00000153563
   - CD4 ENSG00000010610
   - FOXP3 ENSG00000049768
-- name: Urothelial cell
-  markers:
+  name: Tumor-infiltrating lymphocyte(TIL)
+- markers:
   - GATA3 ENSG00000107485
   - RPE65 ENSG00000116745
-- name: Prostate cell
-  markers:
+  name: Urothelial cell
+- markers:
   - AR ENSG00000169083
   - NKX3-1 ENSG00000167034
   - ERG ENSG00000157554
-- name: Regulatory T(Treg) cell
-  markers:
+  name: Prostate cell
+- markers:
   - CTLA4 ENSG00000163599
   - TNFRSF4 ENSG00000186827
   - IL2RA ENSG00000134460
@@ -145,8 +129,8 @@ marker_list:
   - TNFRSF9 ENSG00000049249
   - TNFRSF18 ENSG00000186891
   - FOXP3 ENSG00000049768
-- name: Luminal cell
-  markers:
+  name: Regulatory T(Treg) cell
+- markers:
   - ERBB2 ENSG00000141736
   - GATA3 ENSG00000107485
   - ERBB3 ENSG00000065361
@@ -164,16 +148,16 @@ marker_list:
   - UPK1A ENSG00000105668
   - FGFR3 ENSG00000068078
   - FABP4 ENSG00000170323
-- name: Stem cell
-  markers:
+  name: Luminal cell
+- markers:
   - KRT5 ENSG00000186081
   - CD44 ENSG00000026508
   - ALDH1A1 ENSG00000165092
   - RPSA ENSG00000168028
   - SOX2 ENSG00000181449
   - SOX9 ENSG00000125398
-- name: Squamous-differentiation cell
-  markers:
+  name: Stem cell
+- markers:
   - DSC3 ENSG00000134762
   - DSG3 ENSG00000134757
   - DSC1 ENSG00000134765
@@ -181,16 +165,16 @@ marker_list:
   - DSC2 ENSG00000134755
   - S100A7 ENSG00000143556
   - S100A8 ENSG00000143546
-- name: Neuroendocrine cell
-  markers:
+  name: Squamous-differentiation cell
+- markers:
   - NCAM1 ENSG00000149294
   - CHGA ENSG00000100604
   - SCG2 ENSG00000171951
   - ENO2 ENSG00000111674
   - SYP ENSG00000102003
   - CHGB ENSG00000089199
-- name: P53-like cell
-  markers:
+  name: Neuroendocrine cell
+- markers:
   - PCP4 ENSG00000183036
   - ACTC1 ENSG00000159251
   - PGM5 ENSG00000154330
@@ -200,8 +184,8 @@ marker_list:
   - MYH11 ENSG00000133392
   - CNN1 ENSG00000130176
   - FLNC ENSG00000128591
-- name: Epithelial-mesenchymal cell
-  markers:
+  name: P53-like cell
+- markers:
   - VIM ENSG00000026025
   - CDH2 ENSG00000170558
   - TWIST1 ENSG00000122691
@@ -209,8 +193,8 @@ marker_list:
   - ZEB1 ENSG00000148516
   - SNAI1 ENSG00000124216
   - FOXC2 ENSG00000176692
-- name: Claudin-low cell
-  markers:
+  name: Epithelial-mesenchymal cell
+- markers:
   - CLDN4 ENSG00000189143
   - SNAI2 ENSG00000019549
   - CLDN7 ENSG00000181885
@@ -220,73 +204,73 @@ marker_list:
   - CDH1 ENSG00000039068
   - CLDN3 ENSG00000165215
   - TWIST1 ENSG00000122691
-- name: Urethelial cell
-  markers:
+  name: Claudin-low cell
+- markers:
   - ACE2 ENSG00000130234
-- name: Follicular B cell
-  markers:
+  name: Urethelial cell
+- markers:
   - MS4A1 ENSG00000156738
   - CD79A ENSG00000105369
-- name: Cross-presenting dendritic cell
-  markers:
+  name: Follicular B cell
+- markers:
   - CLEC9A ENSG00000197992
-- name: Proliferating myeloid cell
-  markers:
+  name: Cross-presenting dendritic cell
+- markers:
   - TOP2A ENSG00000131747
-- name: Myofibroblastic cancer?associated fibroblast (myCAF)
-  markers:
+  name: Proliferating myeloid cell
+- markers:
   - RGS5 ENSG00000232995
-- name: Mast cell
-  markers:
+  name: Myofibroblastic cancer?associated fibroblast (myCAF)
+- markers:
   - TPSAB1 ENSG00000172236
-- name: Inflammatory cancer?associated fibroblast (iCAF)
-  markers:
+  name: Mast cell
+- markers:
   - COL1A1 ENSG00000108821
-- name: Myeloid cell
-  markers:
+  name: Inflammatory cancer?associated fibroblast (iCAF)
+- markers:
   - LYZ ENSG00000090382
   - CSTB ENSG00000160213
   - CSF2RA ENSG00000198223
-- name: Tumor?associated macrophage (TAM)
-  markers:
+  name: Myeloid cell
+- markers:
   - MRC1 ENSG00000260314
   - CD68 ENSG00000129226
-- name: Cancer-associated fibroblast
-  markers:
+  name: Tumor?associated macrophage (TAM)
+- markers:
   - THY1 ENSG00000154096
   - FAP ENSG00000078098
   - ACTA2 ENSG00000107796
   - TNC ENSG00000041982
   - FN1 ENSG00000115414
-- name: Nonpathogenic T helper 17(Th17) cell
-  markers:
+  name: Cancer-associated fibroblast
+- markers:
   - PDPN ENSG00000162493
-- name: Lymphatic endothelial cell
-  markers:
+  name: Nonpathogenic T helper 17(Th17) cell
+- markers:
   - PDPN ENSG00000162493
-- name: Cycling epithelial cell
-  markers:
+  name: Lymphatic endothelial cell
+- markers:
   - TUBA1B ENSG00000123416
   - EEF2 ENSG00000167658
-- name: Lymphoid cell
-  markers:
+  name: Cycling epithelial cell
+- markers:
   - PTPRC ENSG00000081237
   - CD247 ENSG00000198821
-- name: Cancer cell
-  markers:
+  name: Lymphoid cell
+- markers:
   - ALDH1A1 ENSG00000165092
   - CD44 ENSG00000026508
-- name: Naive cell
-  markers:
+  name: Cancer cell
+- markers:
   - HNF1A ENSG00000135100
-- name: Cytotoxic T cell
-  markers:
+  name: Naive cell
+- markers:
   - CD8A ENSG00000153563
-- name: Follicular dendritic cell
-  markers:
+  name: Cytotoxic T cell
+- markers:
   - CR2 ENSG00000117322
-- name: M2 macrophage
-  markers:
+  name: Follicular dendritic cell
+- markers:
   - MMP14 ENSG00000157227
   - VTCN1 ENSG00000134258
   - EGF ENSG00000138798
@@ -295,22 +279,38 @@ marker_list:
   - CD163 ENSG00000177575
   - MSR1 ENSG00000038945
   - ARG1 ENSG00000118520
-- name: M1 macrophage
-  markers:
+  name: M2 macrophage
+- markers:
   - CCL5 ENSG00000271503
   - CCR7 ENSG00000126353
   - TNF ENSG00000232810
-- name: Neutrophil
-  markers:
+  name: M1 macrophage
+- markers:
   - CEACAM8 ENSG00000124469
-- name: Exhausted CD8+ T cell
-  markers:
+  name: Neutrophil
+- markers:
   - TIGIT ENSG00000181847
   - CTLA4 ENSG00000163599
   - PDCD1 ENSG00000188389
-- name: Pan-macrophage
-  markers:
+  name: Exhausted CD8+ T cell
+- markers:
   - CD68 ENSG00000129226
-- name: Natural killer cell
-  markers:
+  name: Pan-macrophage
+- markers:
   - NCAM1 ENSG00000149294
+  name: Natural killer cell
+metadata:
+  date: 27.03.2020
+  id: '46'
+  list_name: HCM_human_bladder
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: bladder

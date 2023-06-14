@@ -1,21 +1,5 @@
-metadata:
-  id: '51'
-  list_name: HCM_human_brain
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: brain
-    custom_tag: cell type annotation
 marker_list:
-- name: Neural stem cell
-  markers:
+- markers:
   - ASCL1 ENSG00000139352
   - BMI1 ENSG00000168283
   - CD81 ENSG00000110651
@@ -48,8 +32,8 @@ marker_list:
   - CD44 ENSG00000026508
   - ID1 ENSG00000125968
   - NES ENSG00000132688
-- name: Astrocyte
-  markers:
+  name: Neural stem cell
+- markers:
   - CD80 ENSG00000121594
   - CD86 ENSG00000114013
   - CD40 ENSG00000101017
@@ -503,8 +487,8 @@ marker_list:
   - EEF2 ENSG00000167658
   - MATN4 ENSG00000124159
   - IL17A ENSG00000112115
-- name: Glial cell
-  markers:
+  name: Astrocyte
+- markers:
   - GFAP ENSG00000131095
   - S100A1 ENSG00000160678
   - SLC1A3 ENSG00000079215
@@ -516,8 +500,8 @@ marker_list:
   - MOG ENSG00000204655
   - ACSL1 ENSG00000151726
   - OLIG2 ENSG00000205927
-- name: Cancer cell
-  markers:
+  name: Glial cell
+- markers:
   - MBTPS2 ENSG00000012174
   - PARP1 ENSG00000143799
   - CD44 ENSG00000026508
@@ -568,30 +552,30 @@ marker_list:
   - PTN ENSG00000105894
   - KLRB1 ENSG00000111796
   - TIMP1 ENSG00000102265
-- name: Central nervous system stem cell
-  markers:
+  name: Cancer cell
+- markers:
   - CD34 ENSG00000174059
   - PTPRC ENSG00000081237
   - PROM1 ENSG00000007062
   - CD24 ENSG00000272398
-- name: T helper2 (Th2) cell
-  markers:
+  name: Central nervous system stem cell
+- markers:
   - TNFRSF8 ENSG00000120949
   - CCR6 ENSG00000112486
   - CXCR3 ENSG00000186810
-- name: Interstitial cell
-  markers:
+  name: T helper2 (Th2) cell
+- markers:
   - DECR1 ENSG00000104325
-- name: Glutamatergic neuron
-  markers:
+  name: Interstitial cell
+- markers:
   - TBR1 ENSG00000136535
   - BDNF ENSG00000176697
   - SLC17A6 ENSG00000091664
   - SLC17A7 ENSG00000104888
   - BCL11B ENSG00000127152
   - SATB2 ENSG00000119042
-- name: Cancer stem cell
-  markers:
+  name: Glutamatergic neuron
+- markers:
   - PROM1 ENSG00000007062
   - HOXD9 ENSG00000128709
   - CD44 ENSG00000026508
@@ -634,8 +618,8 @@ marker_list:
   - CX3CR1 ENSG00000168329
   - POU3F2 ENSG00000184486
   - ZNF117 ENSG00000152926
-- name: Endothelial cell
-  markers:
+  name: Cancer stem cell
+- markers:
   - PECAM1 ENSG00000261371
   - VCAM1 ENSG00000162692
   - FLT1 ENSG00000102755
@@ -671,8 +655,8 @@ marker_list:
   - MCL1 ENSG00000143384
   - ETS1 ENSG00000134954
   - PRKCH ENSG00000027075
-- name: Neuron
-  markers:
+  name: Endothelial cell
+- markers:
   - MARK4 ENSG00000007047
   - GFAP ENSG00000131095
   - MAP2 ENSG00000078018
@@ -857,8 +841,8 @@ marker_list:
   - GRIK1 ENSG00000171189
   - NCAM2 ENSG00000154654
   - SHISA9 ENSG00000237515
-- name: Oligodendrocyte progenitor cell
-  markers:
+  name: Neuron
+- markers:
   - CSPG4 ENSG00000173546
   - OLIG2 ENSG00000205927
   - BCAN ENSG00000132692
@@ -873,8 +857,8 @@ marker_list:
   - PTPRZ1 ENSG00000106278
   - RGCC ENSG00000102760
   - APOE ENSG00000130203
-- name: Oligodendrocyte
-  markers:
+  name: Oligodendrocyte progenitor cell
+- markers:
   - RTN4 ENSG00000115310
   - PLP1 ENSG00000123560
   - SEC14L5 ENSG00000103184
@@ -1062,8 +1046,8 @@ marker_list:
   - CNTNAP2 ENSG00000174469
   - QKI ENSG00000112531
   - PCDH9 ENSG00000184226
-- name: Microglial cell
-  markers:
+  name: Oligodendrocyte
+- markers:
   - CD68 ENSG00000129226
   - BCL2A1 ENSG00000140379
   - LAPTM5 ENSG00000162511
@@ -1440,8 +1424,8 @@ marker_list:
   - MCM5 ENSG00000100297
   - FKBP5 ENSG00000096060
   - PAX6 ENSG00000007372
-- name: B cell
-  markers:
+  name: Microglial cell
+- markers:
   - MS4A1 ENSG00000156738
   - CD19 ENSG00000177455
   - CD79A ENSG00000105369
@@ -1461,8 +1445,8 @@ marker_list:
   - IGHG3 ENSG00000211897
   - IGHG1 ENSG00000211896
   - HLA-DQA1 ENSG00000196735
-- name: Macrophage
-  markers:
+  name: B cell
+- markers:
   - CD68 ENSG00000129226
   - AIF1 ENSG00000204472
   - PDE4B ENSG00000184588
@@ -1560,8 +1544,8 @@ marker_list:
   - MSR1 ENSG00000038945
   - ISG15 ENSG00000187608
   - MXRA8 ENSG00000162576
-- name: Neutrophil
-  markers:
+  name: Macrophage
+- markers:
   - MPO ENSG00000005381
   - FCGR3B ENSG00000162747
   - FPR2 ENSG00000171049
@@ -1572,8 +1556,8 @@ marker_list:
   - ITGAM ENSG00000169896
   - MXRA8 ENSG00000162576
   - ELANE ENSG00000197561
-- name: Neural progenitor cell
-  markers:
+  name: Neutrophil
+- markers:
   - ADGRG1 ENSG00000205336
   - DCX ENSG00000077279
   - SOX2 ENSG00000181449
@@ -1594,12 +1578,12 @@ marker_list:
   - VIM ENSG00000026025
   - MSI1 ENSG00000135097
   - EMX1 ENSG00000135638
-- name: Cancer stem-like cell
-  markers:
+  name: Neural progenitor cell
+- markers:
   - FUT4 ENSG00000196371
   - CDH5 ENSG00000179776
-- name: M2 macrophage
-  markers:
+  name: Cancer stem-like cell
+- markers:
   - CD163 ENSG00000177575
   - MSR1 ENSG00000038945
   - MRC1 ENSG00000260314
@@ -1611,8 +1595,8 @@ marker_list:
   - IL10 ENSG00000136634
   - MS4A4A ENSG00000110079
   - VSIG4 ENSG00000155659
-- name: Stem cell
-  markers:
+  name: M2 macrophage
+- markers:
   - SOX2 ENSG00000181449
   - PAX6 ENSG00000007372
   - SOX1 ENSG00000182968
@@ -1639,8 +1623,8 @@ marker_list:
   - MSI1 ENSG00000135097
   - SOX9 ENSG00000125398
   - DCX ENSG00000077279
-- name: Pericyte
-  markers:
+  name: Stem cell
+- markers:
   - CSPG4 ENSG00000173546
   - NOTCH3 ENSG00000074181
   - PDGFRB ENSG00000113721
@@ -1662,8 +1646,8 @@ marker_list:
   - BMP4 ENSG00000125378
   - FOXC2 ENSG00000176692
   - MAFF ENSG00000185022
-- name: Oligodendrocyte precursor cell
-  markers:
+  name: Pericyte
+- markers:
   - PDGFRA ENSG00000134853
   - LHFPL3 ENSG00000187416
   - PCDH15 ENSG00000150275
@@ -1679,20 +1663,20 @@ marker_list:
   - DSCAM ENSG00000171587
   - SOX6 ENSG00000110693
   - CSPG4 ENSG00000173546
-- name: T helper17 (Th17) cell
-  markers:
+  name: Oligodendrocyte precursor cell
+- markers:
   - CXCR3 ENSG00000186810
   - CCR6 ENSG00000112486
-- name: T helper1 (Th1) cell
-  markers:
+  name: T helper17 (Th17) cell
+- markers:
   - CCR6 ENSG00000112486
   - CXCR3 ENSG00000186810
-- name: Regulatory T (Treg) cell
-  markers:
+  name: T helper1 (Th1) cell
+- markers:
   - IL2RA ENSG00000134460
   - CD4 ENSG00000010610
-- name: Lake et al.Science.Ex6
-  markers:
+  name: Regulatory T (Treg) cell
+- markers:
   - ABO ENSG00000175164
   - HCRTR2 ENSG00000137252
   - TLE4 ENSG00000106829
@@ -1727,8 +1711,8 @@ marker_list:
   - TSPAN18 ENSG00000157570
   - BCL11B ENSG00000127152
   - SEMA5A ENSG00000112902
-- name: Lake et al.Science.Ex8
-  markers:
+  name: Lake et al.Science.Ex6
+- markers:
   - MAMDC2 ENSG00000165072
   - LTBP1 ENSG00000049323
   - ATP8B1 ENSG00000081923
@@ -1788,8 +1772,8 @@ marker_list:
   - NTNG2 ENSG00000196358
   - ITGA11 ENSG00000137809
   - CTNNA3 ENSG00000183230
-- name: Lake et al.Science.In3
-  markers:
+  name: Lake et al.Science.Ex8
+- markers:
   - SCTR ENSG00000080293
   - CRIM1 ENSG00000150938
   - SLC12A7 ENSG00000113504
@@ -1803,8 +1787,8 @@ marker_list:
   - EMID1 ENSG00000186998
   - SHISA8 ENSG00000234965
   - EXPH5 ENSG00000110723
-- name: Lake et al.Science.Ex4
-  markers:
+  name: Lake et al.Science.In3
+- markers:
   - LYPD6B ENSG00000150556
   - CXXC4 ENSG00000168772
   - PLCXD3 ENSG00000182836
@@ -1818,8 +1802,8 @@ marker_list:
   - HS3ST3B1 ENSG00000125430
   - PAPSS2 ENSG00000198682
   - ANXA1 ENSG00000135046
-- name: Lake et al.Science.Ex2
-  markers:
+  name: Lake et al.Science.Ex4
+- markers:
   - CLMN ENSG00000165959
   - PAH ENSG00000171759
   - TRHDE ENSG00000072657
@@ -1830,13 +1814,13 @@ marker_list:
   - PCED1B ENSG00000179715
   - SYT10 ENSG00000110975
   - LAMA2 ENSG00000196569
-- name: Lake et al.Science.Ex7
-  markers:
+  name: Lake et al.Science.Ex2
+- markers:
   - PRRX1 ENSG00000116132
   - CHST8 ENSG00000124302
   - SNTG2 ENSG00000172554
-- name: Lake et al.Science.Ex1
-  markers:
+  name: Lake et al.Science.Ex7
+- markers:
   - CDH9 ENSG00000113100
   - GNAL ENSG00000141404
   - NECAB2 ENSG00000103154
@@ -1851,12 +1835,12 @@ marker_list:
   - GREB1L ENSG00000141449
   - PCDH8 ENSG00000136099
   - PDGFD ENSG00000170962
-- name: Lake et al.Science.In1
-  markers:
+  name: Lake et al.Science.Ex1
+- markers:
   - SDK2 ENSG00000069188
   - CNR1 ENSG00000118432
-- name: Lake et al.Science.Ex5
-  markers:
+  name: Lake et al.Science.In1
+- markers:
   - TLL1 ENSG00000038295
   - ACOT11 ENSG00000162390
   - RNF182 ENSG00000180537
@@ -1866,30 +1850,30 @@ marker_list:
   - IL1RAPL2 ENSG00000189108
   - IFITM10 ENSG00000244242
   - ABCC9 ENSG00000069431
-- name: Lake et al.Science.In7
-  markers:
+  name: Lake et al.Science.Ex5
+- markers:
   - HPGD ENSG00000164120
   - PLD1 ENSG00000075651
   - DSP ENSG00000096696
   - STK32B ENSG00000152953
   - AOX1 ENSG00000138356
   - COL24A1 ENSG00000171502
-- name: Lake et al.Science.In4
-  markers:
+  name: Lake et al.Science.In7
+- markers:
   - TRPC3 ENSG00000138741
   - FREM1 ENSG00000164946
   - KIT ENSG00000157404
   - ADAMTS2 ENSG00000087116
   - PDGFRA ENSG00000134853
   - MYH11 ENSG00000133392
-- name: Lake et al.Science.Ex3
-  markers:
+  name: Lake et al.Science.In4
+- markers:
   - VAV3 ENSG00000134215
   - NTNG1 ENSG00000162631
   - VIPR2 ENSG00000106018
   - TRPC3 ENSG00000138741
-- name: Lake et al.Science.In5
-  markers:
+  name: Lake et al.Science.Ex3
+- markers:
   - FREM2 ENSG00000150893
   - TMEM255A ENSG00000125355
   - TXK ENSG00000074966
@@ -1897,30 +1881,30 @@ marker_list:
   - PDGFD ENSG00000170962
   - HCRTR2 ENSG00000137252
   - TOX ENSG00000198846
-- name: Lake et al.Science.In2
-  markers:
+  name: Lake et al.Science.In5
+- markers:
   - CCDC141 ENSG00000163492
   - SLC7A11 ENSG00000151012
   - GPR149 ENSG00000174948
   - PPP1R1C ENSG00000150722
-- name: Lake et al.Science.In6
-  markers:
+  name: Lake et al.Science.In2
+- markers:
   - ZNF703 ENSG00000183779
   - PVALB ENSG00000100362
   - LRRC38 ENSG00000162494
   - RPH3AL ENSG00000181031
-- name: Lake et al.Science.In8
-  markers:
+  name: Lake et al.Science.In6
+- markers:
   - NMU ENSG00000109255
-- name: Dopaminergic neuron
-  markers:
+  name: Lake et al.Science.In8
+- markers:
   - FOLR1 ENSG00000110195
   - PITX3 ENSG00000107859
   - KCNJ6 ENSG00000157542
   - TH ENSG00000180176
   - NR4A2 ENSG00000153234
-- name: M1 macrophage
-  markers:
+  name: Dopaminergic neuron
+- markers:
   - TSPO ENSG00000100300
   - NOX1 ENSG00000007952
   - CD86 ENSG00000114013
@@ -1934,8 +1918,8 @@ marker_list:
   - IL12A ENSG00000168811
   - TNF ENSG00000232810
   - IRF5 ENSG00000128604
-- name: Monocyte
-  markers:
+  name: M1 macrophage
+- markers:
   - FCGR3A ENSG00000203747
   - CD14 ENSG00000170458
   - LYZ ENSG00000090382
@@ -1948,8 +1932,8 @@ marker_list:
   - ZFP36L2 ENSG00000152518
   - MS4A6A ENSG00000110077
   - CD74 ENSG00000019582
-- name: Natural killer cell
-  markers:
+  name: Monocyte
+- markers:
   - ICAM1 ENSG00000090339
   - GGT1 ENSG00000100031
   - FCGR3A ENSG00000203747
@@ -1963,8 +1947,8 @@ marker_list:
   - SAMD3 ENSG00000164483
   - DOCK2 ENSG00000134516
   - MXRA8 ENSG00000162576
-- name: Dendritic cell
-  markers:
+  name: Natural killer cell
+- markers:
   - ITGAE ENSG00000083457
   - FLT3 ENSG00000122025
   - PTPRC ENSG00000081237
@@ -1978,16 +1962,16 @@ marker_list:
   - HLA-DPA1 ENSG00000231389
   - CLEC10A ENSG00000132514
   - BATF3 ENSG00000123685
-- name: Epithelial stem cell
-  markers:
+  name: Dendritic cell
+- markers:
   - LGR5 ENSG00000139292
-- name: Forebrain cell
-  markers:
+  name: Epithelial stem cell
+- markers:
   - EMX1 ENSG00000135638
   - FOXG1 ENSG00000176165
   - OTX2 ENSG00000165588
-- name: Sensory neuron
-  markers:
+  name: Forebrain cell
+- markers:
   - P2RX3 ENSG00000109991
   - DCX ENSG00000077279
   - NEFM ENSG00000104722
@@ -2002,30 +1986,30 @@ marker_list:
   - ISL1 ENSG00000016082
   - NTRK2 ENSG00000148053
   - PIEZO2 ENSG00000154864
-- name: Neural crest stem cell
-  markers:
+  name: Sensory neuron
+- markers:
   - TFAP2A ENSG00000137203
   - BGN ENSG00000182492
   - SOX10 ENSG00000100146
   - KANK4 ENSG00000132854
-- name: Neural crest cell
-  markers:
+  name: Neural crest stem cell
+- markers:
   - MSX1 ENSG00000163132
   - HOXB2 ENSG00000173917
   - TFAP2A ENSG00000137203
   - SOX3 ENSG00000134595
   - SOX10 ENSG00000100146
-- name: Anterior hindbrain cell
-  markers:
+  name: Neural crest cell
+- markers:
   - GBX2 ENSG00000168505
   - IRX3 ENSG00000177508
   - HOXA2 ENSG00000105996
   - HOXB2 ENSG00000173917
-- name: Anterior midbrain cell
-  markers:
+  name: Anterior hindbrain cell
+- markers:
   - OTX2 ENSG00000165588
-- name: Fibroblast
-  markers:
+  name: Anterior midbrain cell
+- markers:
   - THY1 ENSG00000154096
   - MYL9 ENSG00000101335
   - COL1A1 ENSG00000108821
@@ -2045,16 +2029,16 @@ marker_list:
   - IGFBP5 ENSG00000115461
   - LGALS3 ENSG00000131981
   - KCNT2 ENSG00000162687
-- name: Mesoderm cell
-  markers:
+  name: Fibroblast
+- markers:
   - THY1 ENSG00000154096
-- name: Dorsal anterior hindbrain cell
-  markers:
+  name: Mesoderm cell
+- markers:
   - PAX3 ENSG00000135903
   - MSX1 ENSG00000163132
   - PAX7 ENSG00000009709
-- name: Regulatory T(Treg) cell
-  markers:
+  name: Dorsal anterior hindbrain cell
+- markers:
   - FOXP3 ENSG00000049768
   - PDCD1 ENSG00000188389
   - IL2RA ENSG00000134460
@@ -2074,13 +2058,13 @@ marker_list:
   - STAT5B ENSG00000173757
   - CCR4 ENSG00000183813
   - CCR10 ENSG00000184451
-- name: Myeloid derived suppressor cell (MDSC)
-  markers:
+  name: Regulatory T(Treg) cell
+- markers:
   - CD33 ENSG00000105383
   - FUT4 ENSG00000196371
   - CD14 ENSG00000170458
-- name: Inhibitory neuron
-  markers:
+  name: Myeloid derived suppressor cell (MDSC)
+- markers:
   - GAD2 ENSG00000136750
   - LHX6 ENSG00000106852
   - GAD1 ENSG00000128683
@@ -2110,8 +2094,8 @@ marker_list:
   - PDYN ENSG00000101327
   - SYT1 ENSG00000067715
   - DLX6-AS1 ENSG00000231764
-- name: Excitatory neuron
-  markers:
+  name: Inhibitory neuron
+- markers:
   - TBR1 ENSG00000136535
   - SLC17A7 ENSG00000104888
   - NRGN ENSG00000154146
@@ -2144,20 +2128,20 @@ marker_list:
   - SYT1 ENSG00000067715
   - NCAM1 ENSG00000149294
   - ATP1A3 ENSG00000105409
-- name: Immune oligodendroglial cell(imOLG)
-  markers:
+  name: Excitatory neuron
+- markers:
   - CD74 ENSG00000019582
   - APOE ENSG00000130203
-- name: Pyramidal cell
-  markers:
+  name: Immune oligodendroglial cell(imOLG)
+- markers:
   - PCP2 ENSG00000174788
-- name: Ependymal cell
-  markers:
+  name: Pyramidal cell
+- markers:
   - FOXJ1 ENSG00000129654
   - CFAP299 ENSG00000197826
   - AQP4 ENSG00000171885
-- name: Myeloid cell
-  markers:
+  name: Ependymal cell
+- markers:
   - APOE ENSG00000130203
   - PTPRC ENSG00000081237
   - CD14 ENSG00000170458
@@ -2187,15 +2171,15 @@ marker_list:
   - HLA-DRA ENSG00000204287
   - FCER1G ENSG00000158869
   - C1QA ENSG00000173372
-- name: Thalamic cell
-  markers:
+  name: Myeloid cell
+- markers:
   - PAX6 ENSG00000007372
   - TCF7L2 ENSG00000148737
   - OTX2 ENSG00000165588
   - DBX1 ENSG00000109851
   - GBX2 ENSG00000168505
-- name: Progenitor cell
-  markers:
+  name: Thalamic cell
+- markers:
   - PAX6 ENSG00000007372
   - EMX1 ENSG00000135638
   - EMX2 ENSG00000170370
@@ -2220,12 +2204,12 @@ marker_list:
   - OLIG2 ENSG00000205927
   - NES ENSG00000132688
   - DCX ENSG00000077279
-- name: Cortical cell
-  markers:
+  name: Progenitor cell
+- markers:
   - TBR1 ENSG00000136535
   - BCL11B ENSG00000127152
-- name: Radial glial cell
-  markers:
+  name: Cortical cell
+- markers:
   - PAX6 ENSG00000007372
   - HOPX ENSG00000171476
   - GLI3 ENSG00000106571
@@ -2238,11 +2222,11 @@ marker_list:
   - CUX1 ENSG00000257923
   - TLE4 ENSG00000106829
   - FAM107A ENSG00000168309
-- name: Caudal forebrain cell
-  markers:
+  name: Radial glial cell
+- markers:
   - OTX2 ENSG00000165588
-- name: Interneuron
-  markers:
+  name: Caudal forebrain cell
+- markers:
   - PAX2 ENSG00000075891
   - DBX1 ENSG00000109851
   - GAD1 ENSG00000128683
@@ -2256,11 +2240,11 @@ marker_list:
   - LMO3 ENSG00000048540
   - ZFHX4 ENSG00000091656
   - ZFHX2 ENSG00000136367
-- name: Developing corpus callosum cell
-  markers:
+  name: Interneuron
+- markers:
   - NRP1 ENSG00000099250
-- name: Mesenchymal glioblastoma cell
-  markers:
+  name: Developing corpus callosum cell
+- markers:
   - COL1A2 ENSG00000164692
   - S100A1 ENSG00000160678
   - COL1A1 ENSG00000108821
@@ -2269,61 +2253,61 @@ marker_list:
   - DAB2 ENSG00000153071
   - CD44 ENSG00000026508
   - CHI3L1 ENSG00000133048
-- name: Classical glioblastoma cell
-  markers:
+  name: Mesenchymal glioblastoma cell
+- markers:
   - ACSBG1 ENSG00000103740
   - KCNF1 ENSG00000162975
-- name: Proneural glioblastoma cell
-  markers:
+  name: Classical glioblastoma cell
+- markers:
   - STMN4 ENSG00000015592
   - ERBB3 ENSG00000065361
   - P2RX7 ENSG00000089041
   - SOX10 ENSG00000100146
-- name: Plasma cell
-  markers:
+  name: Proneural glioblastoma cell
+- markers:
   - SDC1 ENSG00000115884
   - IGHM ENSG00000211899
   - CD38 ENSG00000004468
   - IGHG1 ENSG00000211896
-- name: Fusiform cerebral cell
-  markers:
+  name: Plasma cell
+- markers:
   - PDGFRB ENSG00000113721
-- name: Exhausted T(Tex) cell
-  markers:
+  name: Fusiform cerebral cell
+- markers:
   - CTLA4 ENSG00000163599
   - PDCD1 ENSG00000188389
   - GZMB ENSG00000100453
   - HAVCR2 ENSG00000135077
   - LAG3 ENSG00000089692
-- name: Fibrous astrocyte
-  markers:
+  name: Exhausted T(Tex) cell
+- markers:
   - GFAP ENSG00000131095
   - NAV2 ENSG00000166833
-- name: A1 astrocyte
-  markers:
+  name: Fibrous astrocyte
+- markers:
   - CFB ENSG00000243649
   - C3 ENSG00000125730
-- name: A2 astrocyte
-  markers:
+  name: A1 astrocyte
+- markers:
   - S100A10 ENSG00000197747
-- name: Scar-forming astrocyte
-  markers:
+  name: A2 astrocyte
+- markers:
   - ACAN ENSG00000157766
   - SLIT2 ENSG00000145147
   - CSGALNACT1 ENSG00000147408
   - CDH2 ENSG00000170558
   - SOX9 ENSG00000125398
   - CHST11 ENSG00000171310
-- name: Reactive astrocyte
-  markers:
+  name: Scar-forming astrocyte
+- markers:
   - CTNNB1 ENSG00000168036
   - PLAUR ENSG00000011422
   - AXIN2 ENSG00000168646
   - NES ENSG00000132688
   - MMP2 ENSG00000087245
   - MMP13 ENSG00000137745
-- name: T cell
-  markers:
+  name: Reactive astrocyte
+- markers:
   - CD3E ENSG00000198851
   - CD3D ENSG00000167286
   - CD2 ENSG00000116824
@@ -2369,11 +2353,11 @@ marker_list:
   - CD52 ENSG00000169442
   - IL32 ENSG00000008517
   - RPL28 ENSG00000108107
-- name: Activated memory T cell
-  markers:
+  name: T cell
+- markers:
   - GZMB ENSG00000100453
-- name: CD8+ T cell
-  markers:
+  name: Activated memory T cell
+- markers:
   - CD160 ENSG00000117281
   - PTPRC ENSG00000081237
   - CD8A ENSG00000153563
@@ -2382,36 +2366,36 @@ marker_list:
   - CD3D ENSG00000167286
   - CD3E ENSG00000198851
   - CD3G ENSG00000160654
-- name: Activated microglial cell
-  markers:
+  name: CD8+ T cell
+- markers:
   - TMEM119 ENSG00000183160
   - CD68 ENSG00000129226
-- name: Demyelinating microglial cell
-  markers:
+  name: Activated microglial cell
+- markers:
   - TMEM119 ENSG00000183160
   - CD68 ENSG00000129226
   - PLP1 ENSG00000123560
-- name: Proliferative CD4+ T cell
-  markers:
+  name: Demyelinating microglial cell
+- markers:
   - CD4 ENSG00000010610
   - PTPRC ENSG00000081237
-- name: Activated macrophage
-  markers:
+  name: Proliferative CD4+ T cell
+- markers:
   - PTPRC ENSG00000081237
   - CD68 ENSG00000129226
-- name: Switched memory B cell(Sw MB)
-  markers:
+  name: Activated macrophage
+- markers:
   - CD38 ENSG00000004468
   - PTPRC ENSG00000081237
-- name: Activated CD4+ T cell
-  markers:
+  name: Switched memory B cell(Sw MB)
+- markers:
   - PTPRC ENSG00000081237
   - CD4 ENSG00000010610
-- name: Proliferative CD8+ T cell
-  markers:
+  name: Activated CD4+ T cell
+- markers:
   - PTPRC ENSG00000081237
-- name: CD4+ T cell
-  markers:
+  name: Proliferative CD8+ T cell
+- markers:
   - CD4 ENSG00000010610
   - PTPRC ENSG00000081237
   - HAVCR1 ENSG00000113249
@@ -2443,48 +2427,48 @@ marker_list:
   - CD3D ENSG00000167286
   - CD3G ENSG00000160654
   - CD3E ENSG00000198851
-- name: Demyelinating macrophage
-  markers:
+  name: CD4+ T cell
+- markers:
   - PTPRC ENSG00000081237
   - CD68 ENSG00000129226
-- name: Chronically activated CD4+ T cell
-  markers:
+  name: Demyelinating macrophage
+- markers:
   - PTPRC ENSG00000081237
   - CD4 ENSG00000010610
   - CD38 ENSG00000004468
-- name: Chronically activated CD8+ T cell
-  markers:
+  name: Chronically activated CD4+ T cell
+- markers:
   - CD8A ENSG00000153563
   - PTPRC ENSG00000081237
   - CD38 ENSG00000004468
-- name: Activated CD8+ T cell
-  markers:
+  name: Chronically activated CD8+ T cell
+- markers:
   - PTPRC ENSG00000081237
   - CCL5 ENSG00000271503
   - CD8B ENSG00000172116
   - CD8A ENSG00000153563
-- name: Naive B cell
-  markers:
+  name: Activated CD8+ T cell
+- markers:
   - PTPRC ENSG00000081237
   - CD37 ENSG00000104894
   - CD74 ENSG00000019582
   - CD79A ENSG00000105369
   - IGHD ENSG00000211898
-- name: IgM memory B cell
-  markers:
+  name: Naive B cell
+- markers:
   - CD38 ENSG00000004468
   - PTPRC ENSG00000081237
-- name: Chandelier cell
-  markers:
+  name: IgM memory B cell
+- markers:
   - NOG ENSG00000183691
   - UNC5B ENSG00000107731
   - COL15A1 ENSG00000204291
-- name: GABAergic neuron
-  markers:
+  name: Chandelier cell
+- markers:
   - GAD1 ENSG00000128683
   - SLC32A1 ENSG00000101438
-- name: Mesenchymal cell
-  markers:
+  name: GABAergic neuron
+- markers:
   - CSF1 ENSG00000184371
   - CCL2 ENSG00000108691
   - CXCL2 ENSG00000081041
@@ -2497,17 +2481,17 @@ marker_list:
   - THY1 ENSG00000154096
   - LUM ENSG00000139329
   - COL1A1 ENSG00000108821
-- name: Cajal-Retzius neuron
-  markers:
+  name: Mesenchymal cell
+- markers:
   - CALR ENSG00000179218
-- name: Early-born neuron
-  markers:
+  name: Cajal-Retzius neuron
+- markers:
   - TBR1 ENSG00000136535
-- name: Subplate neuron
-  markers:
+  name: Early-born neuron
+- markers:
   - DBX1 ENSG00000109851
-- name: Epithelial cell
-  markers:
+  name: Subplate neuron
+- markers:
   - LSAMP ENSG00000185565
   - ATP2A2 ENSG00000174437
   - EZR ENSG00000092820
@@ -2526,46 +2510,46 @@ marker_list:
   - ESRP1 ENSG00000104413
   - CLDN4 ENSG00000189143
   - HTR2C ENSG00000147246
-- name: Tumor-associated microglia cell
-  markers:
+  name: Epithelial cell
+- markers:
   - AIF1 ENSG00000204472
   - CX3CR1 ENSG00000168329
   - PTPRC ENSG00000081237
-- name: Tumor?associated macrophage (TAM)
-  markers:
+  name: Tumor-associated microglia cell
+- markers:
   - PTPRC ENSG00000081237
   - AIF1 ENSG00000204472
   - CX3CR1 ENSG00000168329
   - CD68 ENSG00000129226
   - CCL2 ENSG00000108691
   - IL10 ENSG00000136634
-- name: Embryonic stem cell
-  markers:
+  name: Tumor?associated macrophage (TAM)
+- markers:
   - SOX2 ENSG00000181449
-- name: Outer radial glia
-  markers:
+  name: Embryonic stem cell
+- markers:
   - PTPRZ1 ENSG00000106278
   - HOPX ENSG00000171476
   - MOXD1 ENSG00000079931
-- name: Central memory T cell
-  markers:
+  name: Outer radial glia
+- markers:
   - CD27 ENSG00000139193
-- name: Cajal-Retzius cell
-  markers:
+  name: Central memory T cell
+- markers:
   - RELN ENSG00000189056
-- name: Mature oligodendrocyte
-  markers:
+  name: Cajal-Retzius cell
+- markers:
   - MAG ENSG00000105695
   - CNP ENSG00000173786
   - PLP1 ENSG00000123560
   - MBP ENSG00000197971
   - MOG ENSG00000204655
-- name: Monocyte-derived macrophage
-  markers:
+  name: Mature oligodendrocyte
+- markers:
   - CCR2 ENSG00000121807
   - ITGA4 ENSG00000115232
-- name: Mesenchymal stromal cell
-  markers:
+  name: Monocyte-derived macrophage
+- markers:
   - VCAM1 ENSG00000162692
   - ITGB1 ENSG00000150093
   - CD44 ENSG00000026508
@@ -2573,24 +2557,24 @@ marker_list:
   - THY1 ENSG00000154096
   - NT5E ENSG00000135318
   - MCAM ENSG00000076706
-- name: Extratelencephalic(ET) cell
-  markers:
+  name: Mesenchymal stromal cell
+- markers:
   - POU3F1 ENSG00000185668
   - ANKRD34B ENSG00000189127
   - LRATD2 ENSG00000168672
-- name: von Economo neuron(VEN)
-  markers:
+  name: Extratelencephalic(ET) cell
+- markers:
   - ITGA4 ENSG00000115232
   - GABRQ ENSG00000268089
   - BMP3 ENSG00000152785
   - ADRA1A ENSG00000120907
   - POU3F1 ENSG00000185668
-- name: Oligodendroglial cell
-  markers:
+  name: von Economo neuron(VEN)
+- markers:
   - OLIG2 ENSG00000205927
   - OLIG1 ENSG00000184221
-- name: Mid radical glial cell
-  markers:
+  name: Oligodendroglial cell
+- markers:
   - NES ENSG00000132688
   - RLBP1 ENSG00000140522
   - HES1 ENSG00000114315
@@ -2614,58 +2598,58 @@ marker_list:
   - MCM5 ENSG00000100297
   - DAB1 ENSG00000173406
   - CDO1 ENSG00000129596
-- name: Pro-tumor M2 microglial cell
-  markers:
+  name: Mid radical glial cell
+- markers:
   - MRC1 ENSG00000260314
-- name: Parvalbumin interneuron
-  markers:
+  name: Pro-tumor M2 microglial cell
+- markers:
   - PVALB ENSG00000100362
   - SLIT2 ENSG00000145147
-- name: Somatostatin interneuron
-  markers:
+  name: Parvalbumin interneuron
+- markers:
   - SST ENSG00000157005
   - CALB1 ENSG00000104327
   - NPY ENSG00000122585
-- name: Microglialcell
-  markers:
+  name: Somatostatin interneuron
+- markers:
   - OLFML3 ENSG00000116774
   - TMEM119 ENSG00000183160
-- name: Ependymal-like cell
-  markers:
+  name: Microglialcell
+- markers:
   - CD36 ENSG00000135218
-- name: Neural stem-like cell
-  markers:
+  name: Ependymal-like cell
+- markers:
   - ATF3 ENSG00000162772
-- name: Spinal-progenitor-like cell
-  markers:
+  name: Neural stem-like cell
+- markers:
   - JUNB ENSG00000171223
-- name: Supratentorial-radial-glia-like cell
-  markers:
+  name: Spinal-progenitor-like cell
+- markers:
   - IGF2 ENSG00000167244
-- name: Eosinophil
-  markers:
+  name: Supratentorial-radial-glia-like cell
+- markers:
   - SIGLEC8 ENSG00000105366
   - CD68 ENSG00000129226
-- name: Tissue-resident macrophage
-  markers:
+  name: Eosinophil
+- markers:
   - PTPRC ENSG00000081237
   - CD68 ENSG00000129226
   - CD14 ENSG00000170458
-- name: Conventional CD8+ T cell
-  markers:
+  name: Tissue-resident macrophage
+- markers:
   - PTPRC ENSG00000081237
   - CD8A ENSG00000153563
-- name: Infiltrating macrophage
-  markers:
+  name: Conventional CD8+ T cell
+- markers:
   - PTPRC ENSG00000081237
   - CCR2 ENSG00000121807
   - CD68 ENSG00000129226
   - CD14 ENSG00000170458
-- name: Conventional CD4+ T cell
-  markers:
+  name: Infiltrating macrophage
+- markers:
   - CD4 ENSG00000010610
-- name: Lymphocyte
-  markers:
+  name: Conventional CD4+ T cell
+- markers:
   - LCK ENSG00000182866
   - GZMA ENSG00000145649
   - IL32 ENSG00000008517
@@ -2676,22 +2660,22 @@ marker_list:
   - MS4A1 ENSG00000156738
   - IL7R ENSG00000168685
   - CD96 ENSG00000153283
-- name: Intermediate progenitor cell
-  markers:
+  name: Lymphocyte
+- markers:
   - NEUROD6 ENSG00000164600
   - EOMES ENSG00000163508
   - SOX4 ENSG00000124766
   - PPP1R17 ENSG00000106341
   - NEUROD4 ENSG00000123307
-- name: Glioma stem cell
-  markers:
+  name: Intermediate progenitor cell
+- markers:
   - PROM1 ENSG00000007062
   - CD44 ENSG00000026508
   - FUT4 ENSG00000196371
   - EGFR ENSG00000146648
   - SOX2 ENSG00000181449
-- name: Cytotoxic  lymphocyte
-  markers:
+  name: Glioma stem cell
+- markers:
   - ITK ENSG00000113263
   - CD27 ENSG00000139193
   - CD3G ENSG00000160654
@@ -2700,35 +2684,35 @@ marker_list:
   - ZNF683 ENSG00000176083
   - ICOS ENSG00000163600
   - LAX1 ENSG00000122188
-- name: Monocyte-derived myeloid cell
-  markers:
+  name: Cytotoxic  lymphocyte
+- markers:
   - CD209 ENSG00000090659
   - CLEC12A ENSG00000172322
   - CLEC4E ENSG00000166523
-- name: Lymphoid cell
-  markers:
+  name: Monocyte-derived myeloid cell
+- markers:
   - CXCL9 ENSG00000138755
   - CXCL10 ENSG00000169245
-- name: Cortical somatostatin (SST) interneuron
-  markers:
+  name: Lymphoid cell
+- markers:
   - CORT ENSG00000241563
   - NPY ENSG00000122585
   - SST ENSG00000157005
-- name: Neuronal progenitor cell
-  markers:
+  name: Cortical somatostatin (SST) interneuron
+- markers:
   - TOP2A ENSG00000131747
   - PAX6 ENSG00000007372
   - GMNN ENSG00000112312
   - DLX6-AS1 ENSG00000231764
   - ASCL1 ENSG00000139352
-- name: Red blood cell (erythrocyte)
-  markers:
+  name: Neuronal progenitor cell
+- markers:
   - HBG1 ENSG00000213934
   - HBA1 ENSG00000206172
   - HBB ENSG00000244734
   - HEMGN ENSG00000136929
-- name: Mural cell
-  markers:
+  name: Red blood cell (erythrocyte)
+- markers:
   - PDGFRB ENSG00000113721
   - FOXF2 ENSG00000137273
   - CD248 ENSG00000174807
@@ -2737,19 +2721,19 @@ marker_list:
   - IL7R ENSG00000168685
   - NOTCH3 ENSG00000074181
   - SLC2A1 ENSG00000117394
-- name: Vascular smooth muscle cell(VSMC)
-  markers:
+  name: Mural cell
+- markers:
   - ACTA2 ENSG00000107796
   - CEBPB ENSG00000172216
   - IGFBP5 ENSG00000115461
   - CDKN1A ENSG00000124762
-- name: Granulocyte
-  markers:
+  name: Vascular smooth muscle cell(VSMC)
+- markers:
   - CEACAM8 ENSG00000124469
   - NKX2-1 ENSG00000136352
   - FUT4 ENSG00000196371
-- name: Effector memory CD4+ T cell
-  markers:
+  name: Granulocyte
+- markers:
   - TSPAN14 ENSG00000108219
   - SPATA7 ENSG00000042317
   - SATB1 ENSG00000182568
@@ -2770,52 +2754,52 @@ marker_list:
   - SLC2A13 ENSG00000151229
   - MAML2 ENSG00000184384
   - SPRED2 ENSG00000198369
-- name: Myofibroblast
-  markers:
+  name: Effector memory CD4+ T cell
+- markers:
   - SMN1 ENSG00000172062
-- name: Pluripotency cell
-  markers:
+  name: Myofibroblast
+- markers:
   - POU5F1 ENSG00000204531
-- name: Cancer-associated fibroblast
-  markers:
+  name: Pluripotency cell
+- markers:
   - S100A4 ENSG00000196154
   - ACTA2 ENSG00000107796
   - PDGFRB ENSG00000113721
-- name: Proneural cell
-  markers:
+  name: Cancer-associated fibroblast
+- markers:
   - SOX2 ENSG00000181449
-- name: Pan-reactive astrocyte
-  markers:
+  name: Proneural cell
+- markers:
   - HSPB1 ENSG00000106211
   - CD44 ENSG00000026508
-- name: Mesenchymal stem cell
-  markers:
+  name: Pan-reactive astrocyte
+- markers:
   - PROM1 ENSG00000007062
-- name: Naive CD8+ T cell
-  markers:
+  name: Mesenchymal stem cell
+- markers:
   - TIGIT ENSG00000181847
   - CCR7 ENSG00000126353
   - CXCR5 ENSG00000160683
   - IL2RA ENSG00000134460
-- name: Memory T cell
-  markers:
+  name: Naive CD8+ T cell
+- markers:
   - CD27 ENSG00000139193
   - CD4 ENSG00000010610
   - CXCR3 ENSG00000186810
   - IL2RA ENSG00000134460
-- name: Cytotoxic T cell
-  markers:
+  name: Memory T cell
+- markers:
   - GZMH ENSG00000100450
   - GZMB ENSG00000100453
   - NKG7 ENSG00000105374
   - PRF1 ENSG00000180644
   - GNLY ENSG00000115523
   - GZMA ENSG00000145649
-- name: Mucosa-associated invariant T (MAIT) cell
-  markers:
+  name: Cytotoxic T cell
+- markers:
   - KLRB1 ENSG00000111796
-- name: Natural killer T(NKT) cell
-  markers:
+  name: Mucosa-associated invariant T (MAIT) cell
+- markers:
   - KLRB1 ENSG00000111796
   - KLRC1 ENSG00000134545
   - KLRC2 ENSG00000205809
@@ -2832,18 +2816,18 @@ marker_list:
   - NKG7 ENSG00000105374
   - GNLY ENSG00000115523
   - FLT3 ENSG00000122025
-- name: Midbrain floorplate progenitor cell
-  markers:
+  name: Natural killer T(NKT) cell
+- markers:
   - FOXA2 ENSG00000125798
   - LMX1A ENSG00000162761
-- name: Pan-neuronal cell
-  markers:
+  name: Midbrain floorplate progenitor cell
+- markers:
   - MAP2 ENSG00000078018
   - RBFOX3 ENSG00000167281
   - SYN1 ENSG00000008056
   - NRCAM ENSG00000091129
-- name: Pre-dendritic cell(pre-DC)
-  markers:
+  name: Pan-neuronal cell
+- markers:
   - CD2 ENSG00000116824
   - AXL ENSG00000167601
   - LILRA4 ENSG00000239961
@@ -2859,8 +2843,8 @@ marker_list:
   - UPK3A ENSG00000100373
   - SELL ENSG00000188404
   - LILRB4 ENSG00000186818
-- name: Conventional dendritic cell 2a(cDC2a)
-  markers:
+  name: Pre-dendritic cell(pre-DC)
+- markers:
   - CCR6 ENSG00000112486
   - SUSD3 ENSG00000157303
   - CD59 ENSG00000085063
@@ -2879,8 +2863,8 @@ marker_list:
   - FCER1A ENSG00000179639
   - IL22RA2 ENSG00000164485
   - CST7 ENSG00000077984
-- name: Conventional dendritic cell 2b(cDC2b)
-  markers:
+  name: Conventional dendritic cell 2a(cDC2a)
+- markers:
   - CD300E ENSG00000186407
   - FCER1G ENSG00000158869
   - TSPO ENSG00000100300
@@ -2897,315 +2881,315 @@ marker_list:
   - LGALS3 ENSG00000131981
   - LYZ ENSG00000090382
   - CCR2 ENSG00000121807
-- name: Migratory dendritic cell
-  markers:
+  name: Conventional dendritic cell 2b(cDC2b)
+- markers:
   - PDCD1LG2 ENSG00000197646
-- name: Microglia-derived tumor-associated macrophage(Mg-TAM)
-  markers:
+  name: Migratory dendritic cell
+- markers:
   - TMIGD3 ENSG00000121933
   - APOC2 ENSG00000234906
   - SCIN ENSG00000006747
-- name: Dorsal cell
-  markers:
+  name: Microglia-derived tumor-associated macrophage(Mg-TAM)
+- markers:
   - PAX6 ENSG00000007372
-- name: Resting microglial cell
-  markers:
+  name: Dorsal cell
+- markers:
   - AIF1 ENSG00000204472
-- name: Midbrain cell
-  markers:
+  name: Resting microglial cell
+- markers:
   - OTX2 ENSG00000165588
-- name: Mature Astrocyte
-  markers:
+  name: Midbrain cell
+- markers:
   - AQP4 ENSG00000171885
   - GFAP ENSG00000131095
   - AGT ENSG00000135744
-- name: Dorsal forebrain progenitor cell
-  markers:
+  name: Mature Astrocyte
+- markers:
   - EMX1 ENSG00000135638
-- name: Dentate gyrus granule cell
-  markers:
+  name: Dorsal forebrain progenitor cell
+- markers:
   - PROX1 ENSG00000117707
-- name: Lactotroph cell
-  markers:
+  name: Dentate gyrus granule cell
+- markers:
   - POU1F1 ENSG00000064835
   - ESR1 ENSG00000091831
   - PRL ENSG00000172179
   - DRD2 ENSG00000149295
-- name: Pituitary stem cell
-  markers:
+  name: Lactotroph cell
+- markers:
   - SOX2 ENSG00000181449
   - LHX3 ENSG00000107187
   - SOX9 ENSG00000125398
-- name: Thyrotroph cell
-  markers:
+  name: Pituitary stem cell
+- markers:
   - POU1F1 ENSG00000064835
-- name: Gonadotroph cell
-  markers:
+  name: Thyrotroph cell
+- markers:
   - NR5A1 ENSG00000136931
   - GATA2 ENSG00000179348
   - LHB ENSG00000104826
   - ESR1 ENSG00000091831
-- name: Somatotroph cell
-  markers:
+  name: Gonadotroph cell
+- markers:
   - GHRHR ENSG00000106128
   - POU1F1 ENSG00000064835
   - GH2 ENSG00000136487
-- name: Corticotroph cell
-  markers:
+  name: Somatotroph cell
+- markers:
   - TBX19 ENSG00000143178
   - NEUROD1 ENSG00000162992
-- name: Homeostatic microglial cell
-  markers:
+  name: Corticotroph cell
+- markers:
   - ADGRG1 ENSG00000205336
   - GPR34 ENSG00000171659
   - GPR183 ENSG00000169508
   - CX3CR1 ENSG00000168329
   - P2RY13 ENSG00000181631
   - P2RY12 ENSG00000169313
-- name: Immature neuron
-  markers:
+  name: Homeostatic microglial cell
+- markers:
   - TUBB3 ENSG00000258947
   - DCX ENSG00000077279
   - CUX2 ENSG00000111249
   - GAD2 ENSG00000136750
-- name: Glial neural progenitor cell
-  markers:
+  name: Immature neuron
+- markers:
   - HOPX ENSG00000171476
-- name: Microglial-specific cell
-  markers:
+  name: Glial neural progenitor cell
+- markers:
   - TMEM119 ENSG00000183160
   - P2RY12 ENSG00000169313
   - CX3CR1 ENSG00000168329
-- name: Hematopoietic cell
-  markers:
+  name: Microglial-specific cell
+- markers:
   - SPINK2 ENSG00000128040
   - GATA2 ENSG00000179348
   - CD34 ENSG00000174059
-- name: M1 microglial cell
-  markers:
+  name: Hematopoietic cell
+- markers:
   - CSF1R ENSG00000182578
   - TYROBP ENSG00000011600
   - TREM2 ENSG00000095970
   - CX3CR1 ENSG00000168329
   - P2RY13 ENSG00000181631
   - P2RY12 ENSG00000169313
-- name: Mature dendritic cell
-  markers:
+  name: M1 microglial cell
+- markers:
   - CD83 ENSG00000112149
   - NFKB1 ENSG00000109320
-- name: Perivascular macrophage
-  markers:
+  name: Mature dendritic cell
+- markers:
   - MRC1 ENSG00000260314
-- name: T follicular helper(Tfh) cell
-  markers:
+  name: Perivascular macrophage
+- markers:
   - IL21 ENSG00000138684
   - BCL6 ENSG00000113916
-- name: T helper 1(Th1) cell
-  markers:
+  name: T follicular helper(Tfh) cell
+- markers:
   - TBX21 ENSG00000073861
   - TNF ENSG00000232810
   - STAT1 ENSG00000115415
   - STAT4 ENSG00000138378
-- name: T helper 17(Th17) cell
-  markers:
+  name: T helper 1(Th1) cell
+- markers:
   - STAT3 ENSG00000168610
   - IL17A ENSG00000112115
-- name: T helper 2(Th2) cell
-  markers:
+  name: T helper 17(Th17) cell
+- markers:
   - STAT6 ENSG00000166888
   - IL13 ENSG00000169194
   - STAT5A ENSG00000126561
   - GATA3 ENSG00000107485
-- name: Adult neuronal stem cell
-  markers:
+  name: T helper 2(Th2) cell
+- markers:
   - TNFRSF19 ENSG00000127863
-- name: Ventricular radial glial cell
-  markers:
+  name: Adult neuronal stem cell
+- markers:
   - CCN2 ENSG00000118523
   - FBXO32 ENSG00000156804
-- name: Truncated radial glial cell
-  markers:
+  name: Ventricular radial glial cell
+- markers:
   - FOXJ1 ENSG00000129654
   - NR4A1 ENSG00000123358
   - CRYAB ENSG00000109846
   - DDIT3 ENSG00000175197
   - ENO1 ENSG00000074800
   - PGK1 ENSG00000102144
-- name: Subplate cell
-  markers:
+  name: Truncated radial glial cell
+- markers:
   - CRYM ENSG00000103316
   - NR4A2 ENSG00000153234
-- name: Leptomeningeal cell
-  markers:
+  name: Subplate cell
+- markers:
   - LUM ENSG00000139329
   - COL1A1 ENSG00000108821
-- name: Neuronal intermediate progenitor cell
-  markers:
+  name: Leptomeningeal cell
+- markers:
   - PPP1R17 ENSG00000106341
   - EOMES ENSG00000163508
   - NEUROG1 ENSG00000181965
-- name: Mature astrocyte
-  markers:
+  name: Neuronal intermediate progenitor cell
+- markers:
   - SPARCL1 ENSG00000152583
-- name: Mast cell
-  markers:
+  name: Mature astrocyte
+- markers:
   - KIT ENSG00000157404
-- name: Cytotoxic CD8 T cell
-  markers:
+  name: Mast cell
+- markers:
   - CD8A ENSG00000153563
   - CCL5 ENSG00000271503
   - CD2 ENSG00000116824
   - KNSTRN ENSG00000128944
-- name: CD14+ monocyte
-  markers:
+  name: Cytotoxic CD8 T cell
+- markers:
   - FCGR3A ENSG00000203747
   - CD14 ENSG00000170458
-- name: Naive T(Th0) cell
-  markers:
+  name: CD14+ monocyte
+- markers:
   - NOSIP ENSG00000142546
   - TCF7 ENSG00000081059
   - LEF1 ENSG00000138795
   - CCR7 ENSG00000126353
-- name: Plasmacytoid dendritic cell(pDC)
-  markers:
+  name: Naive T(Th0) cell
+- markers:
   - TNFRSF21 ENSG00000146072
   - TCF4 ENSG00000196628
-- name: Activated B cell
-  markers:
+  name: Plasmacytoid dendritic cell(pDC)
+- markers:
   - IGHM ENSG00000211899
   - CD79A ENSG00000105369
   - CD74 ENSG00000019582
   - CD27 ENSG00000139193
-- name: Gamma delta(??) T cell
-  markers:
+  name: Activated B cell
+- markers:
   - TRDC ENSG00000211829
-- name: Myeloid dendritic cell
-  markers:
+  name: Gamma delta(??) T cell
+- markers:
   - LYZ ENSG00000090382
   - BATF3 ENSG00000123685
-- name: Stromal cell
-  markers:
+  name: Myeloid dendritic cell
+- markers:
   - CD248 ENSG00000174807
-- name: Immune cell
-  markers:
+  name: Stromal cell
+- markers:
   - PTPRC ENSG00000081237
-- name: Upper layer cell
-  markers:
+  name: Immune cell
+- markers:
   - CUX1 ENSG00000257923
   - POU3F2 ENSG00000184486
-- name: Deep layer cell
-  markers:
+  name: Upper layer cell
+- markers:
   - TBR1 ENSG00000136535
   - BCL11B ENSG00000127152
-- name: Layer 4 cell
-  markers:
+  name: Deep layer cell
+- markers:
   - RORB ENSG00000198963
-- name: Brain cell
-  markers:
+  name: Layer 4 cell
+- markers:
   - FOXG1 ENSG00000176165
   - ZIC3 ENSG00000156925
   - NRP1 ENSG00000099250
   - ZIC2 ENSG00000043355
-- name: Superficial layer excitatory neuron
-  markers:
+  name: Brain cell
+- markers:
   - SATB2 ENSG00000119042
-- name: Deep layer excitatory neuron
-  markers:
+  name: Superficial layer excitatory neuron
+- markers:
   - BCL11B ENSG00000127152
-- name: Broad excitatory neuron
-  markers:
+  name: Deep layer excitatory neuron
+- markers:
   - NEUROD6 ENSG00000164600
-- name: Dividing cell
-  markers:
+  name: Broad excitatory neuron
+- markers:
   - MKI67 ENSG00000148773
-- name: Border-associated macrophage
-  markers:
+  name: Dividing cell
+- markers:
   - CD163 ENSG00000177575
-- name: Pituicyte
-  markers:
+  name: Border-associated macrophage
+- markers:
   - NKX2-1 ENSG00000136352
-- name: Spindle cell
-  markers:
+  name: Pituicyte
+- markers:
   - NKX2-1 ENSG00000136352
-- name: Choroid plexus cell
-  markers:
+  name: Spindle cell
+- markers:
   - TTR ENSG00000118271
-- name: Inner radial glial cell
-  markers:
+  name: Choroid plexus cell
+- markers:
   - TOP2A ENSG00000131747
   - NUSAP1 ENSG00000137804
   - CENPU ENSG00000151725
   - PCLAF ENSG00000166803
-- name: Upper layer cortical neuron
-  markers:
+  name: Inner radial glial cell
+- markers:
   - SATB2 ENSG00000119042
-- name: Deep layer neuron
-  markers:
+  name: Upper layer cortical neuron
+- markers:
   - CRYM ENSG00000103316
   - SOX5 ENSG00000134532
   - BCL11B ENSG00000127152
   - TBR1 ENSG00000136535
   - FOXP2 ENSG00000128573
   - FEZF2 ENSG00000153266
-- name: Midbrain dopaminergic neuron
-  markers:
+  name: Deep layer neuron
+- markers:
   - FOXA2 ENSG00000125798
   - LMX1A ENSG00000162761
   - TH ENSG00000180176
-- name: Monocyte-derived cell
-  markers:
+  name: Midbrain dopaminergic neuron
+- markers:
   - CD68 ENSG00000129226
-- name: Immune suppressive macrophage
-  markers:
+  name: Monocyte-derived cell
+- markers:
   - CD163 ENSG00000177575
-- name: Pan monocyte
-  markers:
+  name: Immune suppressive macrophage
+- markers:
   - CD68 ENSG00000129226
   - LYZ ENSG00000090382
   - CD14 ENSG00000170458
-- name: Marginal-associated macrophage
-  markers:
+  name: Pan monocyte
+- markers:
   - APOE ENSG00000130203
   - TREM2 ENSG00000095970
   - CX3CR1 ENSG00000168329
   - LYVE1 ENSG00000133800
-- name: Lateral ganglionic eminence cell
-  markers:
+  name: Marginal-associated macrophage
+- markers:
   - MEIS2 ENSG00000134138
-- name: Dorsal medial ganglionic eminence precursor cell
-  markers:
+  name: Lateral ganglionic eminence cell
+- markers:
   - ZFHX3 ENSG00000140836
   - NR2F1 ENSG00000175745
   - ZNF503 ENSG00000165655
-- name: Ventral medial ganglionic eminence precursor cell
-  markers:
+  name: Dorsal medial ganglionic eminence precursor cell
+- markers:
   - LHX8 ENSG00000162624
   - ZIC1 ENSG00000152977
   - ZIC2 ENSG00000043355
   - ZIC4 ENSG00000174963
-- name: Medial ganglionic eminence cell
-  markers:
+  name: Ventral medial ganglionic eminence precursor cell
+- markers:
   - LHX8 ENSG00000162624
   - NR2F1 ENSG00000175745
   - NKX2-1 ENSG00000136352
-- name: Caudal ganglionic eminence cell
-  markers:
+  name: Medial ganglionic eminence cell
+- markers:
   - NR2F2 ENSG00000185551
   - NR2F1 ENSG00000175745
-- name: Medial ganglionic eminence precursor cell
-  markers:
+  name: Caudal ganglionic eminence cell
+- markers:
   - LHX6 ENSG00000106852
   - NKX2-1 ENSG00000136352
-- name: Non-neuron
-  markers:
+  name: Medial ganglionic eminence precursor cell
+- markers:
   - PAX6 ENSG00000007372
   - S100B ENSG00000160307
   - REST ENSG00000084093
   - MKI67 ENSG00000148773
   - SLC1A3 ENSG00000079215
   - SOX9 ENSG00000125398
-- name: Motor neuron
-  markers:
+  name: Non-neuron
+- markers:
   - ALDH1A2 ENSG00000128918
   - MNX1 ENSG00000130675
   - SLC5A7 ENSG00000115665
@@ -3213,94 +3197,110 @@ marker_list:
   - PRPH ENSG00000135406
   - CHAT ENSG00000070748
   - SLC18A3 ENSG00000187714
-- name: Antigen-presenting cell
-  markers:
+  name: Motor neuron
+- markers:
   - CD86 ENSG00000114013
   - CD80 ENSG00000121594
   - CD40 ENSG00000101017
-- name: Myelo-monocytic cell
-  markers:
+  name: Antigen-presenting cell
+- markers:
   - CD14 ENSG00000170458
   - CD33 ENSG00000105383
-- name: Neural ectodermal cell
-  markers:
+  name: Myelo-monocytic cell
+- markers:
   - OTX2 ENSG00000165588
-- name: Hematopoietic stem cell
-  markers:
+  name: Neural ectodermal cell
+- markers:
   - NCOR2 ENSG00000196498
   - HLX ENSG00000136630
   - PRNP ENSG00000171867
   - NKX3-1 ENSG00000167034
-- name: Lower layer neuron
-  markers:
+  name: Hematopoietic stem cell
+- markers:
   - SOX2 ENSG00000181449
   - EMX2 ENSG00000170370
   - FEZF2 ENSG00000153266
-- name: Leukocyte
-  markers:
+  name: Lower layer neuron
+- markers:
   - PTPRC ENSG00000081237
-- name: Endocrine cell
-  markers:
+  name: Leukocyte
+- markers:
   - CD34 ENSG00000174059
-- name: Oligodendrocyte?like cell
-  markers:
+  name: Endocrine cell
+- markers:
   - FTH1 ENSG00000167996
   - LAMP2 ENSG00000005893
-- name: Microglia?like cell
-  markers:
+  name: Oligodendrocyte?like cell
+- markers:
   - LCP1 ENSG00000136167
   - ITGAM ENSG00000169896
-- name: Mature neuron
-  markers:
+  name: Microglia?like cell
+- markers:
   - MAP2 ENSG00000078018
-- name: Young neuron
-  markers:
+  name: Mature neuron
+- markers:
   - DCX ENSG00000077279
   - NCAM1 ENSG00000149294
   - STMN1 ENSG00000117632
   - SYP ENSG00000102003
-- name: Smooth muscle cell
-  markers:
+  name: Young neuron
+- markers:
   - MYH11 ENSG00000133392
   - CNN1 ENSG00000130176
   - TAGLN ENSG00000149591
-- name: Postmitotic neuron
-  markers:
+  name: Smooth muscle cell
+- markers:
   - TBR1 ENSG00000136535
-- name: Disease-associated microglial cell
-  markers:
+  name: Postmitotic neuron
+- markers:
   - CD9 ENSG00000010278
-- name: Late neuronal progenitor cell
-  markers:
+  name: Disease-associated microglial cell
+- markers:
   - ASCL1 ENSG00000139352
   - PAX6 ENSG00000007372
-- name: Cholinergic neuron
-  markers:
+  name: Late neuronal progenitor cell
+- markers:
   - SLC18A3 ENSG00000187714
-- name: Pituitary stem cell (PSC)
-  markers:
+  name: Cholinergic neuron
+- markers:
   - RBPMS ENSG00000157110
   - SOX9 ENSG00000125398
   - LGR4 ENSG00000205213
-- name: Somatotrope
-  markers:
+  name: Pituitary stem cell (PSC)
+- markers:
   - GH1 ENSG00000259384
-- name: Thyrotrope
-  markers:
+  name: Somatotrope
+- markers:
   - DIO2 ENSG00000211448
-- name: Gonadotrope
-  markers:
+  name: Thyrotrope
+- markers:
   - FSHB ENSG00000131808
   - GNRHR ENSG00000109163
   - LHB ENSG00000104826
-- name: Lactotrope
-  markers:
+  name: Gonadotrope
+- markers:
   - PRL ENSG00000172179
-- name: Effector memory T cell
-  markers:
+  name: Lactotrope
+- markers:
   - TCF7 ENSG00000081059
   - SELL ENSG00000188404
   - IL7R ENSG00000168685
   - KLRG1 ENSG00000139187
   - PTGER2 ENSG00000125384
   - CCR7 ENSG00000126353
+  name: Effector memory T cell
+metadata:
+  date: 27.03.2020
+  id: '51'
+  list_name: HCM_human_brain
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: brain

@@ -1,21 +1,5 @@
-metadata:
-  id: '99'
-  list_name: Panglao_mouse_na
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: na
-    custom_tag: cell type annotation
 marker_list:
-- name: Glomus cells
-  markers:
+- markers:
   - DRD2 ENSMUSG00000032259
   - NOS1 ENSMUSG00000029361
   - PHOX2B ENSMUSG00000012520
@@ -45,8 +29,8 @@ marker_list:
   - KCNJ8 ENSMUSG00000030247
   - ABCC8 ENSMUSG00000040136
   - KCNK9 ENSMUSG00000036760
-- name: Pluripotent stem cells
-  markers:
+  name: Glomus cells
+- markers:
   - PRMT8 ENSMUSG00000030350
   - NCOA5 ENSMUSG00000039804
   - TRIM32 ENSMUSG00000051675
@@ -66,14 +50,14 @@ marker_list:
   - HK2 ENSMUSG00000000628
   - SPN ENSMUSG00000051457
   - ESRP1 ENSMUSG00000040728
-- name: T cells naive
-  markers:
+  name: Pluripotent stem cells
+- markers:
   - CD3D ENSMUSG00000032094
   - CD4 ENSMUSG00000023274
   - SELL ENSMUSG00000026581
   - CCR7 ENSMUSG00000037944
-- name: Taste receptor cells
-  markers:
+  name: T cells naive
+- markers:
   - TAS1R1 ENSMUSG00000028950
   - TAS1R2 ENSMUSG00000028738
   - TAS1R3 ENSMUSG00000029072
@@ -91,3 +75,19 @@ marker_list:
   - TRPM8 ENSMUSG00000036251
   - PROX1 ENSMUSG00000010175
   - GRM4 ENSMUSG00000063239
+  name: Taste receptor cells
+metadata:
+  date: 27.03.2020
+  id: '99'
+  list_name: Panglao_mouse_na
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: na

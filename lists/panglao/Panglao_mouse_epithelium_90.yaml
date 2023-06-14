@@ -1,21 +1,5 @@
-metadata:
-  id: '90'
-  list_name: Panglao_mouse_epithelium
-  organism:
-    organism_name: mouse
-    taxonomy_id: '10090'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: epithelium
-    custom_tag: cell type annotation
 marker_list:
-- name: Basal cells
-  markers:
+- markers:
   - KRT5 ENSMUSG00000061527
   - KRT17 ENSMUSG00000035557
   - BCL2 ENSMUSG00000057329
@@ -66,8 +50,8 @@ marker_list:
   - LAMC2 ENSMUSG00000026479
   - BMP7 ENSMUSG00000008999
   - MYLK ENSMUSG00000022836
-- name: Epithelial cells
-  markers:
+  name: Basal cells
+- markers:
   - CEACAM1 ENSMUSG00000074272
   - ST6GAL1 ENSMUSG00000022885
   - ITGB4 ENSMUSG00000020758
@@ -199,8 +183,8 @@ marker_list:
   - CLDN1 ENSMUSG00000022512
   - OCLN ENSMUSG00000021638
   - MUC5AC ENSMUSG00000037974
-- name: Mesothelial cells
-  markers:
+  name: Epithelial cells
+- markers:
   - CALB2 ENSMUSG00000003657
   - MUC16 ENSMUSG00000109564
   - KRT5 ENSMUSG00000061527
@@ -259,3 +243,19 @@ marker_list:
   - FRAS1 ENSMUSG00000034687
   - RSPO1 ENSMUSG00000028871
   - RARRES2 ENSMUSG00000009281
+  name: Mesothelial cells
+metadata:
+  date: 27.03.2020
+  id: '90'
+  list_name: Panglao_mouse_epithelium
+  marker_type: Genes
+  organism:
+    organism_name: mouse
+    taxonomy_id: '10090'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: epithelium

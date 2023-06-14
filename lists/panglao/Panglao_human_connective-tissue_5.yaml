@@ -1,21 +1,5 @@
-metadata:
-  id: '5'
-  list_name: Panglao_human_connective-tissue
-  organism:
-    organism_name: human
-    taxonomy_id: '9606'
-  marker_type: Genes
-  submitter:
-    name: Kessler, Micha Frederick
-    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
-  date: 27.03.2020
-  source: panglao.se
-  tags:
-    tissue: connective-tissue
-    custom_tag: cell type annotation
 marker_list:
-- name: Adipocyte progenitor cells
-  markers:
+- markers:
   - CEBPA ENSG00000245848
   - EGFR ENSG00000146648
   - FGF10 ENSG00000070193
@@ -40,8 +24,8 @@ marker_list:
   - SULT1E1 ENSG00000109193
   - EBF2 ENSG00000221818
   - NRG4 ENSG00000169752
-- name: Adipocytes
-  markers:
+  name: Adipocyte progenitor cells
+- markers:
   - SLC36A2 ENSG00000186335
   - P2RX5 ENSG00000083454
   - LEP ENSG00000174697
@@ -163,8 +147,8 @@ marker_list:
   - HOXC9 ENSG00000180806
   - ZNF423 ENSG00000102935
   - ESM1 ENSG00000164283
-- name: Chondrocytes
-  markers:
+  name: Adipocytes
+- markers:
   - PRG4 ENSG00000116690
   - TNC ENSG00000041982
   - CRTAC1 ENSG00000095713
@@ -217,8 +201,8 @@ marker_list:
   - NOG ENSG00000183691
   - AGER ENSG00000204305
   - IL10RA ENSG00000110324
-- name: Fibroblasts
-  markers:
+  name: Chondrocytes
+- markers:
   - IL1R1 ENSG00000115594
   - FAP ENSG00000078098
   - FLI1 ENSG00000151702
@@ -395,8 +379,8 @@ marker_list:
   - CKAP4 ENSG00000136026
   - INMT ENSG00000241644
   - CXCL14 ENSG00000145824
-- name: Stromal cells
-  markers:
+  name: Fibroblasts
+- markers:
   - MMP1 ENSG00000196611
   - MMP2 ENSG00000087245
   - MMP9 ENSG00000100985
@@ -433,3 +417,19 @@ marker_list:
   - BMP4 ENSG00000125378
   - WNT2 ENSG00000105989
   - BMP5 ENSG00000112175
+  name: Stromal cells
+metadata:
+  date: 27.03.2020
+  id: '5'
+  list_name: Panglao_human_connective-tissue
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: panglao.se
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: connective-tissue
