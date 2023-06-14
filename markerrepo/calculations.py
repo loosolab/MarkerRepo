@@ -298,7 +298,7 @@ def create_dataset_dict():
     dataset_dict = {}
 
     for name, dataset in datasets.items():
-        dataset_dict[dataset.display_name] = name
+        dataset_dict[dataset.display_name] = name.split("_")[0]
 
     return dataset_dict
 
@@ -324,3 +324,33 @@ def get_dataset_names(organism_name):
     matching_names = [dataset_name for display_name, dataset_name in dataset_dict.items() if organism_name.lower() in display_name.lower()]
 
     return matching_names
+
+
+def transfer_markers_biomart(biomart_df, source_df):
+    """
+    This function merges two dataframes based on a common column.
+
+    Parameters
+    ----------
+    biomart_df : pd.DataFrame
+        DataFrame obtained from the BioMart database, with columns corresponding to 'Gene stable ID', 'Gene name', and a column containing the homologs of interest.
+    source_df : pd.DataFrame
+        Source DataFrame, with columns 'Marker', 'Info'. The 'Marker' column contains two gene names separated by a space.
+
+    Returns
+    --------
+    pd.DataFrame :
+        Target DataFrame containing 'Marker' and 'Info' columns. The 'Marker' column contains the homologs of interest from the BioMart DataFrame.
+    """
+
+    # Split the 'Marker' column and keep the ensembl ID
+    source_df['Marker'] = source_df['Marker'].apply(lambda x: x.split(' ')[1] if len(x.split(' ')) > 1 else x)
+
+    # Merge the two dataframes on the common column ('Marker' from source_df and 'Gene stable ID' from biomart_df)
+    merged_df = pd.merge(biomart_df, source_df, left_on='Gene stable ID', right_on='Marker', how='inner')
+
+    # Create the target dataframe
+    target_df = merged_df[[biomart_df.columns[2], 'Info']]
+    target_df.rename(columns={biomart_df.columns[2]: 'Marker'}, inplace=True)
+
+    return target_df

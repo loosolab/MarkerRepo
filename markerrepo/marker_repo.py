@@ -557,16 +557,21 @@ def select(whitelist=None, key=None, heading=None):
 
     if not whitelist:
         whitelist = read_whitelist(key)['whitelist']
-    
-    if not heading:
-        print(f"Select {key}")
-    else:
-        print(f"Select {heading}")
 
-    for i, value in enumerate(whitelist):
-        print(str(i+1) + ":\t" + value)
+    if len(whitelist) > 1:
+        if not heading:
+            print(f"Select {key}")
+        else:
+            print(f"Select {heading}")
+
+        for i, value in enumerate(whitelist):
+            print(str(i+1) + ":\t" + value)
     
-    selection = whitelist[int(input())-1]
+    if len(whitelist) == 1:
+        selection = whitelist[0]
+    else:
+        selection = whitelist[int(input())-1]
+        
     print(f"Selection: {selection}\n")
 
     return selection
