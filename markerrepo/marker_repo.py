@@ -556,7 +556,12 @@ def select(whitelist=None, key=None, heading=None):
     """
 
     if not whitelist:
-        whitelist = read_whitelist(key)['whitelist']
+        if key:
+            whitelist = read_whitelist(key)['whitelist']
+        elif heading:
+            raise Exception(f"No values for '{heading}' available. Please try again using other parameters.")
+        else:
+            raise Exception("No values available. Please try again using other parameters.")
 
     if len(whitelist) > 1:
         if not heading:

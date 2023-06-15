@@ -110,19 +110,19 @@ def get_supported_taxonomy_ids(hg_db):
         List of supported taxonomy IDs.
     """
     
-    organism = []
+    organisms = []
 
     # Get unique taxonomy IDs from HomoloGene db and convert them to strings
     unique_taxonomy_ids = hg_db['Taxonomy ID'].unique().astype(str).tolist()
     # Get support organisms from whitelist repository
-    supported_organims = read_whitelist("organism")['whitelist']
+    supported_organisms = read_whitelist("organism")['whitelist']
 
-    for so in supported_organims:
+    for so in supported_organisms:
         name, tax = so.split(" ")
         if tax in unique_taxonomy_ids:
-            organism.append(f"{name} {tax}")
+            organisms.append(f"{name} {tax}")
 
-    return organism
+    return organisms
 
 
 def transfer_markers(df, source_organism, target_organism, hg_db):
@@ -248,7 +248,7 @@ def update_scores(df, organism="Hs", panglao_file="panglao_markers"):
 
 def fetch_homologs(source_organism, target_organism):
     """
-    Fetch homologous genes from the BioMart database.
+    Fetch homologous genes using BioMart.
     
     Parameters
     ----------
@@ -354,3 +354,31 @@ def transfer_markers_biomart(biomart_df, source_df):
     target_df.rename(columns={biomart_df.columns[2]: 'Marker'}, inplace=True)
 
     return target_df
+
+
+def get_supported_biomart_organisms():
+    """
+    Returns all supported BioMart organisms in the downloaded Ensembl db.
+
+    Returns
+    -------
+    list of str:
+        List of supported organisms.
+    """
+    
+    organisms = []
+
+    # Get organisms from Ensembl db and convert them to strings
+    dataset_list = list(create_dataset_dict().keys())
+    ensembl_organisms = [s.split(" genes")[0].lower() for s in dataset_list]
+
+    # Get support organisms from whitelist repository
+    supported_organisms = read_whitelist("organism")['whitelist']
+
+    for so in supported_organisms:
+        name, tax = so.split(" ")
+
+        if name.lower() in ensembl_organisms:
+            organisms.append(f"{name} {tax}")
+
+    return organisms
