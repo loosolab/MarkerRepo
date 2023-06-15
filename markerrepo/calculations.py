@@ -4,6 +4,8 @@ import os
 import urllib.request
 from .utils import read_whitelist
 from sklearn.preprocessing import MinMaxScaler
+from pybiomart import Server
+
 
 def compare_marker_lists(repo_lists_path="./lists", keywords=None, marker_df=None, case_sensitive=False, exact=False):
     """
@@ -93,14 +95,9 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
     return homologene_data
 
 
-def get_supported_taxonomy_ids(hg_db):
+def get_supported_taxonomy_ids():
     """
     Returns all supported taxonomy IDs in the downloaded HomoloGene data.
-
-    Parameters
-    ----------
-    hg_db : pd.DataFrame
-        DataFrame containing the HomoloGene db.
     
     Returns
     -------
@@ -108,19 +105,26 @@ def get_supported_taxonomy_ids(hg_db):
         List of supported taxonomy IDs.
     """
     
-    organism = []
+    organisms = []
+
+    if os.path.exists("homologene.data"):
+        homologene_data = pd.read_csv("homologene.data", sep='\t', header=None, index_col=0)
+        homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein GI", "Protein accession"]
+        homologene_data.index.names = ["HID"]
+    else:
+        homologene_data = download_homologene_data()
 
     # Get unique taxonomy IDs from HomoloGene db and convert them to strings
-    unique_taxonomy_ids = hg_db['Taxonomy ID'].unique().astype(str).tolist()
+    unique_taxonomy_ids = homologene_data['Taxonomy ID'].unique().astype(str).tolist()
     # Get support organisms from whitelist repository
-    supported_organims = read_whitelist("organism")['whitelist']
+    supported_organisms = read_whitelist("organism")['whitelist']
 
-    for so in supported_organims:
+    for so in supported_organisms:
         name, tax = so.split(" ")
         if tax in unique_taxonomy_ids:
-            organism.append(f"{name} {tax}")
+            organisms.append(f"{name} {tax}")
 
-    return organism
+    return organisms
 
 
 def transfer_markers(df, source_organism, target_organism, hg_db):
@@ -242,3 +246,175 @@ def update_scores(df, organism="Hs", panglao_file="panglao_markers"):
     df.sort_values('Score', ascending=True, inplace=True)
 
     return df
+
+
+def fetch_homologs(source_organism, target_organism):
+    """
+    Fetch homologous genes using BioMart.
+    
+    Parameters
+    ----------
+    source_organism : str
+        Name of the source organism.
+    target_organism : str
+        Name of the target organism.
+    
+    Returns
+    -------
+    pd.DataFrame :
+        DataFrame containing homologous genes.
+    """
+    # Initialize BioMart server
+    server = Server(host='http://www.ensembl.org')
+
+    # Define source and target datasets
+    source_dataset = server.marts['ENSEMBL_MART_ENSEMBL'].datasets[source_organism + '_gene_ensembl']
+    target_homolog_attribute = target_organism + '_homolog_ensembl_gene'
+
+    # Query BioMart database
+    attributes = ['ensembl_gene_id', 'external_gene_name', target_homolog_attribute]
+    data = source_dataset.query(attributes=attributes)
+    
+    return data
+
+
+def create_dataset_dict():
+    """
+    Creates a dictionary mapping the display names of the datasets to their actual names.
+    
+    Parameters
+    ----------
+    datasets : dict
+        A dictionary of available datasets from the Biomart server.
+
+    Returns
+    --------
+    dict :
+        A dictionary with display names as keys and actual dataset names as values.
+    """
+
+    # Get the available datasets from the Biomart server
+    server = Server(host='http://www.ensembl.org')
+    datasets = server.marts['ENSEMBL_MART_ENSEMBL'].datasets
+
+    dataset_dict = {}
+
+    for name, dataset in datasets.items():
+        dataset_dict[dataset.display_name] = name.split("_")[0]
+
+    return dataset_dict
+
+
+def get_dataset_names(organism_name):
+    """
+    Retrieves the names of datasets corresponding to a specific organism.
+    
+    Parameters
+    ----------
+    organism_name : str
+        The name of the organism to search for.
+    dataset_dict : dict
+        A dictionary with display names as keys and actual dataset names as values.
+
+    Returns
+    --------
+    list :
+        A list of dataset names that correspond to the input organism_name.
+    """
+
+    dataset_dict = create_dataset_dict()
+    matching_names = [dataset_name for display_name, dataset_name in dataset_dict.items() if organism_name.lower() in display_name.lower()]
+
+    return matching_names
+
+
+def transfer_markers_biomart(biomart_df, source_df):
+    """
+    This function merges two dataframes based on a common column.
+
+    Parameters
+    ----------
+    biomart_df : pd.DataFrame
+        DataFrame obtained from the BioMart database, with columns corresponding to 'Gene stable ID', 'Gene name', and a column containing the homologs of interest.
+    source_df : pd.DataFrame
+        Source DataFrame, with columns 'Marker', 'Info'. The 'Marker' column contains two gene names separated by a space.
+
+    Returns
+    --------
+    pd.DataFrame :
+        Target DataFrame containing 'Marker' and 'Info' columns. The 'Marker' column contains the homologs of interest from the BioMart DataFrame.
+    """
+
+    # Split the 'Marker' column and keep the ensembl ID
+    source_df['Marker'] = source_df['Marker'].apply(lambda x: x.split(' ')[1] if len(x.split(' ')) > 1 else x)
+
+    # Merge the two dataframes on the common column ('Marker' from source_df and 'Gene stable ID' from biomart_df)
+    merged_df = pd.merge(biomart_df, source_df, left_on='Gene stable ID', right_on='Marker', how='inner')
+
+    # Create the target dataframe
+    target_df = merged_df[[biomart_df.columns[2], 'Info']]
+    target_df.rename(columns={biomart_df.columns[2]: 'Marker'}, inplace=True)
+
+    return target_df
+
+
+def get_supported_biomart_organisms():
+    """
+    Returns all supported BioMart organisms in the downloaded Ensembl db.
+
+    Returns
+    -------
+    list of str:
+        List of supported organisms.
+    """
+    
+    organisms = []
+
+    # Get organisms from Ensembl db and convert them to strings
+    dataset_list = list(create_dataset_dict().keys())
+    ensembl_organisms = [s.split(" genes")[0].lower() for s in dataset_list]
+
+    # Get support organisms from whitelist repository
+    supported_organisms = read_whitelist("organism")['whitelist']
+
+    for so in supported_organisms:
+        name, tax = so.split(" ")
+
+        if name.lower() in ensembl_organisms:
+            organisms.append(f"{name} {tax}")
+
+    return organisms
+
+
+def select_db(biomart, homologene):
+    """
+    Ask the user to select a database from the provided list of supported organisms in each database.
+
+    Parameters
+    ----------
+    biomart : list
+        List of supported organisms in the Biomart database.
+    homologene : list
+        List of supported organisms in the HomoloGene database.
+
+    Returns
+    -------
+    str :
+        The chosen database, either "biomart" or "homologene".
+    """
+
+    while True:
+        print("Supported organisms in the Biomart database:")
+        for organism in biomart:
+            print(organism)
+
+        print("\nSupported organisms in the HomoloGene database:")
+        for organism in homologene:
+            print(organism)
+
+        db_choice = input("\nPlease choose a database (biomart/homologene): ")
+
+        if db_choice.lower() in ['biomart', 'homologene']:
+            return db_choice
+        else:
+            print("\nInvalid choice. Please choose either 'biomart' or 'homologene'.")
