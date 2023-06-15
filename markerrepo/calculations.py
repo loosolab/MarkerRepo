@@ -166,6 +166,7 @@ def transfer_markers(df, source_organism, target_organism, hg_db):
     result_df = pd.merge(df_copy, merged_data, on='Marker')
     result_df = result_df[['Transferred Marker', 'Info']]
     result_df['Transferred Marker'] = result_df['Transferred Marker'].str.upper()
+    result_df.drop_duplicates(inplace=True)
     
     return result_df
 
@@ -354,6 +355,7 @@ def transfer_markers_biomart(biomart_df, source_df):
     # Create the target dataframe
     target_df = merged_df[[biomart_df.columns[2], 'Info']]
     target_df.rename(columns={biomart_df.columns[2]: 'Marker'}, inplace=True)
+    target_df.drop_duplicates(inplace=True)
 
     return target_df
 
