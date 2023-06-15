@@ -95,14 +95,9 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
     return homologene_data
 
 
-def get_supported_taxonomy_ids(hg_db):
+def get_supported_taxonomy_ids():
     """
     Returns all supported taxonomy IDs in the downloaded HomoloGene data.
-
-    Parameters
-    ----------
-    hg_db : pd.DataFrame
-        DataFrame containing the HomoloGene db.
     
     Returns
     -------
@@ -112,8 +107,15 @@ def get_supported_taxonomy_ids(hg_db):
     
     organisms = []
 
+    if os.path.exists("homologene.data"):
+        homologene_data = pd.read_csv("homologene.data", sep='\t', header=None, index_col=0)
+        homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein GI", "Protein accession"]
+        homologene_data.index.names = ["HID"]
+    else:
+        homologene_data = download_homologene_data()
+
     # Get unique taxonomy IDs from HomoloGene db and convert them to strings
-    unique_taxonomy_ids = hg_db['Taxonomy ID'].unique().astype(str).tolist()
+    unique_taxonomy_ids = homologene_data['Taxonomy ID'].unique().astype(str).tolist()
     # Get support organisms from whitelist repository
     supported_organisms = read_whitelist("organism")['whitelist']
 
@@ -382,3 +384,37 @@ def get_supported_biomart_organisms():
             organisms.append(f"{name} {tax}")
 
     return organisms
+
+
+def select_db(biomart, homologene):
+    """
+    Ask the user to select a database from the provided list of supported organisms in each database.
+
+    Parameters
+    ----------
+    biomart : list
+        List of supported organisms in the Biomart database.
+    homologene : list
+        List of supported organisms in the HomoloGene database.
+
+    Returns
+    -------
+    str :
+        The chosen database, either "biomart" or "homologene".
+    """
+
+    while True:
+        print("Supported organisms in the Biomart database:")
+        for organism in biomart:
+            print(organism)
+
+        print("\nSupported organisms in the HomoloGene database:")
+        for organism in homologene:
+            print(organism)
+
+        db_choice = input("\nPlease choose a database (biomart/homologene): ")
+
+        if db_choice.lower() in ['biomart', 'homologene']:
+            return db_choice
+        else:
+            print("\nInvalid choice. Please choose either 'biomart' or 'homologene'.")
