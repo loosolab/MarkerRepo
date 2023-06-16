@@ -1,0 +1,10 @@
+stages:
+  - test
+
+check uid:
+  stage: test
+  script:
+    - export NEW_UID=$(echo $CI_COMMIT_REF_NAME | sed 's/.*_//') # Extract UID from the branch name
+    - python check_uid.py
+  only:
+    - merge_requests
