@@ -48,9 +48,10 @@ def check_uid(new_uid, repo_lists_path="./lists"):
     """
 
     uids = get_all_uids(repo_lists_path=repo_lists_path)
-    print(new_uid, type(new_uid))
-    print(uids)
-    print(uids[0], type(uids[0]))
+    
+    print(f"Your UID: {new_uid}")
+    print(f"All UIDs: {uids}")
+
     if new_uid in uids:
         print(f"Duplicate UID found: {new_uid}")
         return False
