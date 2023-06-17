@@ -47,9 +47,8 @@ def check_uid(new_uid, repo_lists_path="./lists"):
         True if the new UID is unique, False otherwise.
     """
 
-    # Get the new UID from the environment variable
-    new_uid = os.getenv('NEW_UID')
     uids = get_all_uids(repo_lists_path=repo_lists_path)
+    print(uids)
     
     if new_uid in uids:
         print(f"Duplicate UID found: {new_uid}")
