@@ -719,7 +719,7 @@ def push_marker_list(list_path, repo_path="."):
     """
 
     # Extract the list name from the list path
-    list_name = os.path.basename(list_path).rsplit('_', 1)[0]  # Removes the last part after the last '_'
+    list_name = os.path.splitext(os.path.basename(list_path))[0]  # Removes the .yaml extension
 
     repo = Repo(repo_path)
     assert not repo.bare
