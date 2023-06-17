@@ -1,0 +1,11 @@
+stages:
+  - test
+
+check uid:
+  image: python:3.9
+  stage: test
+  script:
+    - export NEW_UID=$(echo $CI_COMMIT_REF_NAME | sed 's/.*_//') # Extract UID from the branch name
+    - python markerrepo/check_uids.py $NEW_UID
+  only:
+    - merge_requests
