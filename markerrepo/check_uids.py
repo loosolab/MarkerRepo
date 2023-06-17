@@ -1,5 +1,11 @@
+import argparse
 import os
-import sys
+
+# Parse arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("uid", help="The UID to be checked for uniqueness.")
+args = parser.parse_args()
+new_uid = args.uid
 
 def get_all_uids(repo_lists_path="./lists"):
     """ 
@@ -26,7 +32,7 @@ def get_all_uids(repo_lists_path="./lists"):
     return uids
 
 
-def check_uid(repo_lists_path="./lists"):
+def check_uid(new_uid, repo_lists_path="./lists"):
     """
     Check whether the new UID is unique.
 
@@ -53,5 +59,5 @@ def check_uid(repo_lists_path="./lists"):
         return True
 
 # Run the check and exit with error if the UID is not unique
-if not check_uid():
+if not check_uid(new_uid, repo_lists_path="./lists"):
     raise ValueError(f'UID {os.getenv("NEW_UID")} already exists.')

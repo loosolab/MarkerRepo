@@ -704,55 +704,28 @@ def get_display_names(repo_path="."):
     return display_names
 
 
-def push_marker_list(list_file, repo_path=".", repo_list_path="./lists", branch="automatic_push_feature"):
+def push_marker_list(list_path, repo_path="."):
     """
-    Pulls the repository, updates UIDs, commits and pushes the new list, then pulls again.
+    Creates a new branch with the given list name, adds the new list,
+    commits the changes and pushes the new branch to the remote repository.
 
     Parameters
     ----------
-    list_file : str
-        The local file name of the list to be added.
+    list_path : str
+        The path of the new list that is to be added. The list name and branch name
+        will be extracted from this path.
     repo_path : str, default "."
-        The local path of the repository.
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-    branch : str, default "automatic_push_feature"
-        The branch of the repository.
+        The path of the repository. Defaults to the current directory.
     """
 
-    files_to_add = []
+    # Extract the list name from the list path
+    list_name = os.path.basename(list_path).rsplit('_', 1)[0]  # Removes the last part after the last '_'
+
     repo = Repo(repo_path)
+    assert not repo.bare
 
-    # Checkout to the specified branch
-    if repo.active_branch.name != branch:
-        repo.git.checkout(branch)
-
-    repo.remotes.origin.pull()
-
-    # Update UIDs
-    updated_files = update_uids(repo_lists_path=repo_list_path)
-
-    # If the provided list still exists after update, add it to the list of files to add
-    if os.path.exists(f"{repo_list_path}/{list_file}"):
-        files_to_add.append(f"{repo_list_path}/{list_file}")
-
-    # Add any files updated by the update_uids() function to the list of files to add
-    for file_path in updated_files:
-        if os.path.exists(file_path):
-            files_to_add.append(file_path)
-
-    # If there are any files to add, add them, commit, and push
-    if files_to_add:
-        for file_path in files_to_add:
-            repo.git.add(file_path)
-
-        commit_message = "added/updated marker list(s):\n"
-        commit_message += "\n".join(files_to_add)
-        repo.index.commit(commit_message)
-        repo.remotes.origin.push()
-        repo.remotes.origin.pull()
-
-        print("Successfully pushed the following marker list(s) to the repository:\n" + "\n".join(files_to_add))
-
-    else:
-        print("No changes to commit.")
+    # Check out new branch
+    repo.git.checkout('HEAD', b=list_name)
+    repo.git.add(list_path)
+    repo.git.commit('-m', f'Add new list: {list_name}')
+    repo.git.push('--set-upstream', 'origin', list_name)
