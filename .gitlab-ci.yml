@@ -7,5 +7,5 @@ check uid:
   script:
     - export NEW_UID=$(echo $CI_COMMIT_REF_NAME | sed 's/.*_//') # Extract UID from the branch name
     - python markerrepo/check_uids.py $NEW_UID
-  only:
-    - merge_requests
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_REF_NAME =~ /^.*_[0-9]+$/'

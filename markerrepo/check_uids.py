@@ -1,5 +1,6 @@
 import argparse
 import os
+from collections import Counter
 
 # Parse arguments
 parser = argparse.ArgumentParser()
@@ -9,12 +10,16 @@ new_uid = args.uid
 
 def get_all_uids(repo_lists_path="./lists"):
     """ 
-    Traverse the specified directory and its subdirectories to extract UIDs from all marker lists.
+    Traverse the specified directory and its subdirectories to extract UIDs from filenames.
+    The filenames are expected to be in the format '<name>_UID.<extension>', where '<name>' can contain underscores.
+    You can specify a UID to exclude from the collected UIDs.
 
     Parameters
     ----------
     repo_lists_path : str, default "./lists"
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    exclude_uid : str, default None
+        A UID to exclude from the collected UIDs.
 
     Returns
     --------
@@ -40,6 +45,8 @@ def check_uid(new_uid, repo_lists_path="./lists"):
     ----------
     repo_lists_path : str, default "./lists"
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    new_uid : str
+        The UID to be checked for uniqueness.
 
     Returns
     --------
@@ -52,7 +59,9 @@ def check_uid(new_uid, repo_lists_path="./lists"):
     print(f"Your UID: {new_uid}")
     print(f"All UIDs: {uids}")
 
-    if new_uid in uids:
+    uid_counts = Counter(uids)
+
+    if uid_counts[new_uid] > 1:
         print(f"Duplicate UID found: {new_uid}")
         return False
     else:
@@ -61,4 +70,4 @@ def check_uid(new_uid, repo_lists_path="./lists"):
 
 # Run the check and exit with error if the UID is not unique
 if not check_uid(new_uid, repo_lists_path="./lists"):
-    raise ValueError(f'UID {os.getenv("NEW_UID")} already exists.')
+    raise ValueError(f'UID {new_uid} already exists.')
