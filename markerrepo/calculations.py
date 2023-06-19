@@ -353,7 +353,7 @@ def transfer_markers_biomart(biomart_df, source_df):
     merged_df = pd.merge(biomart_df, source_df, left_on='Gene stable ID', right_on='Marker', how='inner')
 
     # Create the target dataframe
-    target_df = merged_df[[biomart_df.columns[2], 'Info']]
+    target_df = merged_df[[biomart_df.columns[2], 'Info']].copy()
     target_df.rename(columns={biomart_df.columns[2]: 'Marker'}, inplace=True)
     target_df.drop_duplicates(inplace=True)
 

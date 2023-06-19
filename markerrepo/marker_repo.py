@@ -352,7 +352,7 @@ def dataframe_to_dict(df):
     return result
 
 
-def export_marker_list(df, path=".", file_name="marker_list"):
+def export_marker_list(df, path=".", file_name="marker_list", header=False, marker_id=None):
     """
     Exports a marker list (df) to path/file_name. If a file with this name already exists,
     a timestamp suffix is added to the filename.
@@ -365,12 +365,22 @@ def export_marker_list(df, path=".", file_name="marker_list"):
         The path where the marker list should be saved.
     file_name : str, default "marker_list"
         The filename of the marker list.
+    header : bool, default False
+        If True, the header will also be exported
+    marker_id : str, default None
+        If "ensembl", only the second marker in the 'Marker' column is kept before exporting the df.
+        If "symbol", only the first marker in the 'Marker' column is kept before exporting the df.
 
     Returns
     -------
     export_path : str
         The full path where the marker list was saved.
     """
+
+    if marker_id == "ensembl":
+        df['Marker'] = df['Marker'].apply(lambda x: x.split(' ')[1])
+    elif marker_id == "symbol":
+        df['Marker'] = df['Marker'].apply(lambda x: x.split(' ')[0])
 
     if not path:
         path = "."
@@ -384,7 +394,7 @@ def export_marker_list(df, path=".", file_name="marker_list"):
         export_path = os.path.join(path, f"{file_name}_{timestamp}")
 
     # Export the marker list
-    df.to_csv(export_path, sep="\t", index=False)
+    df.to_csv(export_path, sep="\t", index=False, header=header)
     print(f"Marker list saved: {os.path.abspath(export_path)}")
     
     return os.path.abspath(export_path)
@@ -531,8 +541,10 @@ def update_markers(df, marker_dict):
 
     df['Marker'] = df['Marker'].apply(apply_update)
 
-    return df
+    # Make sure that the Ensembl ID is always in second position
+    df['Marker'] = df['Marker'].apply(lambda x: ' '.join(x.split(' ')[::-1]) if x.split(' ')[0].startswith('ENS') else x)
 
+    return df
 
 def select(whitelist=None, key=None, heading=None):
     """
