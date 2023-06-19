@@ -7,14 +7,18 @@ parser.add_argument("uid", help="The UID to be checked for uniqueness.")
 args = parser.parse_args()
 new_uid = args.uid
 
-def get_all_uids(repo_lists_path="./lists"):
+def get_all_uids(repo_lists_path="./lists", exclude_uid=None):
     """ 
-    Traverse the specified directory and its subdirectories to extract UIDs from all marker lists.
+    Traverse the specified directory and its subdirectories to extract UIDs from filenames.
+    The filenames are expected to be in the format '<name>_UID.<extension>', where '<name>' can contain underscores.
+    You can specify a UID to exclude from the collected UIDs.
 
     Parameters
     ----------
     repo_lists_path : str, default "./lists"
         The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    exclude_uid : str, default None
+        A UID to exclude from the collected UIDs.
 
     Returns
     --------
@@ -27,8 +31,9 @@ def get_all_uids(repo_lists_path="./lists"):
         for file in files:
             if '.yaml' in file:
                 uid = file.split('_')[-1].split('.yaml')[0]
-                uids.append(uid)
-
+                if uid != exclude_uid:
+                    uids.append(uid)
+    
     return uids
 
 
@@ -47,10 +52,10 @@ def check_uid(new_uid, repo_lists_path="./lists"):
         True if the new UID is unique, False otherwise.
     """
 
-    uids = get_all_uids(repo_lists_path=repo_lists_path)
+    uids = get_all_uids(repo_lists_path=repo_lists_path, exclude_uid=new_uid)
     
     print(f"Your UID: {new_uid}")
-    print(f"All UIDs: {uids}")
+    print(f"All UIDs: {uids.sort()}")
 
     if new_uid in uids:
         print(f"Duplicate UID found: {new_uid}")
