@@ -119,9 +119,6 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
             correct = parse_list_choose_one(['True ', 'False '],
                                             f'\nIs the input correct? You can redo it by selecting \'False\'')
 
-
-    # TODO: extra function for summary
-    # print summary
     print(f'{"".center(size, "-")}\n'
           f'{"SUMMARY".center(size, " ")}\n'
           f'{"".center(size, "-")}\n')
@@ -130,27 +127,13 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
     print(f'\n\n')
     print(f'{"".center(size, "-")}\n')
 
-    # print(f'{"".center(size, "-")}\n'
-    #       f'{"FILE VALIDATION".center(size, " ")}\n'
-    #       f'{"".center(size, "-")}\n')
-    # valid, missing_mandatory_keys, invalid_keys, invalid_entries, \
-    #     invalid_values, pool_warn, ref_genome_warn = validate_yaml.\
-    #     validate_file(result_dict)
-    # if not valid:
-    #     validate_yaml.print_validation_report(
-    #         result_dict, missing_mandatory_keys, invalid_keys,
-    #         invalid_entries, invalid_values)
-    # elif len(pool_warn) > 0 or len(ref_genome_warn) > 0:
-    #     validate_yaml.print_warning(result_dict, pool_warn, ref_genome_warn)
-    # else:
-    #     print(f'Validation complete. No errors found.\n')
-
     list_path = os.path.join(path, file_name)
+    list_path = os.path.abspath(list_path)
+
     save_as_yaml(result_dict, list_path)
     print(f'Marker list saved:\n{list_path}')
-    
-    # not needed for marker repo
-    # print_sample_names(result_dict, input_id, path)
+
+    return list_path
 
 
 def edit_item(key_name, item, key_yaml, result_dict, mandatory_mode):

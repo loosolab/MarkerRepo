@@ -724,6 +724,9 @@ def push_marker_list(list_path, repo_path="."):
     repo = Repo(repo_path)
     assert not repo.bare
 
+    # Pull the latest changes
+    repo.remotes['origin'].pull()
+
     # Check out new branch
     repo.git.checkout('HEAD', b=list_name)
     repo.git.add(list_path)
