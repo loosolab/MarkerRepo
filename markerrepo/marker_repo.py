@@ -532,19 +532,18 @@ def update_markers(df, marker_dict):
 
     Returns
     --------
-    dict :
-        The dictionary containing markers and corresponding information
+    pandas.DataFrame :
+        The DataFrame containing updated markers and corresponding information.
     """
 
-    def apply_update(marker):
-        return marker + ' ' + marker_dict[marker] if marker in marker_dict else marker
-
-    df['Marker'] = df['Marker'].apply(apply_update)
+    df = df.copy()
+    df['Marker'] = df['Marker'].apply(lambda marker: marker + ' ' + marker_dict[marker] if marker in marker_dict else marker)
 
     # Make sure that the Ensembl ID is always in second position
     df['Marker'] = df['Marker'].apply(lambda x: ' '.join(x.split(' ')[::-1]) if x.split(' ')[0].startswith('ENS') else x)
 
     return df
+
 
 def select(whitelist=None, key=None, heading=None):
     """
