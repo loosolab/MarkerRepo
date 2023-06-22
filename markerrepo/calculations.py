@@ -273,7 +273,7 @@ def fetch_homologs(source_organism, target_organism):
     target_homolog_attribute = target_organism + '_homolog_ensembl_gene'
 
     # Query BioMart database
-    attributes = ['ensembl_gene_id', 'external_gene_name', target_homolog_attribute]
+    attributes = ['ensembl_gene_id', target_homolog_attribute]
     data = source_dataset.query(attributes=attributes)
     
     return data
@@ -329,9 +329,9 @@ def get_dataset_names(organism_name):
     return matching_names
 
 
-def transfer_markers_biomart(biomart_df, source_df):
+def transfer_markers_biomart(biomart_df, source_df, source_whitelist, target_whitelist):
     """
-    This function merges two dataframes based on a common column.
+    This function merges two dataframes based on a common column and calculates the proportion of transferred markers.
 
     Parameters
     ----------
@@ -339,6 +339,10 @@ def transfer_markers_biomart(biomart_df, source_df):
         DataFrame obtained from the BioMart database, with columns corresponding to 'Gene stable ID', 'Gene name', and a column containing the homologs of interest.
     source_df : pd.DataFrame
         Source DataFrame, with columns 'Marker', 'Info'. The 'Marker' column contains two gene names separated by a space.
+    source_whitelist : list of str
+        Whitelist containing all gene names and IDs of the source organism, separated by a space.
+    target_whitelist : list of str
+        Whitelist containing all gene names and IDs of the target organism, separated by a space..
 
     Returns
     --------
@@ -346,15 +350,34 @@ def transfer_markers_biomart(biomart_df, source_df):
         Target DataFrame containing 'Marker' and 'Info' columns. The 'Marker' column contains the homologs of interest from the BioMart DataFrame.
     """
 
+    # Convert the whitelists into lists of gene IDs
+    source_genes_list = [entry.split(' ')[1] for entry in source_whitelist]
+    target_genes_list = [entry.split(' ')[1] for entry in target_whitelist]
+
+    # Count the number of all possible markers that could be transferred
+    all_possible_markers = sum(1 for gene in source_genes_list if gene in biomart_df['Gene stable ID'].values)
+
+    # Calculate the percentage of all possible markers that could be transferred
+    possible_transfer_rate = all_possible_markers / len(source_genes_list) * 100
+    print(f"Possible transfer rate of all genes: {possible_transfer_rate:.2f}%")
+
+    # Calculate the percentage of these transferred genes in the target organism
+    transferred_genes_in_target = all_possible_markers / len(target_genes_list) * 100
+    print(f"Proportion of transferred genes in all genes of target organism: {transferred_genes_in_target:.2f}%")
+
     # Split the 'Marker' column and keep the ensembl ID
     source_df['Marker'] = source_df['Marker'].apply(lambda x: x.split(' ')[1] if len(x.split(' ')) > 1 else x)
 
     # Merge the two dataframes on the common column ('Marker' from source_df and 'Gene stable ID' from biomart_df)
     merged_df = pd.merge(biomart_df, source_df, left_on='Gene stable ID', right_on='Marker', how='inner')
 
+    # Calculate the percentage of transferred markers
+    marker_transfer_rate = merged_df.shape[0] / source_df.shape[0] * 100
+    print(f"Marker transfer rate: {marker_transfer_rate:.2f}%")
+
     # Create the target dataframe
-    target_df = merged_df[[biomart_df.columns[2], 'Info']].copy()
-    target_df.rename(columns={biomart_df.columns[2]: 'Marker'}, inplace=True)
+    target_df = merged_df[[biomart_df.columns[1], 'Info']].copy()
+    target_df.rename(columns={biomart_df.columns[1]: 'Marker'}, inplace=True)
     target_df.drop_duplicates(inplace=True)
 
     return target_df
