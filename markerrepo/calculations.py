@@ -499,17 +499,18 @@ def calculate_gene_proportions(whitelist_source, whitelist_target, df, gene_colu
 
     id_index = 0 if id_type == 'symbol' else 1
 
-    # Convert the whitelists into lists of gene IDs or gene symbols
-    source_genes_list = [entry.split(' ')[id_index] for entry in whitelist_source]
-    target_genes_list = [entry.split(' ')[id_index] for entry in whitelist_target]
+    # Convert the whitelists into sets of gene IDs or gene symbols
+    source_genes_set = set(entry.split(' ')[id_index] for entry in whitelist_source)
+    target_genes_set = set(entry.split(' ')[id_index] for entry in whitelist_target)
 
     # Count the number of all possible markers that could be transferred
-    all_possible_markers = sum(1 for gene in source_genes_list if gene in df[gene_column].values)
+    df_genes_set = set(df[gene_column].values)
+    all_possible_markers = len(source_genes_set & df_genes_set)
 
     # Calculate the percentage of all possible markers that could be transferred
-    possible_transfer_rate = all_possible_markers / len(source_genes_list) * 100
+    possible_transfer_rate = all_possible_markers / len(source_genes_set) * 100
 
     # Calculate the percentage of these transferred genes in the target organism
-    transferred_genes_in_target = all_possible_markers / len(target_genes_list) * 100
+    transferred_genes_in_target = all_possible_markers / len(target_genes_set) * 100
 
     return possible_transfer_rate, transferred_genes_in_target
