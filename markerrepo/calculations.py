@@ -127,7 +127,7 @@ def get_supported_taxonomy_ids():
     return organisms
 
 
-def transfer_markers(df, source_organism, target_organism, hg_db, source_whitelist, target_whitelist, calc_proportions=False):
+def transfer_markers(df, source_organism, target_organism, hg_db, source_whitelist=None, target_whitelist=None, calc_proportions=False):
     """
     Transfer markers between organisms based on homology and calculate the proportion of transferred markers.
 
@@ -141,9 +141,9 @@ def transfer_markers(df, source_organism, target_organism, hg_db, source_whiteli
         Taxonomy ID of the target organism.
     hg_db : pd.DataFrame
         DataFrame containing the HomoloGene db.
-    source_whitelist : list of str
+    source_whitelist : list of str, default None
         Whitelist containing all gene names of the source organism. Each entry should be a string.
-    target_whitelist : list of str
+    target_whitelist : list of str, default None
         Whitelist containing all gene names of the target organism. Each entry should be a string.
     calc_proportions : bool, default False
         If true, the proportions of all source genes and target genes are calculated.
