@@ -178,7 +178,7 @@ def transfer_markers(df, source_organism, target_organism, hg_db, target_whiteli
     marker_transfer_rate = result_df.shape[0] / df.shape[0] * 100
     print(f"Marker transfer rate: {marker_transfer_rate:.2f}%")
 
-    target_genes_list = [entry.split(' ')[0] for entry in target_whitelist]
+    target_genes_list = [entry.split(' ')[0].upper() for entry in target_whitelist]
     filtered_df = result_df[result_df['Transferred Marker'].isin(target_genes_list)]
 
     # Calculate the percentage of transferred markers after filtering
