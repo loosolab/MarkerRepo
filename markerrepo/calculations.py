@@ -169,21 +169,23 @@ def transfer_markers(df, source_organism, target_organism, hg_db, target_whiteli
     merged_data['Marker'] = merged_data['Marker'].str.upper()
 
     # Merge input df_copy with merged_data on Marker
-    result_df = pd.merge(df_copy, merged_data, on='Marker')
-    result_df = result_df[['Transferred Marker', 'Info']]
-    result_df['Transferred Marker'] = result_df['Transferred Marker'].str.upper()
-    result_df.drop_duplicates(inplace=True)
+    target_df = pd.merge(df_copy, merged_data, on='Marker')
+    target_df = target_df[['Transferred Marker', 'Info']]
+    target_df['Transferred Marker'] = target_df['Transferred Marker'].str.upper()
+    target_df.drop_duplicates(inplace=True)
     
     # Calculate the percentage of transferred markers
-    marker_transfer_rate = result_df.shape[0] / df.shape[0] * 100
+    marker_transfer_rate = target_df.shape[0] / df.shape[0] * 100
     print(f"Marker transfer rate: {marker_transfer_rate:.2f}%")
 
     target_genes_list = [entry.split(' ')[0].upper() for entry in target_whitelist]
-    filtered_df = result_df[result_df['Transferred Marker'].isin(target_genes_list)]
+    filtered_df = target_df[target_df['Transferred Marker'].isin(target_genes_list)]
 
     # Calculate the percentage of transferred markers after filtering
     marker_filtered_transfer_rate = filtered_df.shape[0] / df_copy.shape[0] * 100
     print(f"Marker transfer rate after filtering: {marker_filtered_transfer_rate:.2f}%")
+
+    target_df.rename(columns={'Transferred Marker': 'Marker'}, inplace=True)
 
     if calc_proportions:
         if source_whitelist is not None and target_whitelist is not None:
@@ -192,7 +194,7 @@ def transfer_markers(df, source_organism, target_organism, hg_db, target_whiteli
             print(f"Possible transfer rate of all genes: {possible_transfer_rate:.2f}%")
             print(f"Proportion of transferred genes in all genes of target organism: {transferred_genes_in_target:.2f}%")
 
-    return result_df
+    return target_df
 
 
 def get_panglao_ui(panglao_file="panglao_markers", organism="Hs"):
@@ -381,6 +383,9 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
 
     # Merge the two dataframes on the common column ('Marker' from source_df and 'Gene stable ID' from biomart_df)
     merged_df = pd.merge(biomart_df, source_df, left_on='Gene stable ID', right_on='Marker', how='inner')
+    transfer_counts_df = merged_df.rename(columns={biomart_df.columns[1]: 'Transferred Marker'}).copy()
+    counts_df = get_transfer_counts(transfer_counts_df)
+    display(counts_df)
 
     # Calculate the percentage of transferred markers
     marker_transfer_rate = merged_df.shape[0] / source_df.shape[0] * 100
@@ -514,3 +519,33 @@ def calculate_gene_proportions(whitelist_source, whitelist_target, df, gene_colu
     transferred_genes_in_target = all_possible_markers / len(target_genes_set) * 100
 
     return possible_transfer_rate, transferred_genes_in_target
+
+
+def get_transfer_counts(df, source_column='Marker', target_column='Transferred Marker'):
+    """
+    Counts the number of target genes for each source gene after a gene transfer.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame resulting from a gene transfer, containing columns for source genes and target genes.
+    source_column : str, default 'Marker'
+        The name of the column in df that contains the source genes.
+    target_column : str, default 'Transferred Marker'
+        The name of the column in df that contains the target genes.
+
+    Returns
+    -------
+    pd.DataFrame :
+        DataFrame with two columns: 'Source Gene' and 'Count target genes'.
+    """
+
+    # Count target genes per source gene, create DF, sort descending, return DF.
+    df = df[[source_column, target_column]].drop_duplicates()
+    display(df)
+    gene_counts = df.groupby(source_column)[target_column].nunique()
+    gene_counts_df = gene_counts.reset_index()
+    gene_counts_df.columns = ['Source Gene', 'Count target genes']
+    gene_counts_df.sort_values('Count target genes', ascending=False, inplace=True)
+
+    return gene_counts_df
