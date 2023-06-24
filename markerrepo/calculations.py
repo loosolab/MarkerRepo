@@ -1,4 +1,5 @@
 from .marker_repo import search_db, combine_lists, get_db
+from .plotting import plot_gene_counts
 import pandas as pd
 import os
 import urllib.request
@@ -355,7 +356,7 @@ def get_dataset_names(organism_name):
     return matching_names
 
 
-def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whitelist=None, calc_proportions=False):
+def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whitelist=None, calc_proportions=False, plots=False):
     """
     This function merges two dataframes based on a common column and calculates the proportion of transferred markers.
 
@@ -371,6 +372,8 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
         Whitelist containing all gene names and IDs of the source organism, separated by a space.
     calc_proportions : bool, default False
         If true, the proportions of all source genes and target genes are calculated.
+    plots : bool, default False
+        If true, show plots of transfer statistics.
 
     Returns
     --------
@@ -384,8 +387,10 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
     # Merge the two dataframes on the common column ('Marker' from source_df and 'Gene stable ID' from biomart_df)
     merged_df = pd.merge(biomart_df, source_df, left_on='Gene stable ID', right_on='Marker', how='inner')
     transfer_counts_df = merged_df.rename(columns={biomart_df.columns[1]: 'Transferred Marker'}).copy()
-    counts_df = get_transfer_counts(transfer_counts_df)
-    display(counts_df)
+
+    if plots:
+        # Plot gene counts
+        counts_df = get_transfer_counts(transfer_counts_df)
 
     # Calculate the percentage of transferred markers
     marker_transfer_rate = merged_df.shape[0] / source_df.shape[0] * 100
@@ -542,10 +547,11 @@ def get_transfer_counts(df, source_column='Marker', target_column='Transferred M
 
     # Count target genes per source gene, create DF, sort descending, return DF.
     df = df[[source_column, target_column]].drop_duplicates()
-    display(df)
     gene_counts = df.groupby(source_column)[target_column].nunique()
     gene_counts_df = gene_counts.reset_index()
     gene_counts_df.columns = ['Source Gene', 'Count target genes']
     gene_counts_df.sort_values('Count target genes', ascending=False, inplace=True)
+
+    plot_gene_counts(gene_counts_df)
 
     return gene_counts_df
