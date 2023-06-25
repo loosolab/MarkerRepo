@@ -10,8 +10,8 @@ metadata:
   tags:
     list_type:
     - Cell type annotation
-    Transferred:
-    - 'source organism: mouse'
+    transferred:
+    - 'mouse'
 marker_list:
 - name: Pulmonary alveolar type II cells
   markers:
