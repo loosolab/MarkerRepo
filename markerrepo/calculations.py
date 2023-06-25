@@ -390,6 +390,7 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
 
     if plots:
         # Plot gene counts
+        # TODO (WIP)
         counts_df = get_transfer_counts(transfer_counts_df)
 
     # Calculate the percentage of transferred markers

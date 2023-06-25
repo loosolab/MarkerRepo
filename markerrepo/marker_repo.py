@@ -194,7 +194,7 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
     further_filter = input("Do you want to filter the results further? (yes/no): ").lower() == "yes"
 
     if further_filter:
-        return guided_search(repo_lists_path=repo_lists_path, df=results)
+        return guided_search(repo_lists_path=repo_lists_path, df=results, out=out)
     
     if out == "marker_list":
         uids = [int(idx) for idx in results.index]
