@@ -519,7 +519,7 @@ def get_whitelists(repo_path="."):
     print("Done!")
 
 
-def update_markers(df, marker_dict):
+def update_markers(df, marker_dict, column='Marker'):
     """
     Updates markers by extending gene names with ensembl IDs and the other way round.
 
@@ -529,6 +529,8 @@ def update_markers(df, marker_dict):
         The DataFrame containing the marker list.
     marker_dict : dict
         Dictionary containing the names and IDs as keys and values.
+    column : str, default 'Marker'
+        The column which is going to be extended.
 
     Returns
     --------
@@ -537,10 +539,10 @@ def update_markers(df, marker_dict):
     """
 
     df = df.copy()
-    df['Marker'] = df['Marker'].apply(lambda marker: marker + ' ' + marker_dict[marker] if marker in marker_dict else marker)
+    df[column] = df[column].apply(lambda marker: marker + ' ' + marker_dict[marker] if marker in marker_dict else marker)
 
     # Make sure that the Ensembl ID is always in second position
-    df['Marker'] = df['Marker'].apply(lambda x: ' '.join(x.split(' ')[::-1]) if x.split(' ')[0].startswith('ENS') else x)
+    df[column] = df[column].apply(lambda x: ' '.join(x.split(' ')[::-1]) if x.split(' ')[0].startswith('ENS') else x)
 
     return df
 
@@ -593,14 +595,16 @@ def select(whitelist=None, key=None, heading=None):
     return selection
 
 
-def get_gene_dict(organism):
+def get_gene_dict(organism=None, w_markers=None):
     """
     Creates dictionary of whitelist of genes of specific organism.
 
     Parameters
     ----------
-    organism : str
+    organism : str, default None
         The organism that owns the corresponding genes.
+    w_markers : list of str, default None
+        A list of Gene Symbols and Ensembl IDs separated by space.
 
     Returns
     --------
@@ -610,10 +614,13 @@ def get_gene_dict(organism):
 
     gene_dict = {}
 
-    if len(organism.split(' ')) > 1:
-        w_markers = read_whitelist(f"genes/{organism.split(' ')[0]}")['whitelist']
-    else:
-        w_markers = read_whitelist(f"genes/{organism}")['whitelist']
+    if organism:
+        if len(organism.split(' ')) > 1:
+            w_markers = read_whitelist(f"genes/{organism.split(' ')[0]}")['whitelist']
+        else:
+            w_markers = read_whitelist(f"genes/{organism}")['whitelist']
+    elif not w_markers:
+        raise ValueError("Provide organism or whitelist of genes (w_markers).")
 
     for marker in w_markers:
         name, ensg = marker.split(" ")[0].upper(), marker.split(" ")[1].upper()
