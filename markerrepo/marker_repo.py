@@ -60,6 +60,11 @@ def process_file(file_path):
     ----------
     file_path : str
         Path of the marker list file (yaml-file).
+    
+    Returns
+    -------
+    dict :
+        A dictionary containing flattened metadata information from the file.
     """
 
     with open(file_path, 'r', encoding='utf-8') as yaml_file:
@@ -101,6 +106,7 @@ def get_marker_lists(repo_lists_path="./lists", parallel=True):
     # Flatten the list of lists into a single list and create DataFrame
     data = [item for sublist in data for item in sublist]
     df = pd.DataFrame(data)
+    df["ID"] = pd.to_numeric(df["ID"])
 
     return df
 
@@ -113,11 +119,20 @@ def process_file_markers(file_path):
     ----------
     file_path : str
         Path of the marker list file (yaml-file).
+    
+    Returns
+    -------
+    list of dict :
+        A list of dictionaries containing marker information for each marker, with 'Marker', 'Info', and 'ID' as keys.
     """
     
     with open(file_path, 'r', encoding='utf-8') as yaml_file:
         yaml_data = yaml.safe_load(yaml_file)
         marker_list_data = yaml_data.get("marker_list", [])
+
+        # Extract ID from filename
+        filename = os.path.basename(file_path)
+        id = filename.split("_")[-1].replace(".yaml", "")
 
         # Extract markers and their names
         markers_data = []
@@ -125,9 +140,41 @@ def process_file_markers(file_path):
             markers = item.get("markers", [])
             name = item.get("name", "")
             for marker in markers:
-                markers_data.append({"marker": marker, "name": name})
+                markers_data.append({"Marker": marker, "Info": name, "ID": id})
 
         return markers_data
+
+
+def combine_dfs(repo_lists_path="./lists", parallel=True, columns_to_merge=None):
+    """
+    Combine the outputs of 'get_db' and 'get_marker_lists' based on the given columns.
+
+    Parameters
+    ----------
+    repo_lists_path : str, default "./lists"
+        The path where the marker lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    parallel : bool, default True
+        If True, uses parallel processing to improve performance.
+    columns_to_merge : list of str
+        The columns to be merged. If None, all columns will be merged.
+
+    Returns
+    --------
+    pandas.DataFrame :
+        DataFrame containing combined information.
+    """
+    
+    marker_lists_df = get_marker_lists(repo_lists_path=repo_lists_path, parallel=parallel)
+    metadata_df = get_db(repo_lists_path=repo_lists_path, parallel=parallel)
+
+    # If no specific columns are provided, merge all columns
+    if columns_to_merge is None:
+        columns_to_merge = list(set(marker_lists_df.columns).union(set(metadata_df.columns)))
+
+    # Merge DataFrames on ID
+    merged_df = pd.merge(marker_lists_df, metadata_df, on="ID", how='inner')[columns_to_merge]
+
+    return merged_df
 
 
 def get_marker_list(file_path):
