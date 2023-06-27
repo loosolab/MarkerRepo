@@ -7,9 +7,68 @@ from .utils import read_whitelist
 import yaml
 import string
 from git import Repo
-from .update_uids import update_uids
 from datetime import datetime
+from concurrent.futures import ProcessPoolExecutor
 
+
+def get_db(repo_lists_path="./lists", parallel=True):
+    """
+    Get the database of the Marker Repo as DataFrame, containing metadata information.
+
+    Parameters
+    ----------
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    parallel : bool, default True
+        If True, uses parallel processing to improve performance.
+
+    Returns
+    --------
+    pandas.DataFrame :
+        DataFrame containing metadata information of all lists.
+    """
+    
+    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(repo_lists_path) for file in files if file.endswith(".yaml")]
+
+    if parallel:
+        # Use a ProcessPoolExecutor to read and parse files in parallel
+        with ProcessPoolExecutor() as executor:
+            data = list(executor.map(process_file, file_paths))
+    else:
+        data = []
+
+        for file_path in file_paths:
+            # Read YAML file and extract all leaf values from "metadata"
+            data.append(process_file(file_path))
+
+    # Create DataFrame and set "ID" as index
+    df = pd.DataFrame(data)
+    df.rename(columns=get_display_names(repo_lists_path.split("/lists")[0]), inplace=True)
+    if "ID" in df.columns:
+        df["ID"] = pd.to_numeric(df["ID"])
+        df.set_index("ID", inplace=True)
+        df.sort_values("ID", inplace=True)
+
+    return df
+
+
+def process_file(file_path):
+    """
+    Reads and parses a marker list file.
+    
+    Parameters
+    ----------
+    file_path : str
+        Path of the marker list file (yaml-file).
+    """
+
+    with open(file_path, 'r', encoding='utf-8') as yaml_file:
+        yaml_data = yaml.safe_load(yaml_file)
+        metadata = yaml_data.get("metadata", {})
+        flattened_metadata = flatten_dict(metadata)
+
+        return flattened_metadata
+    
 
 def get_marker_list(file_path):
     """
@@ -246,48 +305,6 @@ def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
             items.append((new_key, v))
             
     return dict(items)
-
-
-def get_db(repo_lists_path="./lists"):
-    """
-    Get the database of the Marker Repo as DataFrame.
-
-    Parameters
-    ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-
-    Returns
-    --------
-    pandas.DataFrame :
-        Dataframe containing all lists
-    """
-
-    data = []
-
-    # Iterate through all files in the folder and subfolders
-    for root, dirs, files in os.walk(repo_lists_path):
-        for file in files:
-            if file.endswith(".yaml"):
-                file_path = os.path.join(root, file)
-
-                # Read YAML file and extract all leaf values from "metadata"
-                with open(file_path, 'r', encoding='utf-8') as yaml_file:
-                    yaml_data = yaml.safe_load(yaml_file)
-                    metadata = yaml_data.get("metadata", {})
-
-                    # Flatten the dictionary and save the results
-                    flattened_metadata = flatten_dict(metadata)
-                    data.append(flattened_metadata)
-
-    # Create DataFrame and set "ID" as index
-    df = pd.DataFrame(data)
-    df.rename(columns=get_display_names(repo_lists_path.split("/lists")[0]), inplace=True)
-    if "ID" in df.columns:
-        df.set_index("ID", inplace=True)
-        df.sort_values("List name", inplace=True)
-
-    return df
 
 
 def get_list(path, info_col=1, marker_col=0):
