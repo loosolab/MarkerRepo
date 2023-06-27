@@ -70,6 +70,66 @@ def process_file(file_path):
         return flattened_metadata
     
 
+def get_marker_lists(repo_lists_path="./lists", parallel=True):
+    """
+    Get the marker list from the Marker Repo as DataFrame.
+
+    Parameters
+    ----------
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    parallel : bool, default True
+        If True, uses parallel processing to improve performance.
+
+    Returns
+    --------
+    pandas.DataFrame :
+        DataFrame containing all markers and their designations.
+    """
+    
+    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(repo_lists_path) for file in files if file.endswith(".yaml")]
+
+    if parallel:
+        # Use a ProcessPoolExecutor to read and parse files in parallel
+        with ProcessPoolExecutor() as executor:
+            data = list(executor.map(process_file_markers, file_paths))
+    else:
+        data = []
+        for file_path in file_paths:
+            data.append(process_file_markers(file_path))
+
+    # Flatten the list of lists into a single list and create DataFrame
+    data = [item for sublist in data for item in sublist]
+    df = pd.DataFrame(data)
+
+    return df
+
+
+def process_file_markers(file_path):
+    """
+    Reads and parses a marker list file to extract the marker list.
+    
+    Parameters
+    ----------
+    file_path : str
+        Path of the marker list file (yaml-file).
+    """
+    
+    with open(file_path, 'r', encoding='utf-8') as yaml_file:
+        yaml_data = yaml.safe_load(yaml_file)
+        marker_list_data = yaml_data.get("marker_list", [])
+
+        # Extract markers and their names
+        markers_data = []
+        for item in marker_list_data:
+            markers = item.get("markers", [])
+            name = item.get("name", "")
+            for marker in markers:
+                markers_data.append({"marker": marker, "name": name})
+
+        return markers_data
+
+
 def get_marker_list(file_path):
     """
     Reads a YAML file containing a section named "marker_list". The "marker_list" section consists of a list,
