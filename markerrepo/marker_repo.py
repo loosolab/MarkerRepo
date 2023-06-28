@@ -163,18 +163,36 @@ def combine_dfs(repo_lists_path="./lists", parallel=True, columns_to_merge=None)
     pandas.DataFrame :
         DataFrame containing combined information.
     """
-    
-    marker_lists_df = get_marker_lists(repo_lists_path=repo_lists_path, parallel=parallel)
-    metadata_df = get_db(repo_lists_path=repo_lists_path, parallel=parallel)
 
-    # If no specific columns are provided, merge all columns
+    # Get metadata and marker lists dataframes
+    df_meta = get_db(repo_lists_path, parallel)
+    df_markers = get_marker_lists(repo_lists_path, parallel)
+
+    # If columns_to_merge is None, use all columns from both dataframes
     if columns_to_merge is None:
-        columns_to_merge = list(set(marker_lists_df.columns).union(set(metadata_df.columns)))
+        columns_to_merge = list(set(df_meta.columns) | set(df_markers.columns))
 
-    # Merge DataFrames on ID
-    merged_df = pd.merge(marker_lists_df, metadata_df, on="ID", how='inner')[columns_to_merge]
+    # Make sure 'ID' is in the list of columns to merge
+    if 'ID' not in columns_to_merge:
+        columns_to_merge.append('ID')
 
-    return merged_df
+    # Extract relevant columns present in each dataframe
+    df_meta_columns = [col for col in columns_to_merge if col in df_meta.columns]
+    df_meta = df_meta[df_meta_columns]
+    
+    df_markers_columns = [col for col in columns_to_merge if col in df_markers.columns]
+    df_markers = df_markers[df_markers_columns]
+
+    # Group by ID and combine all markers and info for the same ID into lists
+    df_markers_grouped = df_markers.groupby('ID').agg({
+        'Marker': lambda x: "List of markers",
+        'Info': lambda x: "Info list"
+    }).reset_index()
+
+    # Merge dataframes on 'ID'
+    df_combined = pd.merge(df_meta, df_markers_grouped, on='ID', how='inner')
+
+    return df_combined
 
 
 def get_marker_list(file_path):
