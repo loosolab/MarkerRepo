@@ -145,6 +145,29 @@ def process_file_markers(file_path):
         return markers_data
 
 
+def split_marker_elements(marker_list):
+    """
+    This function takes in a list of marker elements and splits each element into two separate elements if 
+    it contains two strings separated by a space. 
+    
+    Parameters
+    ----------
+    marker_list : list of str
+        The list of markers that should be split into separate elements.
+
+    Returns
+    -------
+    list of str :
+        The list containing split elements - one element -> one marker
+    """
+
+    new_marker_list = []
+    for marker in marker_list:
+        # Split the marker into two elements if it contains a space
+        new_marker_list.extend(marker.split())
+    return new_marker_list
+
+
 def combine_dfs(repo_lists_path="./lists", parallel=True):
     """
     Combine the outputs of 'get_db' and 'get_marker_lists' based on the given columns.
@@ -172,6 +195,9 @@ def combine_dfs(repo_lists_path="./lists", parallel=True):
     
     df_combined = df_meta.merge(df_lists, on='ID', how='left')
     df_combined['ID'] = df_combined['ID'].astype(str)
+
+    # Split marker elements
+    df_combined['Marker'] = df_combined['Marker'].apply(split_marker_elements)
 
     return df_combined
 
