@@ -351,7 +351,19 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
     if col_to_search:
         show_possible_values = input("Do you want to see all possible values for this column? (yes/no): ").lower() == "yes"
         if show_possible_values:
-            unique_values = df[col_to_search].unique()
+            # Check if the column contains lists
+            if df[col_to_search].apply(lambda x: isinstance(x, list)).any():
+                # Create a set to store unique values
+                unique_values = set()
+                for row in df[col_to_search]:
+                    if isinstance(row, list):
+                        for item in row:
+                            unique_values.add(item)
+            else:
+                # If the column does not contain lists, simply use the unique() function
+                unique_values = df[col_to_search].unique()
+            
+            # Print all unique values
             for value in unique_values:
                 print(value)
     
