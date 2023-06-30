@@ -145,7 +145,7 @@ def process_file_markers(file_path):
         return markers_data
 
 
-def combine_dfs(repo_lists_path="./lists", parallel=True, columns_to_merge=None):
+def combine_dfs(repo_lists_path="./lists", parallel=True):
     """
     Combine the outputs of 'get_db' and 'get_marker_lists' based on the given columns.
 
@@ -155,8 +155,6 @@ def combine_dfs(repo_lists_path="./lists", parallel=True, columns_to_merge=None)
         The path where the marker lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     parallel : bool, default True
         If True, uses parallel processing to improve performance.
-    columns_to_merge : list of str
-        The columns to be merged. If None, all columns will be merged.
 
     Returns
     --------
@@ -164,33 +162,16 @@ def combine_dfs(repo_lists_path="./lists", parallel=True, columns_to_merge=None)
         DataFrame containing combined information.
     """
 
-    # Get metadata and marker lists dataframes
-    df_meta = get_db(repo_lists_path, parallel)
-    df_markers = get_marker_lists(repo_lists_path, parallel)
-
-    # If columns_to_merge is None, use all columns from both dataframes
-    if columns_to_merge is None:
-        columns_to_merge = list(set(df_meta.columns) | set(df_markers.columns))
-
-    # Make sure 'ID' is in the list of columns to merge
-    if 'ID' not in columns_to_merge:
-        columns_to_merge.append('ID')
-
-    # Extract relevant columns present in each dataframe
-    df_meta_columns = [col for col in columns_to_merge if col in df_meta.columns]
-    df_meta = df_meta[df_meta_columns]
+    df_meta = get_db(repo_lists_path=repo_lists_path, parallel=parallel)
+    df_lists = get_marker_lists(repo_lists_path=repo_lists_path, parallel=parallel)
     
-    df_markers_columns = [col for col in columns_to_merge if col in df_markers.columns]
-    df_markers = df_markers[df_markers_columns]
-
-    # Group by ID and combine all markers and info for the same ID into lists
-    df_markers_grouped = df_markers.groupby('ID').agg({
-        'Marker': lambda x: "List of markers",
-        'Info': lambda x: "Info list"
+    df_lists = df_lists.groupby('ID').agg({
+        'Marker': lambda x: list(set(x)),
+        'Info': lambda x: list(set(x))
     }).reset_index()
-
-    # Merge dataframes on 'ID'
-    df_combined = pd.merge(df_meta, df_markers_grouped, on='ID', how='inner')
+    
+    df_combined = df_meta.merge(df_lists, on='ID', how='left')
+    df_combined['ID'] = df_combined['ID'].astype(str)
 
     return df_combined
 
@@ -259,26 +240,33 @@ def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", r
         Either the filtered search results as metadata or as a combined list of markers.
     """
 
+    # Convert everything to lowercase if the search is case-insensitive
     if not case_sensitive:
         df = df.applymap(lambda x: str(x).lower() if isinstance(x, str) else x)
         if isinstance(keywords, dict):
             keywords = {k: v.lower() for k, v in keywords.items()}
-        else:
+        elif isinstance(keywords, str):
             keywords = keywords.lower()
 
+    mask_df = pd.DataFrame()
+
+    # If keywords is a dictionary
     if isinstance(keywords, dict):
-        filtered_df = df.copy()
-        for column, value in keywords.items():
-            if exact:
-                filtered_df = filtered_df[filtered_df[column] == value]
+        mask_df = pd.DataFrame(False, index=df.index, columns=df.columns)
+        # For each key, value pair in the keywords dictionary
+        for key, value in keywords.items():
+            if key not in df.columns:
+                continue
+            # If the column contains lists
+            if df[key].apply(lambda x: isinstance(x, list)).any():
+                # Go through each list and check if the value is present
+                mask_df[key] = df[key].apply(lambda cell: any(value.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
             else:
-                filtered_df = filtered_df[filtered_df[column].str.contains(value, na=False, regex=False)]
-    else:
-        if exact:
-            mask = df.applymap(lambda x: keywords == str(x)).any(axis=1)
-        else:
-            mask = df.applymap(lambda x: keywords in str(x)).any(axis=1)
-        filtered_df = df[mask]
+                mask_df[key] = df[key].str.contains(value, case=case_sensitive)
+    # TODO: if keywords is a string
+
+    # Select the rows that contain at least one True
+    filtered_df = df[mask_df.any(axis=1)]
 
     if out == "marker_list":
         if repo_lists_path is None:
@@ -367,6 +355,10 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
             keywords = search_term.strip()
         result = search_db(df, keywords, exact=exact, case_sensitive=case_sensitive)
         results = pd.concat([results, result])
+
+    # Raise an exception if no results were found
+    if results.empty:
+        raise Exception("No results found.")
 
     print(f"Number of results: {len(results)}")
     see_results = input("Do you want to see the results? (yes/no): ").lower() == "yes"
