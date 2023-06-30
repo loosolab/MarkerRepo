@@ -7,8 +7,199 @@ from .utils import read_whitelist
 import yaml
 import string
 from git import Repo
-from .update_uids import update_uids
 from datetime import datetime
+from concurrent.futures import ProcessPoolExecutor
+
+
+def get_db(repo_lists_path="./lists", parallel=True):
+    """
+    Get the database of the Marker Repo as DataFrame, containing metadata information.
+
+    Parameters
+    ----------
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    parallel : bool, default True
+        If True, uses parallel processing to improve performance.
+
+    Returns
+    --------
+    pandas.DataFrame :
+        DataFrame containing metadata information of all lists.
+    """
+    
+    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(repo_lists_path) for file in files if file.endswith(".yaml")]
+
+    if parallel:
+        # Use a ProcessPoolExecutor to read and parse files in parallel
+        with ProcessPoolExecutor() as executor:
+            data = list(executor.map(process_file, file_paths))
+    else:
+        data = []
+
+        for file_path in file_paths:
+            # Read YAML file and extract all leaf values from "metadata"
+            data.append(process_file(file_path))
+
+    # Create DataFrame and set "ID" as index
+    df = pd.DataFrame(data)
+    df.rename(columns=get_display_names(repo_lists_path.split("/lists")[0]), inplace=True)
+    if "ID" in df.columns:
+        df["ID"] = pd.to_numeric(df["ID"])
+        df.set_index("ID", inplace=True)
+        df.sort_values("ID", inplace=True)
+
+    return df
+
+
+def process_file(file_path):
+    """
+    Reads and parses a marker list file.
+    
+    Parameters
+    ----------
+    file_path : str
+        Path of the marker list file (yaml-file).
+    
+    Returns
+    -------
+    dict :
+        A dictionary containing flattened metadata information from the file.
+    """
+
+    with open(file_path, 'r', encoding='utf-8') as yaml_file:
+        yaml_data = yaml.safe_load(yaml_file)
+        metadata = yaml_data.get("metadata", {})
+        flattened_metadata = flatten_dict(metadata)
+
+        return flattened_metadata
+    
+
+def get_marker_lists(repo_lists_path="./lists", parallel=True):
+    """
+    Get the marker list from the Marker Repo as DataFrame.
+
+    Parameters
+    ----------
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    parallel : bool, default True
+        If True, uses parallel processing to improve performance.
+
+    Returns
+    --------
+    pandas.DataFrame :
+        DataFrame containing all markers and their designations.
+    """
+    
+    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(repo_lists_path) for file in files if file.endswith(".yaml")]
+
+    if parallel:
+        # Use a ProcessPoolExecutor to read and parse files in parallel
+        with ProcessPoolExecutor() as executor:
+            data = list(executor.map(process_file_markers, file_paths))
+    else:
+        data = []
+        for file_path in file_paths:
+            data.append(process_file_markers(file_path))
+
+    # Flatten the list of lists into a single list and create DataFrame
+    data = [item for sublist in data for item in sublist]
+    df = pd.DataFrame(data)
+    df["ID"] = pd.to_numeric(df["ID"])
+
+    return df
+
+
+def process_file_markers(file_path):
+    """
+    Reads and parses a marker list file to extract the marker list.
+    
+    Parameters
+    ----------
+    file_path : str
+        Path of the marker list file (yaml-file).
+    
+    Returns
+    -------
+    list of dict :
+        A list of dictionaries containing marker information for each marker, with 'Marker', 'Info', and 'ID' as keys.
+    """
+    
+    with open(file_path, 'r', encoding='utf-8') as yaml_file:
+        yaml_data = yaml.safe_load(yaml_file)
+        marker_list_data = yaml_data.get("marker_list", [])
+
+        # Extract ID from filename
+        filename = os.path.basename(file_path)
+        id = filename.split("_")[-1].replace(".yaml", "")
+
+        # Extract markers and their names
+        markers_data = []
+        for item in marker_list_data:
+            markers = item.get("markers", [])
+            name = item.get("name", "")
+            for marker in markers:
+                markers_data.append({"Marker": marker, "Info": name, "ID": id})
+
+        return markers_data
+
+
+def split_marker_elements(marker_list):
+    """
+    This function takes in a list of marker elements and splits each element into two separate elements if 
+    it contains two strings separated by a space. 
+    
+    Parameters
+    ----------
+    marker_list : list of str
+        The list of markers that should be split into separate elements.
+
+    Returns
+    -------
+    list of str :
+        The list containing split elements - one element -> one marker
+    """
+
+    new_marker_list = []
+    for marker in marker_list:
+        # Split the marker into two elements if it contains a space
+        new_marker_list.extend(marker.split())
+    return new_marker_list
+
+
+def combine_dfs(repo_lists_path="./lists", parallel=True):
+    """
+    Combine the outputs of 'get_db' and 'get_marker_lists' based on the given columns.
+
+    Parameters
+    ----------
+    repo_lists_path : str, default "./lists"
+        The path where the marker lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    parallel : bool, default True
+        If True, uses parallel processing to improve performance.
+
+    Returns
+    --------
+    pandas.DataFrame :
+        DataFrame containing combined information.
+    """
+
+    df_meta = get_db(repo_lists_path=repo_lists_path, parallel=parallel)
+    df_lists = get_marker_lists(repo_lists_path=repo_lists_path, parallel=parallel)
+    
+    df_lists = df_lists.groupby('ID').agg({
+        'Marker': lambda x: list(set(x)),
+        'Info': lambda x: list(set(x))
+    }).reset_index()
+    
+    df_combined = df_meta.merge(df_lists, on='ID', how='left')
+    df_combined['ID'] = df_combined['ID'].astype(str)
+
+    # Split marker elements
+    df_combined['Marker'] = df_combined['Marker'].apply(split_marker_elements)
+
+    return df_combined
 
 
 def get_marker_list(file_path):
@@ -71,37 +262,57 @@ def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", r
 
     Returns
     -------
-    pd.DataFrame
+    pd.DataFrame :
         Either the filtered search results as metadata or as a combined list of markers.
     """
 
+    # Convert everything to lowercase if the search is case-insensitive
     if not case_sensitive:
         df = df.applymap(lambda x: str(x).lower() if isinstance(x, str) else x)
         if isinstance(keywords, dict):
             keywords = {k: v.lower() for k, v in keywords.items()}
-        else:
+        elif isinstance(keywords, str):
             keywords = keywords.lower()
 
+    mask_df = pd.DataFrame()
+
+    # If keywords is a dictionary
     if isinstance(keywords, dict):
-        filtered_df = df.copy()
-        for column, value in keywords.items():
-            if exact:
-                filtered_df = filtered_df[filtered_df[column] == value]
+        mask_df = pd.DataFrame(False, index=df.index, columns=df.columns)
+        for key, value in keywords.items():
+            if key not in df.columns:
+                continue
+            # If the column contains lists
+            if df[key].apply(lambda x: isinstance(x, list)).any():
+                if exact:
+                    mask_df[key] = df[key].apply(lambda cell: any(value.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
+                else:
+                    mask_df[key] = df[key].apply(lambda cell: any(value.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
             else:
-                filtered_df = filtered_df[filtered_df[column].str.contains(value, na=False, regex=False)]
-    else:
+                mask_df[key] = df[key].str.contains(value, case=case_sensitive)
+
+    # If keywords is a string
+    elif isinstance(keywords, str):
         if exact:
-            mask = df.applymap(lambda x: keywords == str(x)).any(axis=1)
+            if case_sensitive:
+                mask_df = df.applymap(lambda cell: keywords in cell if isinstance(cell, list) else False)
+            else:
+                mask_df = df.applymap(lambda cell: any(keywords.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
         else:
-            mask = df.applymap(lambda x: keywords in str(x)).any(axis=1)
-        filtered_df = df[mask]
+            if case_sensitive:
+                mask_df = df.applymap(lambda cell: any(keywords in str(item) for item in cell) if isinstance(cell, list) else False)
+            else:
+                mask_df = df.applymap(lambda cell: any(keywords.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
+
+    # Select the rows that contain at least one True
+    filtered_df = df[mask_df.any(axis=1)]
 
     if out == "marker_list":
         if repo_lists_path is None:
-            raise ValueError("mr_path must be provided when out='marker_list'")
+            raise ValueError("repo_lists_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in filtered_df.index]
         return combine_lists(uids, repo_lists_path=repo_lists_path)
-
+    
     return filtered_df
 
 
@@ -166,7 +377,19 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
     if col_to_search:
         show_possible_values = input("Do you want to see all possible values for this column? (yes/no): ").lower() == "yes"
         if show_possible_values:
-            unique_values = df[col_to_search].unique()
+            # Check if the column contains lists
+            if df[col_to_search].apply(lambda x: isinstance(x, list)).any():
+                # Create a set to store unique values
+                unique_values = set()
+                for row in df[col_to_search]:
+                    if isinstance(row, list):
+                        for item in row:
+                            unique_values.add(item)
+            else:
+                # If the column does not contain lists, simply use the unique() function
+                unique_values = df[col_to_search].unique()
+            
+            # Print all unique values
             for value in unique_values:
                 print(value)
     
@@ -183,6 +406,10 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
             keywords = search_term.strip()
         result = search_db(df, keywords, exact=exact, case_sensitive=case_sensitive)
         results = pd.concat([results, result])
+
+    # Raise an exception if no results were found
+    if results.empty:
+        raise Exception("No results found.")
 
     print(f"Number of results: {len(results)}")
     see_results = input("Do you want to see the results? (yes/no): ").lower() == "yes"
@@ -246,48 +473,6 @@ def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
             items.append((new_key, v))
             
     return dict(items)
-
-
-def get_db(repo_lists_path="./lists"):
-    """
-    Get the database of the Marker Repo as DataFrame.
-
-    Parameters
-    ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-
-    Returns
-    --------
-    pandas.DataFrame :
-        Dataframe containing all lists
-    """
-
-    data = []
-
-    # Iterate through all files in the folder and subfolders
-    for root, dirs, files in os.walk(repo_lists_path):
-        for file in files:
-            if file.endswith(".yaml"):
-                file_path = os.path.join(root, file)
-
-                # Read YAML file and extract all leaf values from "metadata"
-                with open(file_path, 'r', encoding='utf-8') as yaml_file:
-                    yaml_data = yaml.safe_load(yaml_file)
-                    metadata = yaml_data.get("metadata", {})
-
-                    # Flatten the dictionary and save the results
-                    flattened_metadata = flatten_dict(metadata)
-                    data.append(flattened_metadata)
-
-    # Create DataFrame and set "ID" as index
-    df = pd.DataFrame(data)
-    df.rename(columns=get_display_names(repo_lists_path.split("/lists")[0]), inplace=True)
-    if "ID" in df.columns:
-        df.set_index("ID", inplace=True)
-        df.sort_values("List name", inplace=True)
-
-    return df
 
 
 def get_list(path, info_col=1, marker_col=0):
