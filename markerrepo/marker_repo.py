@@ -236,7 +236,7 @@ def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", r
 
     Returns
     -------
-    pd.DataFrame
+    pd.DataFrame :
         Either the filtered search results as metadata or as a combined list of markers.
     """
 
@@ -253,27 +253,40 @@ def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", r
     # If keywords is a dictionary
     if isinstance(keywords, dict):
         mask_df = pd.DataFrame(False, index=df.index, columns=df.columns)
-        # For each key, value pair in the keywords dictionary
         for key, value in keywords.items():
             if key not in df.columns:
                 continue
             # If the column contains lists
             if df[key].apply(lambda x: isinstance(x, list)).any():
-                # Go through each list and check if the value is present
-                mask_df[key] = df[key].apply(lambda cell: any(value.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
+                if exact:
+                    mask_df[key] = df[key].apply(lambda cell: any(value.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
+                else:
+                    mask_df[key] = df[key].apply(lambda cell: any(value.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
             else:
                 mask_df[key] = df[key].str.contains(value, case=case_sensitive)
-    # TODO: if keywords is a string
+
+    # If keywords is a string
+    elif isinstance(keywords, str):
+        if exact:
+            if case_sensitive:
+                mask_df = df.applymap(lambda cell: keywords in cell if isinstance(cell, list) else False)
+            else:
+                mask_df = df.applymap(lambda cell: any(keywords.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
+        else:
+            if case_sensitive:
+                mask_df = df.applymap(lambda cell: any(keywords in str(item) for item in cell) if isinstance(cell, list) else False)
+            else:
+                mask_df = df.applymap(lambda cell: any(keywords.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
 
     # Select the rows that contain at least one True
     filtered_df = df[mask_df.any(axis=1)]
 
     if out == "marker_list":
         if repo_lists_path is None:
-            raise ValueError("mr_path must be provided when out='marker_list'")
+            raise ValueError("repo_lists_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in filtered_df.index]
         return combine_lists(uids, repo_lists_path=repo_lists_path)
-
+    
     return filtered_df
 
 
