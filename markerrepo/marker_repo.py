@@ -107,6 +107,7 @@ def get_marker_lists(repo_lists_path="./lists", parallel=True):
     data = [item for sublist in data for item in sublist]
     df = pd.DataFrame(data)
     df["ID"] = pd.to_numeric(df["ID"])
+    df.set_index("ID", inplace=True)
 
     return df
 
@@ -168,7 +169,7 @@ def split_marker_elements(marker_list):
     return new_marker_list
 
 
-def combine_dfs(repo_lists_path="./lists", parallel=True):
+def combine_dfs(repo_lists_path="./lists", parallel=True, preprocessed=True, meta_lists="meta_lists", marker_lists="marker_lists"):
     """
     Combine the outputs of 'get_db' and 'get_marker_lists' based on the given columns.
 
@@ -178,6 +179,12 @@ def combine_dfs(repo_lists_path="./lists", parallel=True):
         The path where the marker lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     parallel : bool, default True
         If True, uses parallel processing to improve performance.
+    preprocessed : bool, default True
+        If True, uses preprocessed data from .tsv files.
+    meta_lists : str, default "meta_lists"
+        Path to the preprocessed metadata .tsv file.
+    marker_lists : str, default "marker_lists"
+        Path to the preprocessed marker .tsv file.
 
     Returns
     --------
@@ -185,22 +192,27 @@ def combine_dfs(repo_lists_path="./lists", parallel=True):
         DataFrame containing combined information.
     """
 
-    df_meta = get_db(repo_lists_path=repo_lists_path, parallel=parallel)
-    df_lists = get_marker_lists(repo_lists_path=repo_lists_path, parallel=parallel)
+    if preprocessed:
+        if not (os.path.isfile(meta_lists) and os.path.isfile(marker_lists)):
+            raise FileNotFoundError("Preprocessed .tsv files not found. Please check the file paths.")
+        df_meta = pd.read_csv(meta_lists, sep='\t')
+        df_marker = pd.read_csv(marker_lists, sep='\t')
+    else:
+        df_meta = get_db(repo_lists_path=repo_lists_path, parallel=parallel)
+        df_marker = get_marker_lists(repo_lists_path=repo_lists_path, parallel=parallel)
     
-    df_lists = df_lists.groupby('ID').agg({
+    df_marker = df_marker.groupby('ID').agg({
         'Marker': lambda x: list(set(x)),
         'Info': lambda x: list(set(x))
     }).reset_index()
     
-    df_combined = df_meta.merge(df_lists, on='ID', how='left')
-    df_combined['ID'] = df_combined['ID'].astype(str)
+    df_combined = df_meta.merge(df_marker, on='ID', how='left')
+    df_combined.set_index('ID', inplace=True)
 
     # Split marker elements
     df_combined['Marker'] = df_combined['Marker'].apply(split_marker_elements)
 
     return df_combined
-
 
 def get_marker_list(file_path):
     """
@@ -950,11 +962,11 @@ def preprocess_lists_to_tsv(repo_lists_path="./lists", output_path_meta="meta_li
     output_path_markers : str
         Path for output marker .tsv file.
     """
-    
+
     # Get metadata and marker lists
     df_meta = get_db(repo_lists_path)
     df_markers = get_marker_lists(repo_lists_path)
     
     # Write to tsv
-    df_meta.to_csv(output_path_meta, sep='\t', index=False)
-    df_markers.to_csv(output_path_markers, sep='\t', index=False)
+    df_meta.to_csv(output_path_meta, sep='\t', index=True)
+    df_markers.to_csv(output_path_markers, sep='\t', index=True)
