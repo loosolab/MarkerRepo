@@ -935,3 +935,26 @@ def push_marker_list(list_path, repo_path="."):
     repo.git.add(list_path)
     repo.git.commit('-m', f'Add new list: {list_name}')
     repo.git.push('--set-upstream', 'origin', list_name)
+
+
+def preprocess_lists_to_tsv(repo_lists_path="./lists", output_path_meta="meta_lists", output_path_markers="marker_lists"):
+    """
+    This function generates preprocessed .tsv files of the database and marker lists.
+
+    Parameters
+    ----------
+    repo_lists_path : str
+        Path to the repo lists.
+    output_path_meta : str
+        Path for output metadata .tsv file.
+    output_path_markers : str
+        Path for output marker .tsv file.
+    """
+    
+    # Get metadata and marker lists
+    df_meta = get_db(repo_lists_path)
+    df_markers = get_marker_lists(repo_lists_path)
+    
+    # Write to tsv
+    df_meta.to_csv(output_path_meta, sep='\t', index=False)
+    df_markers.to_csv(output_path_markers, sep='\t', index=False)
