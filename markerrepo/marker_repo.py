@@ -942,31 +942,48 @@ def push_marker_list(list_path, repo_path="."):
     # Pull the latest changes
     repo.remotes['origin'].pull()
 
+    # Preprocess lists
+    meta_path, markers_path = preprocess_lists_to_tsv(repo_lists_path=f"{repo_path}/lists")
+
     # Check out new branch
     repo.git.checkout('HEAD', b=list_name)
     repo.git.add(list_path)
+    repo.git.add(meta_path)
+    repo.git.add(markers_path)
     repo.git.commit('-m', f'Add new list: {list_name}')
     repo.git.push('--set-upstream', 'origin', list_name)
 
 
-def preprocess_lists_to_tsv(repo_lists_path="./lists", output_path_meta="meta_lists", output_path_markers="marker_lists"):
+def preprocess_lists_to_tsv(repo_lists_path="./lists", output_path_meta="meta_lists.tsv", output_path_markers="marker_lists.tsv"):
     """
-    This function generates preprocessed .tsv files of the database and marker lists.
+    Generates preprocessed .tsv files of the database and marker lists.
+    This function can be used to speed up subsequent reads of the data.
 
     Parameters
     ----------
-    repo_lists_path : str
-        Path to the repo lists.
-    output_path_meta : str
-        Path for output metadata .tsv file.
-    output_path_markers : str
-        Path for output marker .tsv file.
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    output_path_meta : str, default "meta_lists.tsv"
+        The file path for output metadata .tsv file.
+    output_path_markers : str, default "marker_lists.tsv"
+        The file path for output marker .tsv file.
+
+    Returns
+    -------
+    str, str :
+        The absolute paths to the generated .tsv files (metadata and markers respectively).
     """
 
     # Get metadata and marker lists
     df_meta = get_db(repo_lists_path)
     df_markers = get_marker_lists(repo_lists_path)
     
+    # Get absolute file paths
+    output_path_meta = os.path.abspath(output_path_meta)
+    output_path_markers = os.path.abspath(output_path_markers)
+
     # Write to tsv
     df_meta.to_csv(output_path_meta, sep='\t', index=True)
     df_markers.to_csv(output_path_markers, sep='\t', index=True)
+
+    return output_path_meta, output_path_markers
