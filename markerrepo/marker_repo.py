@@ -11,6 +11,68 @@ from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor
 
 
+def create_mask_df(df, keywords, exact, case_sensitive):
+    """
+    Creates a boolean mask DataFrame based on the given keywords.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input DataFrame to be filtered.
+    keywords : dict or str
+        The keywords to filter the DataFrame.
+    case_sensitive : bool, default False
+        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
+    exact : bool, default False
+        If True, the search will look for exact matches. If False, the search will look for substrings.
+
+    Returns
+    -------
+    pd.DataFrame :
+        The boolean mask DataFrame.
+    """
+
+    mask_df = pd.DataFrame(False, index=df.index, columns=df.columns)
+
+    for key, value in keywords.items():
+        if key not in df.columns:
+            continue
+
+        # If the column contains lists
+        if df[key].apply(lambda x: isinstance(x, list)).any():
+            if exact:
+                mask_df[key] = df[key].apply(lambda cell: any(value.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
+            else:
+                mask_df[key] = df[key].apply(lambda cell: any(value.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
+        else:
+            mask_df[key] = df[key].str.contains(value, case=case_sensitive)
+
+    return mask_df
+
+
+def split_keywords(keywords):
+    """
+    Splits the keywords into positive and negative keywords.
+
+    Parameters
+    ----------
+    keywords : str or dict
+        The keywords to split. If it's a string, it will be split by comma. If it's a dict, it will be split by the value's leading '-'.
+
+    Returns
+    -------
+    tuple
+        A tuple of two elements. The first element is a dictionary of positive keywords. The second element is a dictionary of negative keywords.
+    """
+    if isinstance(keywords, str):
+        keywords = {keyword.strip(): None for keyword in keywords.split(",")}
+
+    positive_keywords = {k: v for k, v in keywords.items() if not k.startswith("-")}
+    negative_keywords = {k.lstrip("-"): v for k, v in keywords.items() if k.startswith("-")}
+
+    return positive_keywords, negative_keywords
+
+
 def get_db(repo_lists_path="./lists", parallel=True):
     """
     Get the database of the Marker Repo as DataFrame, containing metadata information.
@@ -214,6 +276,7 @@ def combine_dfs(repo_lists_path="./lists", parallel=True, preprocessed=True, met
 
     return df_combined
 
+
 def get_marker_list(file_path):
     """
     Reads a YAML file containing a section named "marker_list". The "marker_list" section consists of a list,
@@ -286,35 +349,15 @@ def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", r
         elif isinstance(keywords, str):
             keywords = keywords.lower()
 
-    mask_df = pd.DataFrame()
+    # Split keywords into positive and negative keywords
+    positive_keywords, negative_keywords = split_keywords(keywords)
 
-    # If keywords is a dictionary
-    if isinstance(keywords, dict):
-        mask_df = pd.DataFrame(False, index=df.index, columns=df.columns)
-        for key, value in keywords.items():
-            if key not in df.columns:
-                continue
-            # If the column contains lists
-            if df[key].apply(lambda x: isinstance(x, list)).any():
-                if exact:
-                    mask_df[key] = df[key].apply(lambda cell: any(value.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
-                else:
-                    mask_df[key] = df[key].apply(lambda cell: any(value.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
-            else:
-                mask_df[key] = df[key].str.contains(value, case=case_sensitive)
+    # Create masks for positive and negative keywords
+    positive_mask_df = create_mask_df(df, positive_keywords, exact, case_sensitive)
+    negative_mask_df = ~create_mask_df(df, negative_keywords, exact, case_sensitive)
 
-    # If keywords is a string
-    elif isinstance(keywords, str):
-        if exact:
-            if case_sensitive:
-                mask_df = df.applymap(lambda cell: keywords in cell if isinstance(cell, list) else False)
-            else:
-                mask_df = df.applymap(lambda cell: any(keywords.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
-        else:
-            if case_sensitive:
-                mask_df = df.applymap(lambda cell: any(keywords in str(item) for item in cell) if isinstance(cell, list) else False)
-            else:
-                mask_df = df.applymap(lambda cell: any(keywords.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
+    # Combine the masks
+    mask_df = positive_mask_df & negative_mask_df
 
     # Select the rows that contain at least one True
     filtered_df = df[mask_df.any(axis=1)]
