@@ -12,8 +12,35 @@ from concurrent.futures import ProcessPoolExecutor
 from IPython.display import display
 import math
 
-def search_df(df, search_terms, col_to_search=None, exact=False, case_sensitive=False, out="metadata", repo_lists_path="./lists"):
-    #TODO replace with search_db when finished
+def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_lists_path="./lists"):
+    """
+    This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
+    the function either returns the filtered DataFrame or a combined list of markers.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input DataFrame to be filtered.
+    search_terms : list of str
+        Search terms to use for the search.
+    col_to_search : str, default None
+        Column to perform the search in. If None, the search will be performed in all columns.
+    case_sensitive : bool, default False
+        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
+    exact : bool, default False
+        If True, the search will look for exact matches. If False, the search will look for substrings.
+    out : str, default "metadata"
+        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
+        'marker_list', the function returns a combined list of markers.
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+        Required if out = 'marker_list'.
+
+    Returns
+    -------
+    pd.DataFrame :
+        Either the filtered search results as metadata or as a combined list of markers.
+    """
 
     if exact:
         search_func = lambda x, term: x == term
@@ -55,8 +82,29 @@ def search_df(df, search_terms, col_to_search=None, exact=False, case_sensitive=
     return df
 
 
-def interactive_search(df, repo_lists_path="./lists", out="metadata"):
-    #TODO replace with guided_search when finished
+def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
+    """
+    An interactive function that guides the user through the process of searching the DataFrame.
+
+    Parameters
+    ----------
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored.
+    df : pd.DataFrame, default None
+        The DataFrame to search in. If not provided, the function will create one from the repo_lists_path.
+    out : str, default "metadata"
+        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
+        'marker_list', the function returns a combined list of markers.
+
+    Returns
+    -------
+    pd.DataFrame
+        Either the filtered search results as metadata or as a combined list of markers.
+    """
+
+    # Get the DataFrame if not provided
+    if df is None:
+        df = combine_dfs(repo_lists_path=repo_lists_path)
 
     df_copy = df.copy()
     columns = df_copy.columns.tolist()
@@ -120,255 +168,12 @@ def interactive_search(df, repo_lists_path="./lists", out="metadata"):
             break
     
     if out == "marker_list":
+        if repo_lists_path is None:
+            raise ValueError("repo_lists_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in df_copy.index]
         return combine_lists(uids, repo_lists_path=repo_lists_path)
 
     return df_copy
-
-
-def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", repo_lists_path="./lists"):
-    """
-    This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
-    the function either returns the filtered DataFrame or a combined list of markers.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        The input DataFrame to be filtered.
-    keywords : dict or str
-        The keywords to filter the DataFrame.
-    case_sensitive : bool, default False
-        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
-    exact : bool, default False
-        If True, the search will look for exact matches. If False, the search will look for substrings.
-    out : str, default "metadata"
-        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
-        'marker_list', the function returns a combined list of markers.
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-        Required if out = 'marker_list'.
-
-    Returns
-    -------
-    pd.DataFrame :
-        Either the filtered search results as metadata or as a combined list of markers.
-    """
-
-    # Convert everything to lowercase if the search is case-insensitive
-    if not case_sensitive:
-        df = df.applymap(lambda x: str(x).lower() if isinstance(x, str) else x)
-        if isinstance(keywords, dict):
-            keywords = {k: v.lower() for k, v in keywords.items()}
-        elif isinstance(keywords, str):
-            keywords = keywords.lower()
-
-    # Split keywords into positive and negative keywords
-    positive_keywords, negative_keywords = split_keywords(keywords)
-
-    # Create masks for positive and negative keywords
-    if not positive_keywords:
-        positive_mask_df = pd.DataFrame(True, index=df.index, columns=df.columns)
-    else:
-        positive_mask_df = create_mask_df(df, positive_keywords, exact, case_sensitive)
-    negative_mask_df = create_mask_df(df, negative_keywords, exact, case_sensitive, invert=True)
-
-    # First, remove all rows that match any negative keywords
-    negative_rows = negative_mask_df.any(axis=1)
-    df = df[~negative_rows]
-
-    # Next, keep all rows that match any positive keywords (or all rows if there are no positive keywords)
-    positive_rows = positive_mask_df.any(axis=1)
-    filtered_df = df[positive_rows]
-
-    if out == "marker_list":
-        if repo_lists_path is None:
-            raise ValueError("repo_lists_path must be provided when out='marker_list'")
-        uids = [int(idx) for idx in filtered_df.index]
-        return combine_lists(uids, repo_lists_path=repo_lists_path)
-    
-    return filtered_df
-
-
-def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
-    """
-    An interactive function that guides the user through the process of searching the DataFrame.
-
-    Parameters
-    ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored.
-    df : pd.DataFrame, default None
-        The DataFrame to search in. If not provided, the function will create one from the repo_lists_path.
-    out : str, default "metadata"
-        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
-        'marker_list', the function returns a combined list of markers.
-
-    Returns
-    -------
-    pd.DataFrame
-        Either the filtered search results as metadata or as a combined list of markers.
-    """
-
-    # Get the DataFrame if not provided
-    if df is None:
-        df = get_db(repo_lists_path=repo_lists_path)
-
-    columns = df.columns.tolist()
-    identifiers = [str(i) for i in range(1, 10)] + list(string.ascii_lowercase)[:len(columns)-9]
-
-    # Split columns into groups of 10 for pagination
-    page = 0
-    pages = [columns[i:i+10] for i in range(0, len(columns), 10)]
-
-    while True:
-        # Print identifiers and column names for the current page
-        print("Available columns for search:")
-        for identifier, column in zip(identifiers, pages[page]):
-            print(f"{identifier}: {column}")
-        
-        # Ask for column to search in
-        command_options = []
-        if page > 0: command_options.append("'p' for previous page")
-        if page < len(pages) - 1: command_options.append("'n' for next page")
-        command_options = ", ".join(command_options)
-        col_to_search_identifier = input(f"Enter identifier of column to search in (leave blank to search in all columns)\nEnter {command_options}: ")
-        
-        if col_to_search_identifier == 'n':
-            page = (page + 1) % len(pages)
-            continue
-        elif col_to_search_identifier == 'p':
-            page = (page - 1) % len(pages)
-            continue
-        elif col_to_search_identifier == '':
-            col_to_search = None  # Search in all columns
-            break
-        elif col_to_search_identifier in identifiers:
-            col_to_search = pages[page][identifiers.index(col_to_search_identifier)]
-            break
-
-    # Ask for value to search for
-    if col_to_search:
-        show_possible_values = input("Do you want to see all possible values for this column? (yes/no): ").lower() == "yes"
-        if show_possible_values:
-            # Check if the column contains lists
-            if df[col_to_search].apply(lambda x: isinstance(x, list)).any():
-                # Create a set to store unique values
-                unique_values = set()
-                for row in df[col_to_search]:
-                    if isinstance(row, list):
-                        for item in row:
-                            unique_values.add(item)
-            else:
-                # If the column does not contain lists, simply use the unique() function
-                unique_values = df[col_to_search].unique()
-            
-            # Print all unique values
-            for value in unique_values:
-                print(value)
-    
-    search_terms = input("Enter search terms (separate multiple terms with a comma): ").split(',')
-    exact = input("Perform an exact search? (yes/no): ").lower() == "yes"
-    case_sensitive = input("Consider case sensitivity? (yes/no): ").lower() == "yes"
-
-    # Perform the search for each term and combine the results
-    results = pd.DataFrame()
-    for search_term in search_terms:
-        search_term = search_term.strip()
-        if col_to_search:
-            keywords = {col_to_search: search_term}
-        else:
-            keywords = search_term
-        result = search_db(df, keywords, exact=exact, case_sensitive=case_sensitive)
-        results = pd.concat([results, result])
-
-    # Raise an exception if no results were found
-    if results.empty:
-        raise Exception("No results found.")
-
-    print(f"Number of results: {len(results)}")
-    see_results = input("Do you want to see the results? (yes/no): ").lower() == "yes"
-
-    if see_results:
-        display(results)
-
-    # Further filtering?
-    further_filter = input("Do you want to filter the results further? (yes/no): ").lower() == "yes"
-
-    if further_filter:
-        return guided_search(repo_lists_path=repo_lists_path, df=results, out=out)
-    
-    if out == "marker_list":
-        uids = [int(idx) for idx in results.index]
-        return combine_lists(uids, repo_lists_path=repo_lists_path)
-    
-    return results
-
-
-def create_mask_df(df, keywords, case_sensitive=False, exact=False, invert=False):
-    """
-    Creates a boolean mask DataFrame based on the given keywords.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        The input DataFrame to be filtered.
-    keywords : dict or str
-        The keywords to filter the DataFrame.
-    case_sensitive : bool, default False
-        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
-    exact : bool, default False
-        If True, the search will look for exact matches. If False, the search will look for substrings.
-    invert : bool, default False
-        If True, the boolean mask will be inverted. This is useful for negative keywords.
-
-    Returns
-    -------
-    pd.DataFrame :
-        The boolean mask DataFrame.
-    """
-
-    mask_df = pd.DataFrame(False, index=df.index, columns=df.columns)
-
-    for key, value in keywords.items():
-        if key not in df.columns:
-            continue
-
-        # If the column contains lists
-        if df[key].apply(lambda x: isinstance(x, list)).any():
-            if exact:
-                mask_df[key] = df[key].apply(lambda cell: any(value.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
-            else:
-                mask_df[key] = df[key].apply(lambda cell: any(value.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
-        else:
-            if invert: 
-                mask_df[key] = ~df[key].str.contains(value, case=case_sensitive)
-            else: 
-                mask_df[key] = df[key].str.contains(value, case=case_sensitive)
-                
-    return mask_df
-
-
-def split_keywords(keywords):
-    """
-    Splits the keywords into positive and negative keywords.
-
-    Parameters
-    ----------
-    keywords : str or dict
-        The keywords to split. If it's a string, it will be split by comma. If it's a dict, it will be split by the value's leading '-'.
-
-    Returns
-    -------
-    dict, dict :
-        The first element is a dictionary of positive keywords. The second element is a dictionary of negative keywords.
-    """
-    if isinstance(keywords, str):
-        keywords = {keyword.strip(): None for keyword in keywords.split(",")}
-
-    positive_keywords = {k: v for k, v in keywords.items() if not k.startswith("-")}
-    negative_keywords = {k.lstrip("-"): v for k, v in keywords.items() if k.startswith("-")}
-
-    return positive_keywords, negative_keywords
 
 
 def get_db(repo_lists_path="./lists", parallel=True):
@@ -529,7 +334,7 @@ def split_marker_elements(marker_list):
     return new_marker_list
 
 
-def combine_dfs(repo_lists_path="./lists", parallel=True, preprocessed=True, meta_lists="meta_lists", marker_lists="marker_lists"):
+def combine_dfs(repo_lists_path="./lists", parallel=True, preprocessed=False, meta_lists="meta_lists", marker_lists="marker_lists"):
     """
     Combine the outputs of 'get_db' and 'get_marker_lists' based on the given columns.
 
