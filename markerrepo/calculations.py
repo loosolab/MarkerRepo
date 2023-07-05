@@ -1,4 +1,4 @@
-from .marker_repo import search_db, combine_lists, get_db, update_markers, get_gene_dict
+from .marker_repo import search_df, combine_lists, get_db, update_markers, get_gene_dict
 from .plotting import plot_gene_counts
 import pandas as pd
 import os
@@ -37,7 +37,7 @@ def compare_marker_lists(repo_lists_path="./lists", keywords=None, marker_df=Non
     if marker_df is not None:
         df = marker_df
     else:
-        df = search_db(get_db(repo_lists_path=repo_lists_path), keywords, case_sensitive=case_sensitive, exact=exact)
+        df = search_df(get_db(repo_lists_path=repo_lists_path), keywords, case_sensitive=case_sensitive, exact=exact)
         uids = [int(idx) for idx in df.index]
         df = combine_lists(uids, repo_lists_path=repo_lists_path)
 

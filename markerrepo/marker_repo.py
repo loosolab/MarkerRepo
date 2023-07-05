@@ -9,6 +9,171 @@ import string
 from git import Repo
 from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor
+from IPython.display import display
+import math
+
+def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_lists_path="./lists"):
+    """
+    This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
+    the function either returns the filtered DataFrame or a combined list of markers.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input DataFrame to be filtered.
+    search_terms : list of str
+        Search terms to use for the search.
+    col_to_search : str, default None
+        Column to perform the search in. If None, the search will be performed in all columns.
+    case_sensitive : bool, default False
+        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
+    exact : bool, default False
+        If True, the search will look for exact matches. If False, the search will look for substrings.
+    out : str, default "metadata"
+        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
+        'marker_list', the function returns a combined list of markers.
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+        Required if out = 'marker_list'.
+
+    Returns
+    -------
+    pd.DataFrame :
+        Either the filtered search results as metadata or as a combined list of markers.
+    """
+
+    if exact:
+        search_func = lambda x, term: x == term
+    else:
+        search_func = lambda x, term: term in x
+
+    positive_terms = [term for term in search_terms if not term.startswith('-')]
+    negative_terms = [term.lstrip('-') for term in search_terms if term.startswith('-')]
+
+    if col_to_search:
+        if case_sensitive:
+            for term in positive_terms:
+                df = df[df[col_to_search].astype(str).apply(lambda x: search_func(x, term))]
+            for term in negative_terms:
+                df = df[~df[col_to_search].astype(str).apply(lambda x: search_func(x, term))]
+        else:
+            for term in positive_terms:
+                df = df[df[col_to_search].astype(str).str.lower().apply(lambda x: search_func(x, term.lower()))]
+            for term in negative_terms:
+                df = df[~df[col_to_search].astype(str).str.lower().apply(lambda x: search_func(x, term.lower()))]
+    else:
+        if case_sensitive:
+            for term in positive_terms:
+                df = df[df.apply(lambda x: x.astype(str).str.contains(term).any(), axis=1)]
+            for term in negative_terms:
+                df = df[~df.apply(lambda x: x.astype(str).str.contains(term).any(), axis=1)]
+        else:
+            for term in positive_terms:
+                df = df[df.apply(lambda x: x.astype(str).str.lower().str.contains(term.lower()).any(), axis=1)]
+            for term in negative_terms:
+                df = df[~df.apply(lambda x: x.astype(str).str.lower().str.contains(term.lower()).any(), axis=1)]
+
+    if out == "marker_list":
+        if repo_lists_path is None:
+            raise ValueError("repo_lists_path must be provided when out='marker_list'")
+        uids = [int(idx) for idx in df.index]
+        return combine_lists(uids, repo_lists_path=repo_lists_path)
+
+    return df
+
+
+def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
+    """
+    An interactive function that guides the user through the process of searching the DataFrame.
+
+    Parameters
+    ----------
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored.
+    df : pd.DataFrame, default None
+        The DataFrame to search in. If not provided, the function will create one from the repo_lists_path.
+    out : str, default "metadata"
+        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
+        'marker_list', the function returns a combined list of markers.
+
+    Returns
+    -------
+    pd.DataFrame
+        Either the filtered search results as metadata or as a combined list of markers.
+    """
+
+    # Get the DataFrame if not provided
+    if df is None:
+        df = combine_dfs(repo_lists_path=repo_lists_path)
+
+    df_copy = df.copy()
+    columns = df_copy.columns.tolist()
+    page = 1
+    per_page = 10
+    num_pages = math.ceil(len(columns) / per_page)
+
+    while True:
+        start_index = (page - 1) * per_page
+        end_index = start_index + per_page
+
+        print("Available columns for search:")
+        for i, col in enumerate(columns[start_index:end_index], start=start_index):
+            print(f"{i+1}: {col}")
+
+        if page < num_pages:
+            print("n: Next page")
+        if page > 1:
+            print("p: Previous page")
+
+        column = input("Enter identifier of column to search in (leave blank to search in all columns): ")
+        if column.lower() == 'n' and page < num_pages:
+            page += 1
+            continue
+        elif column.lower() == 'p' and page > 1:
+            page -= 1
+            continue
+
+        col_to_search = None
+        if column:
+            col_to_search = columns[int(column) - 1]
+
+            unique_entries = input("Do you want to see all unique entries in this column? (yes/no) ")
+            if unique_entries.lower() == 'yes':
+                if df_copy[col_to_search].dtype == 'object':
+                    unique_values = df_copy[col_to_search].explode().unique()
+                    print("Unique entries:")
+                    for val in unique_values:
+                        print(val)
+                else:
+                    print(df_copy[col_to_search].unique())
+
+        search_terms = input("Enter search terms (separated by commas, '-' for negative search): ")
+        search_terms = [term.strip() for term in search_terms.split(",")]
+
+        exact = input("Perform an exact search? (yes/no): ")
+        exact = exact.lower() == 'yes'
+
+        case_sensitive = input("Consider case sensitivity? (yes/no): ")
+        case_sensitive = case_sensitive.lower() == 'yes'
+
+        df_copy = search_df(df_copy, search_terms, col_to_search, exact, case_sensitive)
+        print(f"Number of results: {len(df_copy)}")
+
+        see_results = input("Do you want to see the results? (yes/no): ")
+        if see_results.lower() == 'yes':
+            display(df_copy)
+
+        continue_search = input("Do you want to continue searching? (yes/no): ")
+        if continue_search.lower() != 'yes':
+            break
+    
+    if out == "marker_list":
+        if repo_lists_path is None:
+            raise ValueError("repo_lists_path must be provided when out='marker_list'")
+        uids = [int(idx) for idx in df_copy.index]
+        return combine_lists(uids, repo_lists_path=repo_lists_path)
+
+    return df_copy
 
 
 def get_db(repo_lists_path="./lists", parallel=True):
@@ -107,6 +272,7 @@ def get_marker_lists(repo_lists_path="./lists", parallel=True):
     data = [item for sublist in data for item in sublist]
     df = pd.DataFrame(data)
     df["ID"] = pd.to_numeric(df["ID"])
+    df.set_index("ID", inplace=True)
 
     return df
 
@@ -168,7 +334,7 @@ def split_marker_elements(marker_list):
     return new_marker_list
 
 
-def combine_dfs(repo_lists_path="./lists", parallel=True):
+def combine_dfs(repo_lists_path="./lists", parallel=True, preprocessed=False, meta_lists="meta_lists", marker_lists="marker_lists"):
     """
     Combine the outputs of 'get_db' and 'get_marker_lists' based on the given columns.
 
@@ -178,6 +344,12 @@ def combine_dfs(repo_lists_path="./lists", parallel=True):
         The path where the marker lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
     parallel : bool, default True
         If True, uses parallel processing to improve performance.
+    preprocessed : bool, default True
+        If True, uses preprocessed data from .tsv files.
+    meta_lists : str, default "meta_lists"
+        Path to the preprocessed metadata .tsv file.
+    marker_lists : str, default "marker_lists"
+        Path to the preprocessed marker .tsv file.
 
     Returns
     --------
@@ -185,16 +357,22 @@ def combine_dfs(repo_lists_path="./lists", parallel=True):
         DataFrame containing combined information.
     """
 
-    df_meta = get_db(repo_lists_path=repo_lists_path, parallel=parallel)
-    df_lists = get_marker_lists(repo_lists_path=repo_lists_path, parallel=parallel)
+    if preprocessed:
+        if not (os.path.isfile(meta_lists) and os.path.isfile(marker_lists)):
+            raise FileNotFoundError("Preprocessed .tsv files not found. Please check the file paths.")
+        df_meta = pd.read_csv(meta_lists, sep='\t')
+        df_marker = pd.read_csv(marker_lists, sep='\t')
+    else:
+        df_meta = get_db(repo_lists_path=repo_lists_path, parallel=parallel)
+        df_marker = get_marker_lists(repo_lists_path=repo_lists_path, parallel=parallel)
     
-    df_lists = df_lists.groupby('ID').agg({
+    df_marker = df_marker.groupby('ID').agg({
         'Marker': lambda x: list(set(x)),
         'Info': lambda x: list(set(x))
     }).reset_index()
     
-    df_combined = df_meta.merge(df_lists, on='ID', how='left')
-    df_combined['ID'] = df_combined['ID'].astype(str)
+    df_combined = df_meta.merge(df_marker, on='ID', how='left')
+    df_combined.set_index('ID', inplace=True)
 
     # Split marker elements
     df_combined['Marker'] = df_combined['Marker'].apply(split_marker_elements)
@@ -236,198 +414,6 @@ def get_marker_list(file_path):
     df = pd.DataFrame(marker_data)
 
     return df
-
-
-def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", repo_lists_path="./lists"):
-    """
-    This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
-    the function either returns the filtered DataFrame or a combined list of markers.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        The input DataFrame to be filtered.
-    keywords : dict or str
-        The keywords to filter the DataFrame.
-    case_sensitive : bool, default False
-        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
-    exact : bool, default False
-        If True, the search will look for exact matches. If False, the search will look for substrings.
-    out : str, default "metadata"
-        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
-        'marker_list', the function returns a combined list of markers.
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-        Required if out = 'marker_list'.
-
-    Returns
-    -------
-    pd.DataFrame :
-        Either the filtered search results as metadata or as a combined list of markers.
-    """
-
-    # Convert everything to lowercase if the search is case-insensitive
-    if not case_sensitive:
-        df = df.applymap(lambda x: str(x).lower() if isinstance(x, str) else x)
-        if isinstance(keywords, dict):
-            keywords = {k: v.lower() for k, v in keywords.items()}
-        elif isinstance(keywords, str):
-            keywords = keywords.lower()
-
-    mask_df = pd.DataFrame()
-
-    # If keywords is a dictionary
-    if isinstance(keywords, dict):
-        mask_df = pd.DataFrame(False, index=df.index, columns=df.columns)
-        for key, value in keywords.items():
-            if key not in df.columns:
-                continue
-            # If the column contains lists
-            if df[key].apply(lambda x: isinstance(x, list)).any():
-                if exact:
-                    mask_df[key] = df[key].apply(lambda cell: any(value.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
-                else:
-                    mask_df[key] = df[key].apply(lambda cell: any(value.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
-            else:
-                mask_df[key] = df[key].str.contains(value, case=case_sensitive)
-
-    # If keywords is a string
-    elif isinstance(keywords, str):
-        if exact:
-            if case_sensitive:
-                mask_df = df.applymap(lambda cell: keywords in cell if isinstance(cell, list) else False)
-            else:
-                mask_df = df.applymap(lambda cell: any(keywords.lower() == str(item).lower() for item in cell) if isinstance(cell, list) else False)
-        else:
-            if case_sensitive:
-                mask_df = df.applymap(lambda cell: any(keywords in str(item) for item in cell) if isinstance(cell, list) else False)
-            else:
-                mask_df = df.applymap(lambda cell: any(keywords.lower() in str(item).lower() for item in cell) if isinstance(cell, list) else False)
-
-    # Select the rows that contain at least one True
-    filtered_df = df[mask_df.any(axis=1)]
-
-    if out == "marker_list":
-        if repo_lists_path is None:
-            raise ValueError("repo_lists_path must be provided when out='marker_list'")
-        uids = [int(idx) for idx in filtered_df.index]
-        return combine_lists(uids, repo_lists_path=repo_lists_path)
-    
-    return filtered_df
-
-
-def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
-    """
-    An interactive function that guides the user through the process of searching the DataFrame.
-
-    Parameters
-    ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored.
-    df : pd.DataFrame, default None
-        The DataFrame to search in. If not provided, the function will create one from the repo_lists_path.
-    out : str, default "metadata"
-        Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
-        'marker_list', the function returns a combined list of markers.
-
-    Returns
-    -------
-    pd.DataFrame
-        Either the filtered search results as metadata or as a combined list of markers.
-    """
-
-    # Get the DataFrame if not provided
-    if df is None:
-        df = get_db(repo_lists_path=repo_lists_path)
-
-    columns = df.columns.tolist()
-    identifiers = [str(i) for i in range(1, 10)] + list(string.ascii_lowercase)[:len(columns)-9]
-
-    # Split columns into groups of 10 for pagination
-    page = 0
-    pages = [columns[i:i+10] for i in range(0, len(columns), 10)]
-
-    while True:
-        # Print identifiers and column names for the current page
-        print("Available columns for search:")
-        for identifier, column in zip(identifiers, pages[page]):
-            print(f"{identifier}: {column}")
-        
-        # Ask for column to search in
-        command_options = []
-        if page > 0: command_options.append("'p' for previous page")
-        if page < len(pages) - 1: command_options.append("'n' for next page")
-        command_options = ", ".join(command_options)
-        col_to_search_identifier = input(f"Enter identifier of column to search in (leave blank to search in all columns)\nEnter {command_options}: ")
-        
-        if col_to_search_identifier == 'n':
-            page = (page + 1) % len(pages)
-            continue
-        elif col_to_search_identifier == 'p':
-            page = (page - 1) % len(pages)
-            continue
-        elif col_to_search_identifier == '':
-            col_to_search = None  # Search in all columns
-            break
-        elif col_to_search_identifier in identifiers:
-            col_to_search = pages[page][identifiers.index(col_to_search_identifier)]
-            break
-
-    # Ask for value to search for
-    if col_to_search:
-        show_possible_values = input("Do you want to see all possible values for this column? (yes/no): ").lower() == "yes"
-        if show_possible_values:
-            # Check if the column contains lists
-            if df[col_to_search].apply(lambda x: isinstance(x, list)).any():
-                # Create a set to store unique values
-                unique_values = set()
-                for row in df[col_to_search]:
-                    if isinstance(row, list):
-                        for item in row:
-                            unique_values.add(item)
-            else:
-                # If the column does not contain lists, simply use the unique() function
-                unique_values = df[col_to_search].unique()
-            
-            # Print all unique values
-            for value in unique_values:
-                print(value)
-    
-    search_terms = input("Enter search terms (separate multiple terms with a comma): ").split(',')
-    exact = input("Perform an exact search? (yes/no): ").lower() == "yes"
-    case_sensitive = input("Consider case sensitivity? (yes/no): ").lower() == "yes"
-
-    # Perform the search for each term and combine the results
-    results = pd.DataFrame()
-    for search_term in search_terms:
-        if col_to_search:
-            keywords = {col_to_search: search_term.strip()}
-        else:
-            keywords = search_term.strip()
-        result = search_db(df, keywords, exact=exact, case_sensitive=case_sensitive)
-        results = pd.concat([results, result])
-
-    # Raise an exception if no results were found
-    if results.empty:
-        raise Exception("No results found.")
-
-    print(f"Number of results: {len(results)}")
-    see_results = input("Do you want to see the results? (yes/no): ").lower() == "yes"
-
-    if see_results:
-        display(results)
-
-    # Further filtering?
-    further_filter = input("Do you want to filter the results further? (yes/no): ").lower() == "yes"
-
-    if further_filter:
-        return guided_search(repo_lists_path=repo_lists_path, df=results, out=out)
-    
-    if out == "marker_list":
-        uids = [int(idx) for idx in results.index]
-        return combine_lists(uids, repo_lists_path=repo_lists_path)
-    
-    return results
 
 
 def flatten_dict(d, parent_key='', sep='_', list_sep='\n'):
@@ -930,8 +916,48 @@ def push_marker_list(list_path, repo_path="."):
     # Pull the latest changes
     repo.remotes['origin'].pull()
 
+    # Preprocess lists
+    meta_path, markers_path = preprocess_lists_to_tsv(repo_lists_path=f"{repo_path}/lists")
+
     # Check out new branch
     repo.git.checkout('HEAD', b=list_name)
     repo.git.add(list_path)
+    repo.git.add(meta_path)
+    repo.git.add(markers_path)
     repo.git.commit('-m', f'Add new list: {list_name}')
     repo.git.push('--set-upstream', 'origin', list_name)
+
+
+def preprocess_lists_to_tsv(repo_lists_path="./lists", output_path_meta="meta_lists.tsv", output_path_markers="marker_lists.tsv"):
+    """
+    Generates preprocessed .tsv files of the database and marker lists.
+    This function can be used to speed up subsequent reads of the data.
+
+    Parameters
+    ----------
+    repo_lists_path : str, default "./lists"
+        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    output_path_meta : str, default "meta_lists.tsv"
+        The file path for output metadata .tsv file.
+    output_path_markers : str, default "marker_lists.tsv"
+        The file path for output marker .tsv file.
+
+    Returns
+    -------
+    str, str :
+        The absolute paths to the generated .tsv files (metadata and markers respectively).
+    """
+
+    # Get metadata and marker lists
+    df_meta = get_db(repo_lists_path)
+    df_markers = get_marker_lists(repo_lists_path)
+    
+    # Get absolute file paths
+    output_path_meta = os.path.abspath(output_path_meta)
+    output_path_markers = os.path.abspath(output_path_markers)
+
+    # Write to tsv
+    df_meta.to_csv(output_path_meta, sep='\t', index=True)
+    df_markers.to_csv(output_path_markers, sep='\t', index=True)
+
+    return output_path_meta, output_path_markers

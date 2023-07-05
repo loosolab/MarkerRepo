@@ -1,4 +1,4 @@
-from .marker_repo import get_db, search_db, combine_lists, export_marker_list, guided_search
+from .marker_repo import get_db, search_df, combine_lists, export_marker_list, guided_search
 from .calculations import compare_marker_lists, update_scores
 
 def get_selected_lists(keywords=None, metadata_df=None, repo_lists_path="./lists", case_sensitive=False, exact=False):
@@ -27,7 +27,7 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_lists_path="./lists
 
     if keywords:
         db = get_db(repo_lists_path=repo_lists_path)
-        df = search_db(db, keywords, case_sensitive=case_sensitive, exact=exact)
+        df = search_df(db, keywords, case_sensitive=case_sensitive, exact=exact)
         if df.empty:
             raise Exception(
                         f"No search results available!")
