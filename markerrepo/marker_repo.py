@@ -12,7 +12,7 @@ from concurrent.futures import ProcessPoolExecutor
 from IPython.display import display
 import math
 
-def search_df(df, search_terms, col_to_search=None, exact=False, case_sensitive=False):
+def search_df(df, search_terms, col_to_search=None, exact=False, case_sensitive=False, out="metadata", repo_lists_path="./lists"):
     #TODO replace with search_db when finished
 
     if exact:
@@ -46,10 +46,16 @@ def search_df(df, search_terms, col_to_search=None, exact=False, case_sensitive=
             for term in negative_terms:
                 df = df[~df.apply(lambda x: x.astype(str).str.lower().str.contains(term.lower()).any(), axis=1)]
 
+    if out == "marker_list":
+        if repo_lists_path is None:
+            raise ValueError("repo_lists_path must be provided when out='marker_list'")
+        uids = [int(idx) for idx in df.index]
+        return combine_lists(uids, repo_lists_path=repo_lists_path)
+
     return df
 
 
-def interactive_search(df):
+def interactive_search(df, repo_lists_path="./lists", out="metadata"):
     #TODO replace with guided_search when finished
 
     df_copy = df.copy()
@@ -112,6 +118,10 @@ def interactive_search(df):
         continue_search = input("Do you want to continue searching? (yes/no): ")
         if continue_search.lower() != 'yes':
             break
+    
+    if out == "marker_list":
+        uids = [int(idx) for idx in df_copy.index]
+        return combine_lists(uids, repo_lists_path=repo_lists_path)
 
     return df_copy
 
