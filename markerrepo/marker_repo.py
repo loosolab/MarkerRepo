@@ -5,12 +5,12 @@ import seaborn as sns
 import git
 from .utils import read_whitelist
 import yaml
-import string
 from git import Repo
 from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor
 from IPython.display import display
 import math
+import re
 
 def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_lists_path="./lists"):
     """
@@ -42,36 +42,23 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
         Either the filtered search results as metadata or as a combined list of markers.
     """
 
-    if exact:
-        search_func = lambda x, term: x == term
-    else:
-        search_func = lambda x, term: term in x
-
     positive_terms = [term for term in search_terms if not term.startswith('-')]
     negative_terms = [term.lstrip('-') for term in search_terms if term.startswith('-')]
 
+    if exact:
+        positive_terms = [f"^{term}$" for term in positive_terms]
+        negative_terms = [f"^{term}$" for term in negative_terms]
+
     if col_to_search:
-        if case_sensitive:
-            for term in positive_terms:
-                df = df[df[col_to_search].astype(str).apply(lambda x: search_func(x, term))]
-            for term in negative_terms:
-                df = df[~df[col_to_search].astype(str).apply(lambda x: search_func(x, term))]
-        else:
-            for term in positive_terms:
-                df = df[df[col_to_search].astype(str).str.lower().apply(lambda x: search_func(x, term.lower()))]
-            for term in negative_terms:
-                df = df[~df[col_to_search].astype(str).str.lower().apply(lambda x: search_func(x, term.lower()))]
+        for term in positive_terms:
+            df = df[df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE)))]
+        for term in negative_terms:
+            df = df[~df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE)))]
     else:
-        if case_sensitive:
-            for term in positive_terms:
-                df = df[df.apply(lambda x: x.astype(str).str.contains(term).any(), axis=1)]
-            for term in negative_terms:
-                df = df[~df.apply(lambda x: x.astype(str).str.contains(term).any(), axis=1)]
-        else:
-            for term in positive_terms:
-                df = df[df.apply(lambda x: x.astype(str).str.lower().str.contains(term.lower()).any(), axis=1)]
-            for term in negative_terms:
-                df = df[~df.apply(lambda x: x.astype(str).str.lower().str.contains(term.lower()).any(), axis=1)]
+        for term in positive_terms:
+            df = df[df.apply(lambda x: x.astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE))).any(), axis=1)]
+        for term in negative_terms:
+            df = df[~df.apply(lambda x: x.astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE))).any(), axis=1)]
 
     if out == "marker_list":
         if repo_lists_path is None:
@@ -156,7 +143,7 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
         case_sensitive = input("Consider case sensitivity? (yes/no): ")
         case_sensitive = case_sensitive.lower() == 'yes'
 
-        df_copy = search_df(df_copy, search_terms, col_to_search, exact, case_sensitive)
+        df_copy = search_df(df_copy, search_terms, col_to_search, case_sensitive, exact)
         print(f"Number of results: {len(df_copy)}")
 
         see_results = input("Do you want to see the results? (yes/no): ")
