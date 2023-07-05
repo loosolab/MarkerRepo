@@ -9,6 +9,111 @@ import string
 from git import Repo
 from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor
+from IPython.display import display
+import math
+
+def search_df(df, search_terms, col_to_search=None, exact=False, case_sensitive=False):
+    #TODO replace with search_db when finished
+
+    if exact:
+        search_func = lambda x, term: x == term
+    else:
+        search_func = lambda x, term: term in x
+
+    positive_terms = [term for term in search_terms if not term.startswith('-')]
+    negative_terms = [term.lstrip('-') for term in search_terms if term.startswith('-')]
+
+    if col_to_search:
+        if case_sensitive:
+            for term in positive_terms:
+                df = df[df[col_to_search].astype(str).apply(lambda x: search_func(x, term))]
+            for term in negative_terms:
+                df = df[~df[col_to_search].astype(str).apply(lambda x: search_func(x, term))]
+        else:
+            for term in positive_terms:
+                df = df[df[col_to_search].astype(str).str.lower().apply(lambda x: search_func(x, term.lower()))]
+            for term in negative_terms:
+                df = df[~df[col_to_search].astype(str).str.lower().apply(lambda x: search_func(x, term.lower()))]
+    else:
+        if case_sensitive:
+            for term in positive_terms:
+                df = df[df.apply(lambda x: x.astype(str).str.contains(term).any(), axis=1)]
+            for term in negative_terms:
+                df = df[~df.apply(lambda x: x.astype(str).str.contains(term).any(), axis=1)]
+        else:
+            for term in positive_terms:
+                df = df[df.apply(lambda x: x.astype(str).str.lower().str.contains(term.lower()).any(), axis=1)]
+            for term in negative_terms:
+                df = df[~df.apply(lambda x: x.astype(str).str.lower().str.contains(term.lower()).any(), axis=1)]
+
+    return df
+
+
+def interactive_search(df):
+    #TODO replace with guided_search when finished
+
+    df_copy = df.copy()
+    columns = df_copy.columns.tolist()
+    page = 1
+    per_page = 10
+    num_pages = math.ceil(len(columns) / per_page)
+
+    while True:
+        start_index = (page - 1) * per_page
+        end_index = start_index + per_page
+
+        print("Available columns for search:")
+        for i, col in enumerate(columns[start_index:end_index], start=start_index):
+            print(f"{i+1}: {col}")
+
+        if page < num_pages:
+            print("n: Next page")
+        if page > 1:
+            print("p: Previous page")
+
+        column = input("Enter identifier of column to search in (leave blank to search in all columns): ")
+        if column.lower() == 'n' and page < num_pages:
+            page += 1
+            continue
+        elif column.lower() == 'p' and page > 1:
+            page -= 1
+            continue
+
+        col_to_search = None
+        if column:
+            col_to_search = columns[int(column) - 1]
+
+            unique_entries = input("Do you want to see all unique entries in this column? (yes/no) ")
+            if unique_entries.lower() == 'yes':
+                if df_copy[col_to_search].dtype == 'object':
+                    unique_values = df_copy[col_to_search].explode().unique()
+                    print("Unique entries:")
+                    for val in unique_values:
+                        print(val)
+                else:
+                    print(df_copy[col_to_search].unique())
+
+        search_terms = input("Enter search terms (separated by commas, '-' for negative search): ")
+        search_terms = [term.strip() for term in search_terms.split(",")]
+
+        exact = input("Perform an exact search? (yes/no): ")
+        exact = exact.lower() == 'yes'
+
+        case_sensitive = input("Consider case sensitivity? (yes/no): ")
+        case_sensitive = case_sensitive.lower() == 'yes'
+
+        df_copy = search_df(df_copy, search_terms, col_to_search, exact, case_sensitive)
+        print(f"Number of results: {len(df_copy)}")
+
+        see_results = input("Do you want to see the results? (yes/no): ")
+        if see_results.lower() == 'yes':
+            display(df_copy)
+
+        continue_search = input("Do you want to continue searching? (yes/no): ")
+        if continue_search.lower() != 'yes':
+            break
+
+    return df_copy
 
 
 def search_db(df, keywords, case_sensitive=False, exact=False, out="metadata", repo_lists_path="./lists"):
