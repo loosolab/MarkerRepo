@@ -128,7 +128,7 @@ def get_supported_taxonomy_ids():
     return organisms
 
 
-def transfer_markers(df, source_organism, target_organism, hg_db, target_whitelist, source_whitelist, calc_proportions=False, plots=False):
+def transfer_markers(df, source_organism, target_organism, hg_db, target_whitelist, source_whitelist, calc_proportions=False, plots=False, target_counts=None):
     """
     Transfer markers between organisms based on homology and calculate the proportion of transferred markers.
 
@@ -150,6 +150,8 @@ def transfer_markers(df, source_organism, target_organism, hg_db, target_whiteli
         If true, the proportions of all source genes and target genes are calculated.
     plots : bool, default False
         If true, show plots of transfer statistics.
+    target_counts : int, default None
+        If not None, filter those target genes whose number of target genes per source gene is <= target_counts.
 
     Returns
     --------
@@ -200,9 +202,8 @@ def transfer_markers(df, source_organism, target_organism, hg_db, target_whiteli
             print(f"Possible transfer rate of all genes: {possible_transfer_rate:.2f}%")
             print(f"Proportion of transferred genes in all genes of target organism: {transferred_genes_in_target:.2f}%")
 
-    # Plot count of target genes per source gene
-    if plots:
-        show_target_genes_counts(merged_data, get_gene_dict(w_markers=source_whitelist))
+    if target_counts:
+        return process_and_filter_genes(merged_data, df, source_whitelist, target_counts=target_counts, plots=plots)
 
     markers_extended = update_markers(target_df, get_gene_dict(w_markers=target_whitelist))
 
@@ -367,7 +368,7 @@ def get_dataset_names(organism_name):
     return matching_names
 
 
-def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whitelist, calc_proportions=False, plots=False):
+def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whitelist, calc_proportions=False, plots=False, target_counts=None):
     """
     This function merges two dataframes based on a common column and calculates the proportion of transferred markers.
 
@@ -385,6 +386,8 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
         If true, the proportions of all source genes and target genes are calculated.
     plots : bool, default False
         If true, show plots of transfer statistics.
+    target_counts : int, default None
+        If not None, filter those target genes whose number of target genes per source gene is <= target_counts.
 
     Returns
     --------
@@ -426,13 +429,63 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
                 print(f"Possible transfer rate of all genes: {possible_transfer_rate:.2f}%")
                 print(f"Proportion of transferred genes in all genes of target organism: {transferred_genes_in_target:.2f}%")
 
-    # Plot count of target genes per source gene
-    if plots:
-        show_target_genes_counts(transfer_counts_df, get_gene_dict(w_markers=source_whitelist))
+    if target_counts:
+        return process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, target_counts=target_counts, plots=plots, id_type='ensembl')
 
     markers_extended = update_markers(target_df, get_gene_dict(w_markers=target_whitelist))
 
     return markers_extended
+
+
+def process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, target_counts=None, plots=False, id_type='symbol'):
+    """
+    Process and filter genes based on given conditions.
+
+    Parameters
+    ----------
+    transfer_counts_df : pd.DataFrame
+        DataFrame containing the transfer counts data.
+    source_df : pd.DataFrame
+        DataFrame containing the source genes data.
+    source_whitelist : list
+        List of source genes to be whitelisted.
+    target_counts : int, optional
+        Maximum count of target genes allowed. If not specified, all genes are included.
+    plots : bool, default False
+        Whether to generate plots or not.
+    id_type : str, default 'symbol'
+        The type of identifiers in the transfer_counts_df. 'symbol' for gene symbols and 'ensembl' for Ensembl IDs.
+
+    Returns
+    -------
+    pd.DataFrame :
+        DataFrame containing the filtered source genes data.
+    """
+
+    id_index = 0 if id_type == 'symbol' else 1
+    
+    # Calculate target genes count per source genes
+    gene_counts_df = get_target_genes_counts(transfer_counts_df, get_gene_dict(w_markers=source_whitelist))
+    print("\nCount of target genes per source gene:")
+    display(gene_counts_df)
+
+    # Plot count of target genes per source gene
+    if plots:
+        plot_gene_counts(gene_counts_df)
+
+    if target_counts:
+        filter_df = gene_counts_df.copy()
+        filter_df = filter_df.loc[filter_df['Count target genes'] <= target_counts]
+        filter_df['Source Gene'] = filter_df['Source Gene'].apply(lambda x: x.split(' ')[id_index] if len(x.split(' ')) > 1 else x)
+        source_df_copy = source_df.copy()
+        source_df_copy['Marker'] = source_df_copy['Marker'].apply(lambda x: x.split(' ')[id_index] if len(x.split(' ')) > 1 else x)
+        filtered_source_df = pd.merge(source_df_copy, filter_df, left_on='Marker', right_on='Source Gene', how='inner')
+        filtered_source_df = filtered_source_df[['Marker', 'Info']]
+
+        print(f"Filtered source DataFrame with target_counts <= {target_counts}:")
+        display(update_markers(filtered_source_df, get_gene_dict(w_markers=source_whitelist)))
+        
+        return filtered_source_df
 
 
 def get_supported_biomart_organisms():
@@ -568,7 +621,7 @@ def get_transfer_counts(df, source_column='Marker', target_column='Transferred M
     return gene_counts_df
 
 
-def show_target_genes_counts(df, gene_dict, source_column='Marker', target_column='Transferred Marker'):
+def get_target_genes_counts(df, gene_dict, source_column='Marker', target_column='Transferred Marker'):
     """
     Show plot and DataFrame of count of target genes per source gene.
 
@@ -584,10 +637,7 @@ def show_target_genes_counts(df, gene_dict, source_column='Marker', target_colum
         The name of the column in df that contains the target genes.
     """
 
-     # TODO: Think about other display methods
-
     gene_counts_df = get_transfer_counts(df, source_column=source_column, target_column=target_column)
     gene_counts_df = update_markers(gene_counts_df, gene_dict, column='Source Gene')
-    print("\nCount of target genes per source gene:")
-    display(gene_counts_df)
-    plot_gene_counts(gene_counts_df)
+
+    return gene_counts_df
