@@ -592,6 +592,51 @@ def calculate_gene_proportions(whitelist_source, whitelist_target, df, gene_colu
     return possible_transfer_rate, transferred_genes_in_target
 
 
+def calculate_homology_proportions(df, source_genes, target_genes, id_type='symbol'):
+    """
+    Calculate the percentage of source and target genes present in a given DataFrame.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A DataFrame that contains gene identifiers for source and target organism.
+        First column: source organism, second column: target organism.
+    source_genes : list of str
+        Whole set of genes from the source organism. Format: 'GeneName Ensembl ID'.
+    target_genes : list of str
+        Whole set of genes from the target organism. Format: 'GeneName Ensembl ID'.
+    id_type : str, default 'symbol'
+        The type of identifiers in the whitelist and df. 'symbol' for gene symbols and 'ensembl' for Ensembl IDs.
+
+    Returns
+    -------
+    tuple of float
+        Tuple containing the proportion of all possible transferred genes and of these genes in the target organism.
+    """
+
+    #TODO HomoloGene adjustments
+
+    id_index = 0 if id_type == 'symbol' else 1
+
+    # Split each string in the lists by space and take the second part (the Ensembl ID)
+    source_genes_ids = [gene.split()[id_index] for gene in source_genes]
+    target_genes_ids = [gene.split()[id_index] for gene in target_genes]
+
+    # Calculate the number of source and target genes
+    num_source_genes = len(source_genes_ids)
+    num_target_genes = len(target_genes_ids)
+
+    # Find the intersection of the source/target genes and the DataFrame
+    source_intersection = df.iloc[:, 0].isin(source_genes_ids)
+    target_intersection = df.iloc[:, 1].isin(target_genes_ids)
+
+    # Calculate the percentage of genes that are in the DataFrame
+    source_percentage = (source_intersection.sum() / num_source_genes) * 100
+    target_percentage = (target_intersection.sum() / num_target_genes) * 100
+
+    return source_percentage, target_percentage
+
+
 def get_transfer_counts(df, source_column='Marker', target_column='Transferred Marker'):
     """
     Counts the number of target genes for each source gene after a gene transfer.
