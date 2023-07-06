@@ -510,7 +510,7 @@ def dataframe_to_dict(df):
     return result
 
 
-def export_marker_list(df, path=".", file_name="marker_list", header=False, marker_id=None):
+def export_marker_list(df, path=".", file_name=None, header=False, marker_id=None):
     """
     Exports a marker list (df) to path/file_name. If a file with this name already exists,
     a timestamp suffix is added to the filename.
@@ -521,7 +521,7 @@ def export_marker_list(df, path=".", file_name="marker_list", header=False, mark
         The marker list to be exported.
     path : str, default "."
         The path where the marker list should be saved.
-    file_name : str, default "marker_list"
+    file_name : str, default None
         The filename of the marker list.
     header : bool, default False
         If True, the header will also be exported
@@ -542,6 +542,9 @@ def export_marker_list(df, path=".", file_name="marker_list", header=False, mark
 
     if not path:
         path = "."
+
+    if not file_name:
+        file_name = get_valid_filename()
 
     # Generate the full file path
     export_path = os.path.join(path, f"{file_name}")
@@ -948,3 +951,35 @@ def preprocess_lists_to_tsv(repo_lists_path="./lists", output_path_meta="meta_li
     df_markers.to_csv(output_path_markers, sep='\t', index=True)
 
     return output_path_meta, output_path_markers
+
+
+def get_valid_filename(prompt="Enter file name or path: "):
+    """
+    Allows the user to enter a path or file name, which will be checked for validity.
+
+    Parameters
+    ----------
+    prompt : str, default "Enter file name: "
+        The text of the prompt.
+
+    Returns
+    -------
+    str :
+        A valid path or file name.
+    """
+
+    while True:
+        file_name = input(prompt)
+        
+        # Check if file name is not empty
+        if not file_name.strip():
+            print("File name or path cannot be empty.")
+            continue
+
+        # Check if file name ends with a slash
+        if file_name.endswith("/"):
+            print("File name or path cannot end with a slash.")
+            continue
+
+
+        return file_name
