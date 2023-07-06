@@ -143,7 +143,7 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
         case_sensitive = input("Consider case sensitivity? (yes/no): ")
         case_sensitive = case_sensitive.lower() == 'yes'
 
-        df_copy = search_df(df_copy, search_terms, col_to_search, case_sensitive, exact)
+        df_copy = search_df(df_copy, search_terms, col_to_search=col_to_search, case_sensitive=case_sensitive, exact=exact)
         print(f"Number of results: {len(df_copy)}")
 
         see_results = input("Do you want to see the results? (yes/no): ")
