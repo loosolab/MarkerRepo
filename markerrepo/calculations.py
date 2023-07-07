@@ -198,7 +198,7 @@ def transfer_markers(df, source_organism, target_organism, hg_db, target_whiteli
     if calc_proportions:
         if source_whitelist is not None and target_whitelist is not None:
             # Calculate the proportions
-            possible_transfer_rate, transferred_genes_in_target = calculate_gene_proportions(source_whitelist, target_whitelist, hg_db, 'Gene Symbol', 'symbol')
+            possible_transfer_rate, transferred_genes_in_target = calculate_homology_proportions(merged_data, source_whitelist, target_whitelist, id_type='symbol')
             print(f"Possible transfer rate of all genes: {possible_transfer_rate:.2f}%")
             print(f"Proportion of transferred genes in all genes of target organism: {transferred_genes_in_target:.2f}%")
 
@@ -424,7 +424,7 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
     if calc_proportions:
             if source_whitelist is not None:
                 # Calculate the proportions
-                possible_transfer_rate, transferred_genes_in_target = calculate_gene_proportions(source_whitelist, target_whitelist, biomart_df, 'Gene stable ID', id_type="ensembl")
+                possible_transfer_rate, transferred_genes_in_target = calculate_homology_proportions(biomart_df, source_whitelist, target_whitelist, id_type="ensembl")
 
                 print(f"Possible transfer rate of all genes: {possible_transfer_rate:.2f}%")
                 print(f"Proportion of transferred genes in all genes of target organism: {transferred_genes_in_target:.2f}%")
@@ -484,7 +484,9 @@ def process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, ta
 
         print(f"Filtered source DataFrame with target_counts <= {target_counts}:")
         display(update_markers(filtered_source_df, get_gene_dict(w_markers=source_whitelist)))
+        num_filtered_genes = source_df_copy.shape[0] - filtered_source_df.shape[0]
         
+        print(f"Filtered: {num_filtered_genes} source genes, {filtered_source_df.shape[0] / source_df_copy.shape[0] * 100:.2f}%")
         return filtered_source_df
 
 
@@ -550,46 +552,47 @@ def select_db(biomart, homologene):
             print("\nInvalid choice. Please choose either 'biomart' or 'homologene'.")
 
 
-def calculate_gene_proportions(whitelist_source, whitelist_target, df, gene_column, id_type='symbol'):
+def calculate_homology_proportions(df, source_genes, target_genes, id_type='symbol'):
     """
-    Calculates the proportions of all possible transferred genes and of these genes in the target organism.
+    Calculate the percentage of source and target genes present in a given DataFrame.
 
     Parameters
     ----------
-    whitelist_source : list of str
-        Whitelist containing all gene names of the source organism.
-    whitelist_target : list of str
-        Whitelist containing all gene names of the target organism.
     df : pd.DataFrame
-        DataFrame that contains a column with the gene IDs or gene symbols.
-    gene_column : str
-        The name of the column in the DataFrame that contains the gene IDs or gene symbols.
+        A DataFrame that contains gene identifiers for source and target organism.
+        First column: source organism, second column: target organism.
+    source_genes : list of str
+        Whole set of genes from the source organism. Format: 'GeneName Ensembl ID'.
+    target_genes : list of str
+        Whole set of genes from the target organism. Format: 'GeneName Ensembl ID'.
     id_type : str, default 'symbol'
         The type of identifiers in the whitelist and df. 'symbol' for gene symbols and 'ensembl' for Ensembl IDs.
 
     Returns
-    --------
-    tuple :
+    -------
+    tuple of float
         Tuple containing the proportion of all possible transferred genes and of these genes in the target organism.
     """
 
     id_index = 0 if id_type == 'symbol' else 1
 
-    # Convert the whitelists into sets of gene IDs or gene symbols
-    source_genes_set = set(entry.split(' ')[id_index] for entry in whitelist_source)
-    target_genes_set = set(entry.split(' ')[id_index] for entry in whitelist_target)
+    # Split each string in the lists by space and take the second part (the Ensembl ID)
+    source_genes_ids = [gene.split()[id_index] for gene in source_genes]
+    target_genes_ids = [gene.split()[id_index] for gene in target_genes]
 
-    # Count the number of all possible markers that could be transferred
-    df_genes_set = set(df[gene_column].values)
-    all_possible_markers = len(source_genes_set & df_genes_set)
+    # Calculate the number of source and target genes
+    num_source_genes = len(source_genes_ids)
+    num_target_genes = len(target_genes_ids)
 
-    # Calculate the percentage of all possible markers that could be transferred
-    possible_transfer_rate = all_possible_markers / len(source_genes_set) * 100
+    # Find the intersection of the source/target genes and the DataFrame
+    source_intersection = df.iloc[:, 0].isin(source_genes_ids)
+    target_intersection = df.iloc[:, 1].isin(target_genes_ids)
 
-    # Calculate the percentage of these transferred genes in the target organism
-    transferred_genes_in_target = all_possible_markers / len(target_genes_set) * 100
+    # Calculate the percentage of genes that are in the DataFrame
+    source_percentage = (source_intersection.sum() / num_source_genes) * 100
+    target_percentage = (target_intersection.sum() / num_target_genes) * 100
 
-    return possible_transfer_rate, transferred_genes_in_target
+    return source_percentage, target_percentage
 
 
 def get_transfer_counts(df, source_column='Marker', target_column='Transferred Marker'):
