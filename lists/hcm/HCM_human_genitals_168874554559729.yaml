@@ -1,0 +1,53 @@
+marker_list:
+- markers:
+  - ITGAE ENSG00000083457
+  - CD1A ENSG00000158477
+  - CD1C ENSG00000158481
+  name: Conventional dendritic cell 2(cDC2)
+- markers:
+  - CD209 ENSG00000090659
+  - CD14 ENSG00000170458
+  name: CD14+ monocyte-derived macrophage
+- markers:
+  - CLEC9A ENSG00000197992
+  - THBD ENSG00000178726
+  - XCR1 ENSG00000173578
+  - ITGAE ENSG00000083457
+  - CADM1 ENSG00000182985
+  name: Conventional dendritic cell 1(cDC1)
+- markers:
+  - CD1C ENSG00000158481
+  - CD209 ENSG00000090659
+  - CD14 ENSG00000170458
+  name: CD14+ CD1c+ dendritic cell
+- markers:
+  - CD1A ENSG00000158477
+  name: Vaginal Epidermal Dendritic Cell (VEDC)
+- markers:
+  - CD209 ENSG00000090659
+  - CD14 ENSG00000170458
+  - FCGR1A ENSG00000150337
+  name: CD14+ macrophage
+- markers:
+  - EPCAM ENSG00000119888
+  - CD1C ENSG00000158481
+  - CD1A ENSG00000158477
+  name: Langerhans cell
+- markers:
+  - CD36 ENSG00000135218
+  name: Inflammatory Dendritic Epidermal Cell (IDEC)
+metadata:
+  date: 27.03.2020
+  id: '168874554559729'
+  list_name: HCM_human_genitals
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: genitals

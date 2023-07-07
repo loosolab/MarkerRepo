@@ -1,0 +1,29 @@
+marker_list:
+- markers:
+  - CD4 ENSG00000010610
+  - CD8A ENSG00000153563
+  name: T cell
+- markers:
+  - CD4 ENSG00000010610
+  - FOXP3 ENSG00000049768
+  - IL2RA ENSG00000134460
+  name: Regulatory T (Treg) cell
+- markers:
+  - NCAM1 ENSG00000149294
+  - FCGR3A ENSG00000203747
+  name: Natural killer cell
+metadata:
+  date: 27.03.2020
+  id: '1688745543154327'
+  list_name: HCM_human_ascites
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: ascites
