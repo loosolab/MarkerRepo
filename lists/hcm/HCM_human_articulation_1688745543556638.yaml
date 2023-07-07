@@ -1,0 +1,26 @@
+marker_list:
+- markers:
+  - FCGR2A ENSG00000143226
+  - FCGR1A ENSG00000150337
+  - CD80 ENSG00000121594
+  - CD163 ENSG00000177575
+  - CD68 ENSG00000129226
+  - CD14 ENSG00000170458
+  - CD200R1 ENSG00000163606
+  - CSF1R ENSG00000182578
+  name: Macrophage
+metadata:
+  date: 27.03.2020
+  id: '1688745543556638'
+  list_name: HCM_human_articulation
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: articulation

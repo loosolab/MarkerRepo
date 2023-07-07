@@ -1,0 +1,23 @@
+marker_list:
+- markers:
+  - CD34 ENSG00000174059
+  - PTPRC ENSG00000081237
+  - THY1 ENSG00000154096
+  - CD44 ENSG00000026508
+  - NT5E ENSG00000135318
+  name: Multipotent stem cell
+metadata:
+  date: 27.03.2020
+  id: '1688745543563150'
+  list_name: HCM_human_adventitia
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: adventitia

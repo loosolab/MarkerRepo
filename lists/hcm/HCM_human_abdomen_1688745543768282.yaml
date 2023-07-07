@@ -1,0 +1,27 @@
+marker_list:
+- markers:
+  - MERTK ENSG00000153208
+  - FCGR3A ENSG00000203747
+  - MRC1 ENSG00000260314
+  - VSIG4 ENSG00000155659
+  - CD163 ENSG00000177575
+  name: Macrophage
+- markers:
+  - FABP4 ENSG00000170323
+  - UCP1 ENSG00000109424
+  name: Brown adipocyte
+metadata:
+  date: 27.03.2020
+  id: '1688745543768282'
+  list_name: HCM_human_abdomen
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: abdomen

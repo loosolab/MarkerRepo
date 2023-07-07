@@ -1,0 +1,19 @@
+marker_list:
+- markers:
+  - MUC6 ENSG00000184956
+  name: Fundic gland cell
+metadata:
+  date: 27.03.2020
+  id: '1688745545607045'
+  list_name: HCM_human_fundic-gland
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: fundic-gland

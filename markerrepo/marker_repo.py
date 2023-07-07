@@ -11,6 +11,8 @@ from concurrent.futures import ProcessPoolExecutor
 from IPython.display import display
 import math
 import re
+import time
+import random
 
 def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_lists_path="./lists"):
     """
@@ -799,37 +801,23 @@ def get_gene_dict(organism=None, w_markers=None):
     return gene_dict
 
 
-def get_uid(path="./lists"):
+def get_uid():
     """
-    Creates a new UID by iterating through all files in path.
-
-    Parameters
-    ----------
-    path : str, default "./lists"
-        The root of the files containing UIDs.
+    Creates a new ID by combining a timestamp and a random number.
 
     Returns
     --------
     str :
-        A string containing an unused UID
+        A string containing the new ID.
     """
 
-    existing_uids = []
-    
-    # Iterate through all files and subdirectories in the given path
-    for root, _, files in os.walk(path):
-        for file in files:
-            # Extract the UID from the filename
-            file_parts = file.split('_')
-            uid = file_parts[-1].split('.yaml')[0]
-            existing_uids.append(uid)
+    timestamp = int(time.time())
+    random_number = random.randint(1, 1000000)
 
-    # Generate a new UID and make sure it is unique
-    new_uid = 1
-    while str(new_uid) in existing_uids:
-        new_uid += 1
+    # Combine the timestamp and random number to create a (almost) unique ID
+    uid = f"{timestamp}-{random_number}"
 
-    return str(new_uid)
+    return uid
 
 
 def extract_display_names(d, parent_key='', sep='_'):
