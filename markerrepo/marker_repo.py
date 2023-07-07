@@ -22,7 +22,9 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
     df : pd.DataFrame
         The input DataFrame to be filtered.
     search_terms : list of str
-        Search terms to use for the search.
+        Search terms to use for the search. Terms can be prefixed with '+' to denote that they must be included,
+        or with '-' to denote that they must not be included. Terms without a prefix will include rows that contain them,
+        but will not exclude rows that do not.
     col_to_search : str, default None
         Column to perform the search in. If None, the search will be performed in all columns.
     case_sensitive : bool, default False
@@ -42,19 +44,25 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
         Either the filtered search results as metadata or as a combined list of markers.
     """
 
-    positive_terms = [term for term in search_terms if not term.startswith('-')]
+    must_include_terms = [term.lstrip('+') for term in search_terms if term.startswith('+')]
+    positive_terms = [term for term in search_terms if not term.startswith('-') and not term.startswith('+')]
     negative_terms = [term.lstrip('-') for term in search_terms if term.startswith('-')]
 
     if exact:
+        must_include_terms = [f"^{term}$" for term in must_include_terms]
         positive_terms = [f"^{term}$" for term in positive_terms]
         negative_terms = [f"^{term}$" for term in negative_terms]
 
     if col_to_search:
+        for term in must_include_terms:
+            df = df[df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE)))]
         for term in positive_terms:
             df = df[df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE)))]
         for term in negative_terms:
             df = df[~df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE)))]
     else:
+        for term in must_include_terms:
+            df = df[df.apply(lambda x: x.astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE))).all(), axis=1)]
         for term in positive_terms:
             df = df[df.apply(lambda x: x.astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE))).any(), axis=1)]
         for term in negative_terms:
