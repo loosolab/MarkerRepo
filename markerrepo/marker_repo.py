@@ -62,11 +62,11 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
             df = df[~df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE)))]
     else:
         for term in must_include_terms:
-            df = df[df.apply(lambda x: x.astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE))).all(), axis=1)]
+            df = df[df.apply(lambda x: x.astype(str).str.contains(term, flags=0 if case_sensitive else re.IGNORECASE, regex=True).any(), axis=1)]
         for term in positive_terms:
-            df = df[df.apply(lambda x: x.astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE))).any(), axis=1)]
+            df = df[df.apply(lambda x: x.astype(str).str.contains(term, flags=0 if case_sensitive else re.IGNORECASE, regex=True).any(), axis=1)]
         for term in negative_terms:
-            df = df[~df.apply(lambda x: x.astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE))).any(), axis=1)]
+            df = df[~df.apply(lambda x: x.astype(str).str.contains(term, flags=0 if case_sensitive else re.IGNORECASE, regex=True).any(), axis=1)]
 
     if out == "marker_list":
         if repo_lists_path is None:
