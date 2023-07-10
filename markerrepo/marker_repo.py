@@ -680,14 +680,14 @@ def get_whitelists(repo_path="."):
     """
 
     # Based on https://gitlab.gwdg.de/loosolab/software/metadata-organizer/-/blob/main/metaTools.py
-    print('Fetching whitelists...\n')
+    print('Fetching whitelists...')
     if not os.path.exists(f"{repo_path}/metadata_whitelists"):
         repo = git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git/', f"{repo_path}/metadata_whitelists")
     else:
         repo = git.Repo('metadata_whitelists')
         o = repo.remotes.origin
         o.pull()
-    print("Done!")
+    print("Done!\n")
 
 
 def update_markers(df, marker_dict, column='Marker'):

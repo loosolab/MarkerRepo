@@ -1,4 +1,4 @@
-from .marker_repo import search_df, combine_lists, get_db, update_markers, get_gene_dict
+from .marker_repo import search_df, combine_lists, get_db, update_markers, get_gene_dict, get_whitelists, select, combine_dfs, guided_search
 from .plotting import plot_gene_counts
 import pandas as pd
 import os
@@ -576,9 +576,9 @@ def calculate_homology_proportions(df, source_genes, target_genes, id_type='symb
 
     id_index = 0 if id_type == 'symbol' else 1
 
-    # Split each string in the lists by space and take the second part (the Ensembl ID)
-    source_genes_ids = [gene.split()[id_index] for gene in source_genes]
-    target_genes_ids = [gene.split()[id_index] for gene in target_genes]
+    # Split each string in the lists by space
+    source_genes_ids = [gene.split()[id_index].upper() for gene in source_genes]
+    target_genes_ids = [gene.split()[id_index].upper() for gene in target_genes]
 
     # Calculate the number of source and target genes
     num_source_genes = len(source_genes_ids)
@@ -644,3 +644,67 @@ def get_target_genes_counts(df, gene_dict, source_column='Marker', target_column
     gene_counts_df = update_markers(gene_counts_df, gene_dict, column='Source Gene')
 
     return gene_counts_df
+
+
+def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False):
+    """
+    Prepares the transfer of marker genes from a source organism to a target organism 
+    by querying and fetching all necessary data.
+    Returns
+    -------
+    misc
+
+    if BioMart:
+        biomart df, source df, target genes whitelist, source genes whitelist
+    else:
+        source df, source tax ID, target tax ID, HomoloGene db, target genes whitelist, source genes whitelist
+    """
+
+    get_whitelists()
+
+    biomart_orgs = get_supported_biomart_organisms()
+    homologene_orgs = get_supported_taxonomy_ids()
+
+    db_choice = select_db(biomart_orgs, homologene_orgs)
+
+    if db_choice == "biomart":
+        organisms = biomart_orgs
+    else:
+        organisms = homologene_orgs
+
+    source_organism, source_tax = select(whitelist=organisms, heading="source organism").split(" ")
+    target_organism, target_tax = select(whitelist=organisms, heading="target organism").split(" ")
+    print(f"Loading genes of {source_organism}...")
+    source_genes = read_whitelist(f"genes/{source_organism}")['whitelist']
+    print("Done!\n")
+    print(f"Loading genes of {target_organism}...")  
+    target_genes = read_whitelist(f"genes/{target_organism}")['whitelist']
+    print("Done!\n")
+
+    if db_choice == "biomart":
+        print("Specify BioMart organism selection:")
+        source_organism_bm = select(whitelist=get_dataset_names(source_organism), heading="BioMart source organism")
+        target_organism_bm = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism")
+
+        print("Fetch necessary data from BioMart...")
+        biomart_db = fetch_homologs(source_organism_bm, target_organism_bm).dropna()
+    else:
+        print("Get HomoloGene db...")
+        hg_db = download_homologene_data()
+
+    if search_terms:
+        print("\nGenerate marker DataFrame based on the given search terms: ")
+        for search_term in search_terms:
+            print(search_term)
+        source_df = search_df(combine_dfs(), search_terms, case_sensitive=case_sensitive, exact=exact, out="marker_list")
+    else:
+        print("\nSelect the marker lists to be transferred to the target organism:")
+        source_df = guided_search(out="marker_list")
+
+    print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
+    display(source_df)
+
+    if db_choice == "biomart":
+        return biomart_db, source_df, target_genes, source_genes
+    else:
+        return source_df, source_tax, target_tax, hg_db, target_genes, source_genes
