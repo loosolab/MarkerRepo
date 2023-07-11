@@ -705,6 +705,8 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False):
     display(source_df)
 
     if db_choice == "biomart":
+        print(f'The preparations have been completed successfully.\nPlease continue by following the steps in the section "Transfer markers from one organism to another using BioMart".')
         return biomart_db, source_df, target_genes, source_genes
     else:
+        print(f'The preparations have been completed successfully.\nPlease continue by following the steps in the section "Transfer markers from one organism to another using HomoloGene db".')
         return source_df, source_tax, target_tax, hg_db, target_genes, source_genes
