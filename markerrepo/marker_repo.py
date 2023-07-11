@@ -477,11 +477,17 @@ def get_list(path, info_col=1, marker_col=0):
     pandas.DataFrame :
         DataFrame containing the list
     """
-
+    
+    # Detect the number of columns
+    with open(path, 'r') as f:
+        line = f.readline()
+        num_columns = len(line.split('\t'))
+    
     headers = ["Marker", "Info"]
-    if type(info_col) == int:
-        header = [headers[marker_col], headers[info_col]]
-        df = pd.read_csv(path, sep='\t', names=header)
+    if type(info_col) == int and num_columns > 2:
+        df = pd.read_csv(path, sep='\t', usecols=[marker_col, info_col], names=headers)
+    elif type(info_col) == int and num_columns <= 2:
+        df = pd.read_csv(path, sep='\t', names=headers)
     else:
         df = pd.read_csv(path, sep='\t', names=[headers[0]])
         df[headers[1]] = info_col
@@ -815,7 +821,7 @@ def get_uid():
     random_number = random.randint(1, 1000000)
 
     # Combine the timestamp and random number to create a (almost) unique ID
-    uid = f"{timestamp}-{random_number}"
+    uid = f"{timestamp}{random_number}"
 
     return uid
 
