@@ -908,14 +908,9 @@ def push_marker_list(list_path, repo_path="."):
     # Pull the latest changes
     repo.remotes['origin'].pull()
 
-    # Preprocess lists
-    meta_path, markers_path = preprocess_lists_to_tsv(repo_lists_path=f"{repo_path}/lists")
-
     # Check out new branch
     repo.git.checkout('HEAD', b=list_name)
     repo.git.add(list_path)
-    repo.git.add(meta_path)
-    repo.git.add(markers_path)
     repo.git.commit('-m', f'Add new list: {list_name}')
     repo.git.push('--set-upstream', 'origin', list_name)
 
