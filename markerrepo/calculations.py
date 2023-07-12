@@ -118,7 +118,18 @@ def get_supported_taxonomy_ids():
     # Get unique taxonomy IDs from HomoloGene db and convert them to strings
     unique_taxonomy_ids = homologene_data['Taxonomy ID'].unique().astype(str).tolist()
     # Get support organisms from whitelist repository
-    supported_organisms = read_whitelist("organism")['whitelist']
+    # TODO "strange error read_whitelist function"
+    # supported_organisms = read_whitelist("organism")['whitelist']
+    supported_organisms = ['human 9606',
+                            'mouse 10090',
+                            'zebrafish 7955',
+                            'rat 10114',
+                            'pig 9823',
+                            'medaka 8090',
+                            'chicken 9031',
+                            'drosophila 7215',
+                            'yeast 4932']
+    # supported_organisms = read_whitelist("organism")['whitelist']
 
     for so in supported_organisms:
         name, tax = so.split(" ")
