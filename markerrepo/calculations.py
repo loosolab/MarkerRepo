@@ -507,7 +507,18 @@ def get_supported_biomart_organisms():
     ensembl_organisms = [s.split(" genes")[0].lower() for s in dataset_list]
 
     # Get support organisms from whitelist repository
-    supported_organisms = read_whitelist("organism")['whitelist']
+    # TODO "strange error read_whitelist function"
+    # supported_organisms = read_whitelist("organism")['whitelist']
+    supported_organisms = ['human 9606',
+                            'mouse 10090',
+                            'zebrafish 7955',
+                            'rat 10114',
+                            'pig 9823',
+                            'medaka 8090',
+                            'chicken 9031',
+                            'drosophila 7215',
+                            'yeast 4932']
+
 
     for so in supported_organisms:
         name, tax = so.split(" ")
