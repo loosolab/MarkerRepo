@@ -8,6 +8,9 @@ metadata:
   submitter:
     name: Bentsen, Mette
   source: panglao
+  tags:
+    list_type: Cell type annotation
+    transferred: mouse
 marker_list:
 - name: Pulmonary alveolar type II cells
   markers:
