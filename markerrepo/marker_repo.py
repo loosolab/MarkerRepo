@@ -5,7 +5,7 @@ import seaborn as sns
 import git
 from .utils import read_whitelist
 import yaml
-from git import Repo
+from git import Repo, GitCommandError
 from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor
 from IPython.display import display
@@ -909,17 +909,36 @@ def push_marker_list(list_path, repo_path="."):
     # Extract the list name from the list path
     list_name = os.path.splitext(os.path.basename(list_path))[0]  # Removes the .yaml extension
 
-    repo = Repo(repo_path)
-    assert not repo.bare
+    try:
+        print("Opening repository")
+        repo = Repo(repo_path)
+        assert not repo.bare
 
-    # Pull the latest changes
-    repo.remotes['origin'].pull()
+        # Pull the latest changes
+        print("Pulling latest changes from the repository")
+        repo.remotes['origin'].pull()
 
-    # Check out new branch
-    repo.git.checkout('HEAD', b=list_name)
-    repo.git.add(list_path)
-    repo.git.commit('-m', f'Add new list: {list_name}')
-    repo.git.push('--set-upstream', 'origin', list_name)
+        # Check out new branch
+        print(f"Creating and checking out new branch '{list_name}'")
+        repo.git.checkout('HEAD', b=list_name)
+
+        # Add and commit changes
+        print("Adding new list and committing changes")
+        repo.git.add(list_path)
+        repo.git.commit('-m', f'Add new list: {list_name}')
+
+        # Push changes
+        print("Pushing changes to the repository")
+        repo.git.push('--set-upstream', 'origin', list_name)
+
+        print("Changes pushed successfully.")
+
+    except GitCommandError as e:
+        print(f"An error occurred while pushing to the repository: {e}")
+    except AssertionError:
+        print(f"The provided path '{repo_path}' does not appear to be a valid Git repository.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 
 def preprocess_lists_to_tsv(repo_path=".", output_path_meta="meta_lists.tsv", output_path_markers="marker_lists.tsv"):
