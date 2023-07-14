@@ -8,7 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 from pybiomart import Server
 
 
-def compare_marker_lists(repo_lists_path="./lists", keywords=None, marker_df=None, case_sensitive=False, exact=False):
+def compare_marker_lists(repo_path=".", keywords=None, marker_df=None, case_sensitive=False, exact=False):
     """
     This function compares and scores markers from selected marker lists using Ubiquitousness Index.
     A score of '0' signifies that the marker is the most specific within this selection, 
@@ -16,8 +16,8 @@ def compare_marker_lists(repo_lists_path="./lists", keywords=None, marker_df=Non
 
     Parameters
     ----------
-    repo_lists_path : str, default "./lists"
-        The path to the directory containing the marker lists.
+    repo_path : str, default "."
+        The path of the Marker Repo.
     keywords : str, dict
         Keywords for selecting marker lists. If a string, the function will check if the string is contained anywhere in the marker lists. 
         If a dictionary, the keys are the column names and the values are the keywords to search for in those columns.
@@ -37,9 +37,9 @@ def compare_marker_lists(repo_lists_path="./lists", keywords=None, marker_df=Non
     if marker_df is not None:
         df = marker_df
     else:
-        df = search_df(get_db(repo_lists_path=repo_lists_path), keywords, case_sensitive=case_sensitive, exact=exact)
+        df = search_df(get_db(repo_path=repo_path), keywords, case_sensitive=case_sensitive, exact=exact)
         uids = [int(idx) for idx in df.index]
-        df = combine_lists(uids, repo_lists_path=repo_lists_path)
+        df = combine_lists(uids, repo_path=repo_path)
 
     df = df.drop_duplicates()
     
@@ -96,9 +96,14 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
     return homologene_data
 
 
-def get_supported_taxonomy_ids():
+def get_supported_taxonomy_ids(repo_path="."):
     """
     Returns all supported taxonomy IDs in the downloaded HomoloGene data.
+
+    Parameters
+    ----------
+    repo_path : str, default "."
+        The path of the Marker Repo.
     
     Returns
     -------
@@ -119,17 +124,7 @@ def get_supported_taxonomy_ids():
     unique_taxonomy_ids = homologene_data['Taxonomy ID'].unique().astype(str).tolist()
     # Get support organisms from whitelist repository
     # TODO "strange error read_whitelist function"
-    # supported_organisms = read_whitelist("organism")['whitelist']
-    supported_organisms = ['human 9606',
-                            'mouse 10090',
-                            'zebrafish 7955',
-                            'rat 10114',
-                            'pig 9823',
-                            'medaka 8090',
-                            'chicken 9031',
-                            'drosophila 7215',
-                            'yeast 4932']
-    # supported_organisms = read_whitelist("organism")['whitelist']
+    supported_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
 
     for so in supported_organisms:
         name, tax = so.split(" ")
@@ -221,7 +216,7 @@ def transfer_markers(df, source_organism, target_organism, hg_db, target_whiteli
     return markers_extended
 
 
-def get_panglao_ui(panglao_file="panglao_markers", organism="Hs"):
+def get_panglao_ui(panglao_file="panglao_markers", organism=None):
     """
     Create a dictionary with gene symbols and nicknames as keys and average ubiquitousness index as values.
     Only considers rows with the given organism.
@@ -230,7 +225,7 @@ def get_panglao_ui(panglao_file="panglao_markers", organism="Hs"):
     ----------
     panglao_file : str
         Path to the panglao markers.
-    organism : str
+    organism : str, default None
         Organism to consider (e.g. "Hs" or "Mm").
 
     Returns
@@ -241,8 +236,9 @@ def get_panglao_ui(panglao_file="panglao_markers", organism="Hs"):
 
     df = pd.read_csv(panglao_file, sep="\t")
     
-    # Filter dataframe by organism
-    df = df[df['species'].str.contains(organism, na=False)]
+    if organism:
+        # Filter dataframe by organism
+        df = df[df['species'].str.contains(organism, na=False)]
     
     panglao_ui_dict = {}
 
@@ -264,7 +260,7 @@ def get_panglao_ui(panglao_file="panglao_markers", organism="Hs"):
     return panglao_ui_dict
 
 
-def update_scores(df, organism="Hs", panglao_file="panglao_markers"):
+def update_scores(df, organism=None, panglao_file="panglao_markers", repo_path="."):
     """
     Update the scores in the dataframe using the ubiquitousness index from the panglao database.
 
@@ -272,10 +268,12 @@ def update_scores(df, organism="Hs", panglao_file="panglao_markers"):
     ----------
     df : pd.DataFrame
         DataFrame with columns "Marker", "Info", and "Score". 
-    organism : str
+    organism : str, default None
         Organism to consider when retrieving the ubiquitousness index (e.g. "Hs" or "Mm").
     panglao_file : str
         Path to the panglao markers.
+    repo_path : str, default "."
+        The path of the Marker Repo.
 
     Returns
     -------
@@ -284,7 +282,7 @@ def update_scores(df, organism="Hs", panglao_file="panglao_markers"):
     """
 
     # Retrieve the ubiquitousness index dictionary for the given organism
-    ui_dict = get_panglao_ui(panglao_file, organism)
+    ui_dict = get_panglao_ui(f"{repo_path}/{panglao_file}", organism)
 
     # Split the "Marker" column and take the first part
     df['MainMarker'] = df['Marker'].str.split().str[0].str.upper()
@@ -501,9 +499,14 @@ def process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, ta
         return filtered_source_df
 
 
-def get_supported_biomart_organisms():
+def get_supported_biomart_organisms(repo_path="."):
     """
     Returns all supported BioMart organisms in the downloaded Ensembl db.
+
+    Parameters
+    ----------
+    repo_path : str, default "."
+        The path of the Marker Repo.
 
     Returns
     -------
@@ -519,17 +522,7 @@ def get_supported_biomart_organisms():
 
     # Get support organisms from whitelist repository
     # TODO "strange error read_whitelist function"
-    # supported_organisms = read_whitelist("organism")['whitelist']
-    supported_organisms = ['human 9606',
-                            'mouse 10090',
-                            'zebrafish 7955',
-                            'rat 10114',
-                            'pig 9823',
-                            'medaka 8090',
-                            'chicken 9031',
-                            'drosophila 7215',
-                            'yeast 4932']
-
+    supported_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
 
     for so in supported_organisms:
         name, tax = so.split(" ")
@@ -668,10 +661,16 @@ def get_target_genes_counts(df, gene_dict, source_column='Marker', target_column
     return gene_counts_df
 
 
-def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False):
+def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, repo_path="."):
     """
     Prepares the transfer of marker genes from a source organism to a target organism 
     by querying and fetching all necessary data.
+
+    Parameters
+    ----------
+    repo_path : str, default "."
+        The path of the Marker Repo.
+
     Returns
     -------
     misc
@@ -684,8 +683,8 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False):
 
     get_whitelists()
 
-    biomart_orgs = get_supported_biomart_organisms()
-    homologene_orgs = get_supported_taxonomy_ids()
+    biomart_orgs = get_supported_biomart_organisms(repo_path=repo_path)
+    homologene_orgs = get_supported_taxonomy_ids(repo_path=repo_path)
 
     db_choice = select_db(biomart_orgs, homologene_orgs)
 
@@ -694,19 +693,19 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False):
     else:
         organisms = homologene_orgs
 
-    source_organism, source_tax = select(whitelist=organisms, heading="source organism").split(" ")
-    target_organism, target_tax = select(whitelist=organisms, heading="target organism").split(" ")
+    source_organism, source_tax = select(whitelist=organisms, heading="source organism", repo_path=repo_path).split(" ")
+    target_organism, target_tax = select(whitelist=organisms, heading="target organism", repo_path=repo_path).split(" ")
     print(f"Loading genes of {source_organism}...")
-    source_genes = read_whitelist(f"genes/{source_organism}")['whitelist']
+    source_genes = read_whitelist(f"genes/{source_organism}", repo_path=repo_path)['whitelist']
     print("Done!\n")
     print(f"Loading genes of {target_organism}...")  
-    target_genes = read_whitelist(f"genes/{target_organism}")['whitelist']
+    target_genes = read_whitelist(f"genes/{target_organism}", repo_path=repo_path)['whitelist']
     print("Done!\n")
 
     if db_choice == "biomart":
         print("Specify BioMart organism selection:")
-        source_organism_bm = select(whitelist=get_dataset_names(source_organism), heading="BioMart source organism")
-        target_organism_bm = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism")
+        source_organism_bm = select(whitelist=get_dataset_names(source_organism), heading="BioMart source organism", repo_path=repo_path)
+        target_organism_bm = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
 
         print("Fetch necessary data from BioMart...")
         biomart_db = fetch_homologs(source_organism_bm, target_organism_bm).dropna()
@@ -718,10 +717,10 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False):
         print("\nGenerate marker DataFrame based on the given search terms: ")
         for search_term in search_terms:
             print(search_term)
-        source_df = search_df(combine_dfs(), search_terms, case_sensitive=case_sensitive, exact=exact, out="marker_list")
+        source_df = search_df(combine_dfs(repo_path=repo_path), search_terms, case_sensitive=case_sensitive, exact=exact, out="marker_list", repo_path=repo_path)
     else:
         print("\nSelect the marker lists to be transferred to the target organism:")
-        source_df = guided_search(out="marker_list")
+        source_df = guided_search(repo_path=repo_path, out="marker_list")
 
     print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
     display(source_df)

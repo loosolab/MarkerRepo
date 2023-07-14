@@ -8,7 +8,7 @@ parser.add_argument("uid", help="The UID to be checked for uniqueness.")
 args = parser.parse_args()
 new_uid = args.uid
 
-def get_all_uids(repo_lists_path="./lists"):
+def get_all_uids(repo_path="."):
     """ 
     Traverse the specified directory and its subdirectories to extract UIDs from filenames.
     The filenames are expected to be in the format '<name>_UID.<extension>', where '<name>' can contain underscores.
@@ -16,8 +16,8 @@ def get_all_uids(repo_lists_path="./lists"):
 
     Parameters
     ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    repo_path : str, default "."
+        The path of the Marker Repo.
     exclude_uid : str, default None
         A UID to exclude from the collected UIDs.
 
@@ -28,7 +28,7 @@ def get_all_uids(repo_lists_path="./lists"):
     """
 
     uids = []
-    for _, _, files in os.walk(repo_lists_path):
+    for _, _, files in os.walk(repo_path):
         for file in files:
             if '.yaml' in file:
                 uid = file.split('_')[-1].split('.yaml')[0]
@@ -37,14 +37,14 @@ def get_all_uids(repo_lists_path="./lists"):
     return uids
 
 
-def check_uid(new_uid, repo_lists_path="./lists"):
+def check_uid(new_uid, repo_path="."):
     """
     Check whether the new UID is unique.
 
     Parameters
     ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    repo_path : str, default "."
+        The path of the Marker Repo.
     new_uid : str
         The UID to be checked for uniqueness.
 
@@ -54,7 +54,7 @@ def check_uid(new_uid, repo_lists_path="./lists"):
         True if the new UID is unique, False otherwise.
     """
 
-    uids = get_all_uids(repo_lists_path=repo_lists_path)
+    uids = get_all_uids(repo_path=repo_path)
     
     print(f"Your UID: {new_uid}")
     print(f"All UIDs: {uids}")
@@ -69,5 +69,5 @@ def check_uid(new_uid, repo_lists_path="./lists"):
         return True
 
 # Run the check and exit with error if the UID is not unique
-if not check_uid(new_uid, repo_lists_path="./lists"):
+if not check_uid(new_uid, repo_path="."):
     raise ValueError(f'UID {new_uid} already exists.')

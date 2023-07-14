@@ -34,21 +34,21 @@ def get_all_paths_and_uids(path):
     return files_with_uids
 
 
-def update_uids(repo_lists_path):
+def update_uids(repo_path):
     """
     Update the UIDs of the files in the given path to ensure uniqueness.
 
     Parameters
     ----------
-    repo_lists_path : str
-        The path to the folder containing the marker lists.
+    repo_path : str
+        The path of the Marker Repo.
 
     Returns
     -------
     list of str :
         A list containing all paths of files that have been updated.
     """
-    files_with_uids = get_all_paths_and_uids(repo_lists_path)
+    files_with_uids = get_all_paths_and_uids(f"{repo_path}/lists")
     uids_in_use = set(files_with_uids.keys())
     new_file_paths = []
 

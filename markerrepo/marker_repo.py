@@ -14,7 +14,7 @@ import re
 import time
 import random
 
-def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_lists_path="./lists"):
+def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path="."):
     """
     This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
     the function either returns the filtered DataFrame or a combined list of markers.
@@ -36,9 +36,8 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
     out : str, default "metadata"
         Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
         'marker_list', the function returns a combined list of markers.
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
-        Required if out = 'marker_list'.
+    repo_path : str, default "."
+        The path of the Marker Repo. Required if out = 'marker_list'.
 
     Returns
     -------
@@ -71,24 +70,24 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
             df = df[~df.apply(lambda x: x.astype(str).str.contains(term, flags=0 if case_sensitive else re.IGNORECASE, regex=True).any(), axis=1)]
 
     if out == "marker_list":
-        if repo_lists_path is None:
-            raise ValueError("repo_lists_path must be provided when out='marker_list'")
+        if repo_path is None:
+            raise ValueError("repo_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in df.index]
-        return combine_lists(uids, repo_lists_path=repo_lists_path)
+        return combine_lists(uids, repo_path=repo_path)
 
     return df
 
 
-def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
+def guided_search(repo_path=".", df=None, out="metadata"):
     """
     An interactive function that guides the user through the process of searching the DataFrame.
 
     Parameters
     ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored.
+    repo_path : str, default "."
+        The path of the Marker Repo.
     df : pd.DataFrame, default None
-        The DataFrame to search in. If not provided, the function will create one from the repo_lists_path.
+        The DataFrame to search in. If not provided, the function will create one from the repo_path.
     out : str, default "metadata"
         Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
         'marker_list', the function returns a combined list of markers.
@@ -101,7 +100,7 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
 
     # Get the DataFrame if not provided
     if df is None:
-        df = combine_dfs(repo_lists_path=repo_lists_path)
+        df = combine_dfs(repo_path=repo_path)
 
     df_copy = df.copy()
     columns = df_copy.columns.tolist()
@@ -165,22 +164,22 @@ def guided_search(repo_lists_path="./lists", df=None, out="metadata"):
             break
     
     if out == "marker_list":
-        if repo_lists_path is None:
-            raise ValueError("repo_lists_path must be provided when out='marker_list'")
+        if repo_path is None:
+            raise ValueError("repo_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in df_copy.index]
-        return combine_lists(uids, repo_lists_path=repo_lists_path)
+        return combine_lists(uids, repo_path=repo_path)
 
     return df_copy
 
 
-def get_db(repo_lists_path="./lists", parallel=True):
+def get_db(repo_path=".", parallel=True):
     """
     Get the database of the Marker Repo as DataFrame, containing metadata information.
 
     Parameters
     ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    repo_path : str, default "."
+        The path of the Marker Repo.
     parallel : bool, default True
         If True, uses parallel processing to improve performance.
 
@@ -190,7 +189,7 @@ def get_db(repo_lists_path="./lists", parallel=True):
         DataFrame containing metadata information of all lists.
     """
     
-    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(repo_lists_path) for file in files if file.endswith(".yaml")]
+    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(f"{repo_path}/lists") for file in files if file.endswith(".yaml")]
 
     if parallel:
         # Use a ProcessPoolExecutor to read and parse files in parallel
@@ -205,7 +204,7 @@ def get_db(repo_lists_path="./lists", parallel=True):
 
     # Create DataFrame and set "ID" as index
     df = pd.DataFrame(data)
-    df.rename(columns=get_display_names(repo_lists_path.split("/lists")[0]), inplace=True)
+    df.rename(columns=get_display_names(repo_path=repo_path), inplace=True)
     if "ID" in df.columns:
         df["ID"] = pd.to_numeric(df["ID"])
         df.set_index("ID", inplace=True)
@@ -237,14 +236,14 @@ def process_file(file_path):
         return flattened_metadata
     
 
-def get_marker_lists(repo_lists_path="./lists", parallel=True):
+def get_marker_lists(repo_path=".", parallel=True):
     """
     Get the marker list from the Marker Repo as DataFrame.
 
     Parameters
     ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    repo_path : str, default "."
+        The path of the Marker Repo.
     parallel : bool, default True
         If True, uses parallel processing to improve performance.
 
@@ -254,7 +253,7 @@ def get_marker_lists(repo_lists_path="./lists", parallel=True):
         DataFrame containing all markers and their designations.
     """
     
-    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(repo_lists_path) for file in files if file.endswith(".yaml")]
+    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(f"{repo_path}/lists") for file in files if file.endswith(".yaml")]
 
     if parallel:
         # Use a ProcessPoolExecutor to read and parse files in parallel
@@ -331,14 +330,14 @@ def split_marker_elements(marker_list):
     return new_marker_list
 
 
-def combine_dfs(repo_lists_path="./lists", parallel=True, preprocessed=False, meta_lists="meta_lists", marker_lists="marker_lists"):
+def combine_dfs(repo_path=".", parallel=True, preprocessed=False, meta_lists="meta_lists", marker_lists="marker_lists"):
     """
     Combine the outputs of 'get_db' and 'get_marker_lists' based on the given columns.
 
     Parameters
     ----------
-    repo_lists_path : str, default "./lists"
-        The path where the marker lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    repo_path : str, default "."
+        The path of the Marker Repo.
     parallel : bool, default True
         If True, uses parallel processing to improve performance.
     preprocessed : bool, default True
@@ -360,8 +359,8 @@ def combine_dfs(repo_lists_path="./lists", parallel=True, preprocessed=False, me
         df_meta = pd.read_csv(meta_lists, sep='\t')
         df_marker = pd.read_csv(marker_lists, sep='\t')
     else:
-        df_meta = get_db(repo_lists_path=repo_lists_path, parallel=parallel)
-        df_marker = get_marker_lists(repo_lists_path=repo_lists_path, parallel=parallel)
+        df_meta = get_db(repo_path=repo_path, parallel=parallel)
+        df_marker = get_marker_lists(repo_path=repo_path, parallel=parallel)
     
     df_marker = df_marker.groupby('ID').agg({
         'Marker': lambda x: list(set(x)),
@@ -526,7 +525,7 @@ def dataframe_to_dict(df):
     return result
 
 
-def export_marker_list(df, path=".", file_name=None, header=False, marker_id=None):
+def export_marker_list(df, path="./exported_lists", file_name=None, header=False, marker_id=None):
     """
     Exports a marker list (df) to path/file_name. If a file with this name already exists,
     a timestamp suffix is added to the filename.
@@ -550,6 +549,10 @@ def export_marker_list(df, path=".", file_name=None, header=False, marker_id=Non
     export_path : str
         The full path where the marker list was saved.
     """
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+        print(f"Folder {os.path.abspath(path)} created.")
 
     if marker_id == "ensembl":
         df['Marker'] = df['Marker'].apply(lambda x: x.split(' ')[1])
@@ -577,7 +580,7 @@ def export_marker_list(df, path=".", file_name=None, header=False, marker_id=Non
     return os.path.abspath(export_path)
 
 
-def get_uid_paths(uids, repo_lists_path="./lists"):
+def get_uid_paths(uids, repo_path="."):
     """
     Searches for files in the specified folder and its subfolders with names in the format "name_UID.yaml",
     where UID is an integer. Returns the paths of the files that contain the UIDs from the given list.
@@ -586,8 +589,8 @@ def get_uid_paths(uids, repo_lists_path="./lists"):
     ----------
     uids : list of int
         A list of integers representing the UIDs to search for.
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    repo_path : str, default "."
+        The path of the Marker Repo.
 
     Returns
     -------
@@ -597,7 +600,7 @@ def get_uid_paths(uids, repo_lists_path="./lists"):
 
     matching_files = []
 
-    for root, _, files in os.walk(repo_lists_path):
+    for root, _, files in os.walk(f"{repo_path}/lists"):
         for file in files:
             if file.endswith('.yaml'):
                 uid = int(file.split('_')[-1].split('.')[0])
@@ -607,7 +610,7 @@ def get_uid_paths(uids, repo_lists_path="./lists"):
     return matching_files
 
 
-def combine_lists(uids, repo_lists_path="./lists"):
+def combine_lists(uids, repo_path="."):
     """
     Combine multiple lists to one custom list.
 
@@ -615,8 +618,8 @@ def combine_lists(uids, repo_lists_path="./lists"):
     ----------
     uids : list of str
         The uids of the lists which will be combined.
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    repo_path : str, default "."
+        The path of the Marker Repo.
 
     Returns
     --------
@@ -626,7 +629,7 @@ def combine_lists(uids, repo_lists_path="./lists"):
 
     # Read lists which are going to be combined
     dfs = []
-    for file in get_uid_paths(uids, repo_lists_path=repo_lists_path):
+    for file in get_uid_paths(uids, repo_path=repo_path):
         dfs.append(get_marker_list(file))
         
     # Perform outer join
@@ -638,7 +641,7 @@ def combine_lists(uids, repo_lists_path="./lists"):
     return combined_df
 
 
-def show_statistics(metadata, repo_lists_path="./lists", dpi=120):
+def show_statistics(metadata, repo_path=".", dpi=120):
     """
     Shows content of whole Marker Repo.
 
@@ -646,8 +649,8 @@ def show_statistics(metadata, repo_lists_path="./lists", dpi=120):
     ----------
     metadata : dict
         The dictionary containing the metadata information.
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    repo_path : str, default "."
+        The path of the Marker Repo.
     dpi : int, default 120
     """
 
@@ -659,7 +662,7 @@ def show_statistics(metadata, repo_lists_path="./lists", dpi=120):
     axes_arr = [(0,0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
 
     # Load all lists
-    df = getDB(repo_lists_path)
+    df = combine_dfs(repo_path=repo_path)
 
     # Keep values which are not None
     filters = {}
@@ -682,7 +685,7 @@ def get_whitelists(repo_path="."):
     Parameters
     ----------
     repo_path : str, default "."
-        The path of the marker repository.
+        The path of the Marker Repo.
     """
 
     # Based on https://gitlab.gwdg.de/loosolab/software/metadata-organizer/-/blob/main/metaTools.py
@@ -724,7 +727,7 @@ def update_markers(df, marker_dict, column='Marker'):
     return df
 
 
-def select(whitelist=None, key=None, heading=None):
+def select(whitelist=None, key=None, heading=None, repo_path="."):
     """
     Shows selection of whitelist and returns selected value.
     If only a key is passed, the corresponding whitelist is used as a selection.
@@ -738,6 +741,8 @@ def select(whitelist=None, key=None, heading=None):
         The key of the whitelist. For example "organism".
     heading: str, default None
         The heading (description) of the whitelist.
+    repo_path : str, default "."
+        The path of the Marker Repo.
 
     Returns
     --------
@@ -747,7 +752,7 @@ def select(whitelist=None, key=None, heading=None):
 
     if not whitelist:
         if key:
-            whitelist = read_whitelist(key)['whitelist']
+            whitelist = read_whitelist(key, repo_path=repo_path)['whitelist']
         elif heading:
             raise Exception(f"No values for '{heading}' available. Please try again using other parameters.")
         else:
@@ -772,7 +777,7 @@ def select(whitelist=None, key=None, heading=None):
     return selection
 
 
-def get_gene_dict(organism=None, w_markers=None):
+def get_gene_dict(organism=None, w_markers=None, repo_path="."):
     """
     Creates dictionary of whitelist of genes of specific organism.
 
@@ -782,6 +787,8 @@ def get_gene_dict(organism=None, w_markers=None):
         The organism that owns the corresponding genes.
     w_markers : list of str, default None
         A list of Gene Symbols and Ensembl IDs separated by space.
+    repo_path : str, default "."
+        The path of the Marker Repo.
 
     Returns
     --------
@@ -793,9 +800,9 @@ def get_gene_dict(organism=None, w_markers=None):
 
     if organism:
         if len(organism.split(' ')) > 1:
-            w_markers = read_whitelist(f"genes/{organism.split(' ')[0]}")['whitelist']
+            w_markers = read_whitelist(f"genes/{organism.split(' ')[0]}", repo_path=repo_path)['whitelist']
         else:
-            w_markers = read_whitelist(f"genes/{organism}")['whitelist']
+            w_markers = read_whitelist(f"genes/{organism}", repo_path=repo_path)['whitelist']
     elif not w_markers:
         raise ValueError("Provide organism or whitelist of genes (w_markers).")
 
@@ -867,7 +874,7 @@ def get_display_names(repo_path="."):
     Parameters
     ----------
     repo_path : str, default "."
-        The path of the marker repository.
+        The path of the Marker Repo.
 
     Returns:
     -------
@@ -896,7 +903,7 @@ def push_marker_list(list_path, repo_path="."):
         The path of the new list that is to be added. The list name and branch name
         will be extracted from this path.
     repo_path : str, default "."
-        The path of the repository. Defaults to the current directory.
+        The path of the Marker Repo.
     """
 
     # Extract the list name from the list path
@@ -915,15 +922,15 @@ def push_marker_list(list_path, repo_path="."):
     repo.git.push('--set-upstream', 'origin', list_name)
 
 
-def preprocess_lists_to_tsv(repo_lists_path="./lists", output_path_meta="meta_lists.tsv", output_path_markers="marker_lists.tsv"):
+def preprocess_lists_to_tsv(repo_path=".", output_path_meta="meta_lists.tsv", output_path_markers="marker_lists.tsv"):
     """
     Generates preprocessed .tsv files of the database and marker lists.
     This function can be used to speed up subsequent reads of the data.
 
     Parameters
     ----------
-    repo_lists_path : str, default "./lists"
-        The path where the lists of the Marker Repo are stored - probable 'REPO_PATH/lists'.
+    repo_path : str, default "."
+        The path of the Marker Repo.
     output_path_meta : str, default "meta_lists.tsv"
         The file path for output metadata .tsv file.
     output_path_markers : str, default "marker_lists.tsv"
@@ -936,8 +943,8 @@ def preprocess_lists_to_tsv(repo_lists_path="./lists", output_path_meta="meta_li
     """
 
     # Get metadata and marker lists
-    df_meta = get_db(repo_lists_path)
-    df_markers = get_marker_lists(repo_lists_path)
+    df_meta = get_db(repo_path=repo_path)
+    df_markers = get_marker_lists(repo_path=repo_path)
     
     # Get absolute file paths
     output_path_meta = os.path.abspath(output_path_meta)

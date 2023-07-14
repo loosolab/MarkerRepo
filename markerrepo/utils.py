@@ -16,14 +16,14 @@ def save_as_yaml(dictionary, file_path):
         documents = yaml.dump(dictionary, file, sort_keys=False)
 
 
-def read_in_yaml(yaml_file, repo_lists_path="./lists", marker_list=True):
+def read_in_yaml(yaml_file, repo_path=".", marker_list=True):
     """
     read yaml, auto lower all keys
     :param yaml_file: the path to the yaml file to be read in
     :return: low_output: a dictionary containing the information of the yaml
     """
     if marker_list:
-        yaml_file = f"{repo_lists_path}/{yaml_file}"
+        yaml_file = f"{repo_path}/{yaml_file}"
 
     with open(yaml_file) as file:
         output = yaml.load(file, Loader=yaml.FullLoader)
@@ -86,7 +86,7 @@ def find_values(node, kv):
                         yield val
 
 
-def read_whitelist(key, marker_list=False):
+def read_whitelist(key, marker_list=False, repo_path="."):
     """
     This function reads in a whitelist and returns it.
     :param key: the key that contains a whitelist
@@ -94,8 +94,7 @@ def read_whitelist(key, marker_list=False):
     """
     try:
         whitelist = read_in_yaml(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-                         'metadata_whitelists', 'whitelists', key), marker_list=marker_list)
+            os.path.join(repo_path, 'metadata_whitelists', 'whitelists', key), marker_list=marker_list)
     except (AttributeError, FileNotFoundError):
         whitelist = None
     return whitelist

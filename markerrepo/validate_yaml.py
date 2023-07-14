@@ -228,7 +228,7 @@ def new_test(metafile, key_yaml, sub_lists, key_name, invalid_keys,
     return invalid_keys, invalid_entry, invalid_value
 
 
-def new_test_for_whitelist(entry_key, entry_value, sublists):
+def new_test_for_whitelist(entry_key, entry_value, sublists, repo_path="."):
     """
     This function tests if the value of a key matches the whitelist.
     :param entry_key: the key that is tested
@@ -237,7 +237,7 @@ def new_test_for_whitelist(entry_key, entry_value, sublists):
                       value
     :return: True if the entry does not match the whitelist else False
     """
-    whitelist = read_whitelist(entry_key)
+    whitelist = read_whitelist(entry_key, repo_path=repo_path)
     if whitelist and whitelist['whitelist_type'] == 'plain':
         whitelist = whitelist['whitelist']
     if isinstance(whitelist, dict):
@@ -258,7 +258,7 @@ def new_test_for_whitelist(entry_key, entry_value, sublists):
             if value[0] in whitelist:
                 whitelist = whitelist[value[0]]
             else:
-                whitelist = read_whitelist(value[0])
+                whitelist = read_whitelist(value[0], repo_path=repo_path)
                 if whitelist and whitelist['whitelist_type'] == 'plain':
                     whitelist = whitelist['whitelist']
         if isinstance(whitelist, dict) and whitelist[
@@ -271,7 +271,7 @@ def new_test_for_whitelist(entry_key, entry_value, sublists):
             and os.path.isfile(os.path.join(
             os.path.dirname(os.path.abspath(__file__)), '..',
             'metadata_whitelists', 'whitelists', whitelist)):
-        whitelist = read_whitelist(whitelist)
+        whitelist = read_whitelist(whitelist, repo_path=repo_path)
         if whitelist:
             whitelist = whitelist['whitelist']
     if whitelist and entry_value not in whitelist:
