@@ -1,4 +1,4 @@
-from .marker_repo import get_db, search_df, combine_lists, export_marker_list, guided_search
+from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs
 from .calculations import compare_marker_lists, update_scores
 
 def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False):
@@ -26,7 +26,7 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sens
     """
 
     if keywords:
-        db = get_db(repo_path=repo_path)
+        db = combine_dfs(repo_path=repo_path)
         df = search_df(db, keywords, case_sensitive=case_sensitive, exact=exact)
         if df.empty:
             raise Exception(
@@ -49,7 +49,7 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sens
     return markers_filtered
 
 
-def convert_markers(repo_path=".", keywords=None, df=None, path=None, file_name="marker_list", case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
+def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists", file_name="marker_list", case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
     Optionally, it can export the DataFrame to a file.
@@ -91,7 +91,7 @@ def convert_markers(repo_path=".", keywords=None, df=None, path=None, file_name=
     """
 
     if gs:
-        marker_list = guided_search(out="marker_list")
+        marker_list = guided_search(repo_path=repo_path, out="marker_list")
     elif repo_path and keywords:
         marker_list = get_selected_lists(keywords, repo_path=repo_path, case_sensitive=case_sensitive, exact=exact)
     elif df is not None:
@@ -111,11 +111,11 @@ def convert_markers(repo_path=".", keywords=None, df=None, path=None, file_name=
             
         case "score":
             print("Preparing score style marker list...")
-            marker_list = compare_marker_lists(marker_df=marker_list)
+            marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
             
         case "panglao":
             print("Preparing panglao style marker list...")
-            marker_list = compare_marker_lists(marker_df=marker_list)
+            marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
             marker_list = update_scores(marker_list)
             marker_list = transform_list_to_panglao(df=marker_list, organism=organism, tissue=tissue)
         case _:

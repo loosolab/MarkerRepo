@@ -37,7 +37,7 @@ def compare_marker_lists(repo_path=".", keywords=None, marker_df=None, case_sens
     if marker_df is not None:
         df = marker_df
     else:
-        df = search_df(get_db(repo_path=repo_path), keywords, case_sensitive=case_sensitive, exact=exact)
+        df = search_df(combine_dfs(repo_path=repo_path), keywords, case_sensitive=case_sensitive, exact=exact)
         uids = [int(idx) for idx in df.index]
         df = combine_lists(uids, repo_path=repo_path)
 
