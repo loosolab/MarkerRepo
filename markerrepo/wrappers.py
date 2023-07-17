@@ -1,5 +1,5 @@
-from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs
-from .calculations import compare_marker_lists, update_scores
+from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs, get_whitelists
+from .calculations import compare_marker_lists, update_scores, get_supported_biomart_organisms, get_supported_taxonomy_ids
 
 def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False):
     """
@@ -56,7 +56,7 @@ def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists"
 
     Parameters
     ----------
-    repo_lists_path : str, default "."
+    repo_path : str, default "."
         The path of the Marker Repo.
     keywords : dict or str, default None
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
@@ -161,3 +161,82 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     df = df[['Organism', 'Marker', 'Info', 'Aliases', 'Score', 'Tissue']]
     
     return df
+
+
+def transfer_markers(target_organism=None, source_df=None, repo_path="."):
+    """
+    Performs all steps of transferring marker genes from source organism(s)
+    to one target organism.
+    
+    Parameters
+    ----------
+    target_organism : str, default None
+        The target organism to which the genes of the source organism(s) are to be transferred.
+    source_df : DataFrame, default None
+        Metadata DataFrame of source information.
+    repo_path : str, default "."
+        The path of the Marker Repo.
+
+    Returns
+    -------
+    pd.DataFrame :
+        Updated DataFrame with new columns, specified column order, and updated Marker column.
+    """
+
+    get_whitelists()
+
+    if source_df is None:
+        source_df = guided_search(out="metadata")
+    
+    unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
+
+    source_organisms = [' '.join(map(str, tup)) for tup in unique_organisms.values]
+    biomart_orgs = get_supported_biomart_organisms(repo_path=repo_path)
+    homologene_orgs = get_supported_taxonomy_ids(repo_path=repo_path)
+
+    in_both, in_neither, only_in_biomart, only_in_homologene = check_organisms(biomart_orgs, homologene_orgs, source_organisms)
+
+    # TODO loop transfers using supported source organisms 
+    
+
+def check_organisms(biomart_orgs, homologene_orgs, source_organisms):
+    """
+    Checks if the source organisms are supported by the BioMart or HomoloGene approach.
+    
+    Parameters
+    ----------
+    biomart_orgs : list
+        List of organisms supported by the BioMart approach.
+    homologene_orgs : list
+        List of organisms supported by the HomoloGene approach.
+    source_organisms : list
+        List of source organisms that the user wants to use for gene transfer.
+
+    Returns
+    -------
+    lists of str :
+        - Organisms available in both approaches
+        - Organisms available in neither approach
+        - Organisms available only in the BioMart approach
+        - Organisms available only in the HomoloGene approach
+    """
+
+    biomart_set = set(biomart_orgs)
+    homologene_set = set(homologene_orgs)
+    source_set = set(source_organisms)
+
+    in_both = list(source_set.intersection(biomart_set).intersection(homologene_set))
+    in_neither = list(source_set.difference(biomart_set).difference(homologene_set))
+    only_in_biomart = list(source_set.intersection(biomart_set).difference(homologene_set))
+    only_in_homologene = list(source_set.intersection(homologene_set).difference(biomart_set))
+
+    if in_both:
+        print("The following organisms can be used in both approaches: " + ', '.join(in_both) + ".")
+    if in_neither:
+        print("The following organisms can't be used in either approach: " + ', '.join(in_neither) + ".")
+    if only_in_biomart:
+        print("The following organisms can only be used in the BioMart approach: " + ', '.join(only_in_biomart) + ".")
+    if only_in_homologene:
+        print("The following organisms can only be used in the HomoloGene approach: " + ', '.join(only_in_homologene) + ".")
+
+    return in_both, in_neither, only_in_biomart, only_in_homologene

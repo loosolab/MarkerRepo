@@ -668,6 +668,14 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
 
     Parameters
     ----------
+    search_terms : list of str
+        Search terms to use for the search. Terms can be prefixed with '+' to denote that they must be included,
+        or with '-' to denote that they must not be included. Terms without a prefix will include rows that contain them,
+        but will not exclude rows that do not.
+    case_sensitive : bool, default False
+        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
+    exact : bool, default False
+        If True, the search will look for exact matches. If False, the search will look for substrings.
     repo_path : str, default "."
         The path of the Marker Repo.
 
