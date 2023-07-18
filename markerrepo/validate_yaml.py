@@ -11,7 +11,7 @@ generated = ['condition_name', 'sample_name']
 factor = None
 
 
-def validate_file(metafile):
+def validate_file(metafile, repo_path="."):
     """
     In this function all functions for the validation of a metadata file are
     called. The validation is based on the data in the file 'keys.yaml'. It is
@@ -27,10 +27,9 @@ def validate_file(metafile):
     pool_warn = []
     ref_genome_warn = []
     valid = True
-    key_yaml = read_in_yaml(os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), '..', 'keys.yaml'), marker_list=False)
+    key_yaml = read_in_yaml(f"{repo_path}/keys.yaml", marker_list=False)
     invalid_keys, invalid_entries, invalid_value = \
-        new_test(metafile, key_yaml, [], '', [], [], [], None, [], None, metafile)
+        new_test(metafile, key_yaml, [], '', [], [], [], None, [], None, metafile, repo_path=repo_path)
     missing_mandatory_keys = test_for_mandatory(metafile, key_yaml,
                                                 [x.split(':')[-1] for x in
                                                  invalid_keys])
@@ -127,7 +126,7 @@ def print_warning(metafile, pool_warn, ref_genome_warn):
 
 def new_test(metafile, key_yaml, sub_lists, key_name, invalid_keys,
              invalid_entry, invalid_value, input_type, is_factor,
-             local_factor, full_metadata):
+             local_factor, full_metadata, repo_path="."):
     """
     This function test if all keys in the metadata file are valid.
     :param metafile: the metadata file
@@ -202,7 +201,7 @@ def new_test(metafile, key_yaml, sub_lists, key_name, invalid_keys,
                     metafile[key], key_yaml[key]['value'], sub_lists,
                     f'{key_name}:{key}' if key_name != '' else key,
                     invalid_keys, invalid_entry, invalid_value, input_type,
-                    is_factor, local_factor, full_metadata)
+                    is_factor, local_factor, full_metadata, repo_path=repo_path)
                 invalid_keys = res_keys
     elif isinstance(metafile, list):
         for item in metafile:
@@ -215,7 +214,7 @@ def new_test(metafile, key_yaml, sub_lists, key_name, invalid_keys,
             sub_lists = sub_lists[:-1]
     else:
         invalid = new_test_for_whitelist(key_name.split(':')[-1], metafile,
-                                         sub_lists)
+                                         sub_lists, repo_path=repo_path)
         if invalid:
             invalid_entry.append(f'{key_name}:{metafile}')
 

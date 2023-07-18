@@ -97,6 +97,7 @@ def read_whitelist(key, marker_list=False, repo_path="."):
             os.path.join(repo_path, 'metadata_whitelists', 'whitelists', key), marker_list=marker_list)
     except (AttributeError, FileNotFoundError):
         whitelist = None
+        
     return whitelist
 
 

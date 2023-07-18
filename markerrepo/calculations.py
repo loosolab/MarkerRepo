@@ -56,7 +56,7 @@ def compare_marker_lists(repo_path=".", keywords=None, marker_df=None, case_sens
     return df
 
 
-def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data"):
+def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data", check=False):
     """
     Download and parse the HomoloGene data.
 
@@ -66,6 +66,8 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
         Name of the local HomoloGene data file.
     url : str, default "ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data"
         URL to the HomoloGene data file.
+    check : bool, default False
+        If True, ask wether you want to overwrite the HomoloGene file.
 
     Returns
     --------
@@ -75,19 +77,18 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
 
     # Check if file already exists
     if os.path.exists(file_name):
-        overwrite = input(f"'{file_name}' already exists. Do you want to overwrite it? (yes/no): ").lower()
-        
-        if overwrite == 'no':
-            # Load existing data
-            homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
-        else:
-            # Download new data and overwrite existing file
-            urllib.request.urlretrieve(url, file_name)
-            homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
+        if check:
+            overwrite = input(f"'{file_name}' already exists. Do you want to overwrite it? (yes/no): ").lower()
+            
+            if overwrite == 'yes':
+                # Download new data and overwrite existing file
+                urllib.request.urlretrieve(url, file_name)
     else:
         # Download data
         urllib.request.urlretrieve(url, file_name)
-        homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
+
+    # Load HomoloGene db
+    homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
 
     # Rename columns
     homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein GI", "Protein accession"]
@@ -122,8 +123,8 @@ def get_supported_taxonomy_ids(repo_path="."):
 
     # Get unique taxonomy IDs from HomoloGene db and convert them to strings
     unique_taxonomy_ids = homologene_data['Taxonomy ID'].unique().astype(str).tolist()
+    
     # Get support organisms from whitelist repository
-    # TODO "strange error read_whitelist function"
     supported_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
 
     for so in supported_organisms:
@@ -134,7 +135,7 @@ def get_supported_taxonomy_ids(repo_path="."):
     return organisms
 
 
-def transfer_markers(df, source_organism, target_organism, hg_db, target_whitelist, source_whitelist, calc_proportions=False, plots=False, target_counts=None):
+def transfer_markers_homologene(df, source_organism, target_organism, hg_db, target_whitelist, source_whitelist, calc_proportions=False, plots=False, target_counts=None):
     """
     Transfer markers between organisms based on homology and calculate the proportion of transferred markers.
 
@@ -330,11 +331,6 @@ def fetch_homologs(source_organism, target_organism):
 def create_dataset_dict():
     """
     Creates a dictionary mapping the display names of the datasets to their actual names.
-    
-    Parameters
-    ----------
-    datasets : dict
-        A dictionary of available datasets from the Biomart server.
 
     Returns
     --------
@@ -362,8 +358,6 @@ def get_dataset_names(organism_name):
     ----------
     organism_name : str
         The name of the organism to search for.
-    dataset_dict : dict
-        A dictionary with display names as keys and actual dataset names as values.
 
     Returns
     --------
@@ -495,7 +489,7 @@ def process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, ta
         display(update_markers(filtered_source_df, get_gene_dict(w_markers=source_whitelist)))
         num_filtered_genes = source_df_copy.shape[0] - filtered_source_df.shape[0]
         
-        print(f"Filtered: {num_filtered_genes} source genes, {filtered_source_df.shape[0] / source_df_copy.shape[0] * 100:.2f}%")
+        print(f"Filtered: {num_filtered_genes} source genes, {100 - filtered_source_df.shape[0] / source_df_copy.shape[0] * 100:.2f}%")
         return filtered_source_df
 
 
@@ -521,7 +515,6 @@ def get_supported_biomart_organisms(repo_path="."):
     ensembl_organisms = [s.split(" genes")[0].lower() for s in dataset_list]
 
     # Get support organisms from whitelist repository
-    # TODO "strange error read_whitelist function"
     supported_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
 
     for so in supported_organisms:
@@ -668,6 +661,14 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
 
     Parameters
     ----------
+    search_terms : list of str
+        Search terms to use for the search. Terms can be prefixed with '+' to denote that they must be included,
+        or with '-' to denote that they must not be included. Terms without a prefix will include rows that contain them,
+        but will not exclude rows that do not.
+    case_sensitive : bool, default False
+        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
+    exact : bool, default False
+        If True, the search will look for exact matches. If False, the search will look for substrings.
     repo_path : str, default "."
         The path of the Marker Repo.
 

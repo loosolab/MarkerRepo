@@ -28,7 +28,7 @@ class WhitelistCompleter:
 
 # ---------------------------------GENERATE-------------------------------------
 
-def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_type, path="./lists"):
+def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_type, repo_path="."):
     """
     This function is used to generate metadata by calling functions to compute
     user input. It writes the metadata into a yaml file.
@@ -62,8 +62,8 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
 
     # test if list already exists
     if os.path.exists(
-            os.path.join(path, file_name)) or os.path.exists(
-            os.path.join(path, file_name)):
+            os.path.join(repo_path, file_name)) or os.path.exists(
+            os.path.join(f"{repo_path}/lists", file_name)):
         print(f'The marker list {input_id} already exists.')
         overwrite = parse_list_choose_one(['True ', 'False '],
                               f'\nDo you want to overwrite the file?')
@@ -71,9 +71,7 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
             sys.exit(f'Program terminated.')
 
     # read in structure file
-    key_yaml = read_in_yaml(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-                     'keys.yaml'), marker_list=False)
+    key_yaml = read_in_yaml(f"{repo_path}/keys.yaml", marker_list=False)
 
     # create metadata dictionary and fill it with the given organism and marker type
     org_dict = {'organism_name': organism.split()[0], 'taxonomy_id': organism.split()[1]}
@@ -127,7 +125,7 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
     print(f'\n\n')
     print(f'{"".center(size, "-")}\n')
 
-    list_path = os.path.join(path, file_name)
+    list_path = os.path.join(f"{repo_path}/lists", file_name)
     list_path = os.path.abspath(list_path)
 
     save_as_yaml(result_dict, list_path)
