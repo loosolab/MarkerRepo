@@ -248,21 +248,24 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             else:
                 filtered_source_df = source_marker_list
             
-            print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
-            transferred_list = transfer_markers_homologene(filtered_source_df, source_tax, target_tax, hg_db, target_genes,
-                                                    source_whitelist=source_genes, calc_proportions=True, plots=True)
-            print("Transferred markers:")
-            display(transferred_list)
+            if not filtered_source_df.empty:
+                print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
+                transferred_list = transfer_markers_homologene(filtered_source_df, source_tax, target_tax, hg_db, target_genes,
+                                                        source_whitelist=source_genes, calc_proportions=True, plots=True)
+                print("Transferred markers:")
+                display(transferred_list)
 
-            if weight_markers:
-                results_scored = compare_marker_lists(marker_df=transferred_list)
-                transferred_list = update_scores(df=results_scored, repo_path=repo_path)
+                if weight_markers:
+                    results_scored = compare_marker_lists(marker_df=transferred_list)
+                    transferred_list = update_scores(df=results_scored, repo_path=repo_path)
 
-            file_name=f"{source_organism}_{target_organism}_HomoloGene"
-            if export_suffix:
-                file_name = f"{file_name}_{export_suffix}"
+                file_name=f"{source_organism}_{target_organism}_HomoloGene"
+                if export_suffix:
+                    file_name = f"{file_name}_{export_suffix}"
 
-            paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
+                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
+            else:
+                print("Source DataFrame is empty.")
 
     if len(biomart_organisms) > 0:
         print("\nStarting BioMart approach...")
@@ -290,22 +293,25 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             else:
                 filtered_source_df = source_marker_list
             
-            print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
-            transferred_list = transfer_markers_biomart(biomart_db, filtered_source_df, target_genes, source_whitelist=source_genes,
-                                                        calc_proportions=True, plots=True, target_counts=None)
-            print("Transferred markers:")
-            display(transferred_list)
+            if not filtered_source_df.empty:
+                print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
+                transferred_list = transfer_markers_biomart(biomart_db, filtered_source_df, target_genes, source_whitelist=source_genes,
+                                                            calc_proportions=True, plots=True, target_counts=None)
+                print("Transferred markers:")
+                display(transferred_list)
 
-            if weight_markers:
-                results_scored = compare_marker_lists(marker_df=transferred_list)
-                transferred_list = update_scores(df=results_scored, repo_path=repo_path)
+                if weight_markers:
+                    results_scored = compare_marker_lists(marker_df=transferred_list)
+                    transferred_list = update_scores(df=results_scored, repo_path=repo_path)
 
-            file_name=f"{source_organism}_{target_organism}_BioMart"
-            if export_suffix:
-                file_name = f"{file_name}_{export_suffix}"
+                file_name=f"{source_organism}_{target_organism}_BioMart"
+                if export_suffix:
+                    file_name = f"{file_name}_{export_suffix}"
 
-            paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
-
+                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
+            else:
+                print("Source DataFrame is empty.")
+                
     return paths
 
 
