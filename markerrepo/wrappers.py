@@ -1,5 +1,6 @@
-from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs, get_whitelists
-from .calculations import compare_marker_lists, update_scores, get_supported_biomart_organisms, get_supported_taxonomy_ids
+from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs, get_whitelists, select
+from .calculations import compare_marker_lists, update_scores, get_supported_biomart_organisms, get_supported_taxonomy_ids, get_dataset_names, fetch_homologs, download_homologene_data, transfer_markers_biomart
+from .utils import read_whitelist
 
 def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False):
     """
@@ -163,19 +164,23 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_organism=None, source_df=None, repo_path="."):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
     
     Parameters
     ----------
-    target_organism : str, default None
-        The target organism to which the genes of the source organism(s) are to be transferred.
+    target_org : str, default None
+        The target organism to which the genes of the source organism(s) are to be transferred. 
+        The string must contain the organism name and the taxonomy id. If None, select a target organism.
+        Example: "human 9606"
     source_df : DataFrame, default None
         Metadata DataFrame of source information.
     repo_path : str, default "."
         The path of the Marker Repo.
+    target_counts : int, default 1
+        If not None, filter those target genes whose number of target genes per source gene is <= target_counts.
 
     Returns
     -------
@@ -185,18 +190,70 @@ def transfer_markers(target_organism=None, source_df=None, repo_path="."):
 
     get_whitelists()
 
+    if not target_org:
+        target_org = select(key="organism", heading="target organism:")
+    target_organism, target_tax = target_org.split(" ")
+
+    print(f"Loading genes of {target_organism}...")  
+    target_genes = read_whitelist(f"genes/{target_organism}", repo_path=repo_path)['whitelist']
+    print("Done!\n")
+
     if source_df is None:
         source_df = guided_search(out="metadata")
     
     unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
 
     source_organisms = [' '.join(map(str, tup)) for tup in unique_organisms.values]
-    biomart_orgs = get_supported_biomart_organisms(repo_path=repo_path)
-    homologene_orgs = get_supported_taxonomy_ids(repo_path=repo_path)
+    biomart_organisms = get_supported_biomart_organisms(repo_path=repo_path)
+    homologene_organisms = get_supported_taxonomy_ids(repo_path=repo_path)
 
-    in_both, in_neither, only_in_biomart, only_in_homologene = check_organisms(biomart_orgs, homologene_orgs, source_organisms)
+    in_both, in_neither, only_in_biomart, only_in_homologene = check_organisms(biomart_organisms, homologene_organisms, source_organisms)
+    biomart_organisms = in_both + only_in_biomart
 
-    # TODO loop transfers using supported source organisms 
+    print("")
+    if target_org in biomart_organisms:
+        biomart_organisms.remove(target_org)
+        print(f"Removed {target_org} from BioMart source organisms as it matches the target organism.")
+
+    homologene_organisms = in_both + only_in_homologene
+    if target_org in homologene_organisms:
+        homologene_organisms.remove(target_org)
+        print(f"Removed {target_org} from HomoloGene source organisms as it matches the target organism.")
+
+    print("\nStarting BioMart approach...")
+    print("\nSpecify BioMart organism selection:")
+    target_organism_bm = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
+    for source_organism in biomart_organisms:
+        source_organism = source_organism.split(" ")[0]
+        source_organism_bm = select(whitelist=get_dataset_names(source_organism), heading="BioMart source organism", repo_path=repo_path)
+        print(f"Loading genes of {source_organism}...")
+        source_genes = read_whitelist(f"genes/{source_organism}", repo_path=repo_path)['whitelist']
+        print("Done!\n")
+
+        print("Fetch necessary data from BioMart...")
+        biomart_db = fetch_homologs(source_organism_bm, target_organism_bm).dropna()
+
+        uids = source_df.loc[source_df['Organism name'] == source_organism].index.tolist()
+        source_marker_list = combine_lists(uids, repo_path=repo_path)
+        print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
+        display(source_marker_list)
+
+        if target_counts:
+            print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.")
+            filtered_source_df = transfer_markers_biomart(biomart_db, source_marker_list, target_genes, source_whitelist=source_genes,
+                                                        calc_proportions=True, plots=True, target_counts=target_counts)
+        else:
+            filtered_source_df = source_marker_list
+        
+        print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
+        transferred_list = transfer_markers_biomart(biomart_db, filtered_source_df, target_genes, source_whitelist=source_genes,
+                                                    calc_proportions=True, plots=True, target_counts=None)
+        print("Transferred markers:")
+        display(transferred_list)
+
+        export_marker_list(transferred_list, path="./transferred_markers", file_name=f"{source_organism}_{target_organism}_BioMart", marker_id="symbol")
+
+    # TODO HomoloGene approach
     
 
 def check_organisms(biomart_orgs, homologene_orgs, source_organisms):

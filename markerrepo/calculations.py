@@ -122,8 +122,8 @@ def get_supported_taxonomy_ids(repo_path="."):
 
     # Get unique taxonomy IDs from HomoloGene db and convert them to strings
     unique_taxonomy_ids = homologene_data['Taxonomy ID'].unique().astype(str).tolist()
+    
     # Get support organisms from whitelist repository
-    # TODO "strange error read_whitelist function"
     supported_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
 
     for so in supported_organisms:
@@ -330,11 +330,6 @@ def fetch_homologs(source_organism, target_organism):
 def create_dataset_dict():
     """
     Creates a dictionary mapping the display names of the datasets to their actual names.
-    
-    Parameters
-    ----------
-    datasets : dict
-        A dictionary of available datasets from the Biomart server.
 
     Returns
     --------
@@ -362,8 +357,6 @@ def get_dataset_names(organism_name):
     ----------
     organism_name : str
         The name of the organism to search for.
-    dataset_dict : dict
-        A dictionary with display names as keys and actual dataset names as values.
 
     Returns
     --------
@@ -521,7 +514,6 @@ def get_supported_biomart_organisms(repo_path="."):
     ensembl_organisms = [s.split(" genes")[0].lower() for s in dataset_list]
 
     # Get support organisms from whitelist repository
-    # TODO "strange error read_whitelist function"
     supported_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
 
     for so in supported_organisms:
