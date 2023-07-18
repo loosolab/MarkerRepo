@@ -56,7 +56,7 @@ def compare_marker_lists(repo_path=".", keywords=None, marker_df=None, case_sens
     return df
 
 
-def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data"):
+def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data", check=False):
     """
     Download and parse the HomoloGene data.
 
@@ -66,6 +66,8 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
         Name of the local HomoloGene data file.
     url : str, default "ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data"
         URL to the HomoloGene data file.
+    check : bool, default False
+        If True, ask wether you want to overwrite the HomoloGene file.
 
     Returns
     --------
@@ -75,19 +77,18 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
 
     # Check if file already exists
     if os.path.exists(file_name):
-        overwrite = input(f"'{file_name}' already exists. Do you want to overwrite it? (yes/no): ").lower()
-        
-        if overwrite == 'no':
-            # Load existing data
-            homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
-        else:
-            # Download new data and overwrite existing file
-            urllib.request.urlretrieve(url, file_name)
-            homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
+        if check:
+            overwrite = input(f"'{file_name}' already exists. Do you want to overwrite it? (yes/no): ").lower()
+            
+            if overwrite == 'yes':
+                # Download new data and overwrite existing file
+                urllib.request.urlretrieve(url, file_name)
     else:
         # Download data
         urllib.request.urlretrieve(url, file_name)
-        homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
+
+    # Load HomoloGene db
+    homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
 
     # Rename columns
     homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein GI", "Protein accession"]
@@ -134,7 +135,7 @@ def get_supported_taxonomy_ids(repo_path="."):
     return organisms
 
 
-def transfer_markers(df, source_organism, target_organism, hg_db, target_whitelist, source_whitelist, calc_proportions=False, plots=False, target_counts=None):
+def transfer_markers_homologene(df, source_organism, target_organism, hg_db, target_whitelist, source_whitelist, calc_proportions=False, plots=False, target_counts=None):
     """
     Transfer markers between organisms based on homology and calculate the proportion of transferred markers.
 
@@ -488,7 +489,7 @@ def process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, ta
         display(update_markers(filtered_source_df, get_gene_dict(w_markers=source_whitelist)))
         num_filtered_genes = source_df_copy.shape[0] - filtered_source_df.shape[0]
         
-        print(f"Filtered: {num_filtered_genes} source genes, {filtered_source_df.shape[0] / source_df_copy.shape[0] * 100:.2f}%")
+        print(f"Filtered: {num_filtered_genes} source genes, {100 - filtered_source_df.shape[0] / source_df_copy.shape[0] * 100:.2f}%")
         return filtered_source_df
 
 

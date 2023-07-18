@@ -1,5 +1,5 @@
 from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs, get_whitelists, select
-from .calculations import compare_marker_lists, update_scores, get_supported_biomart_organisms, get_supported_taxonomy_ids, get_dataset_names, fetch_homologs, download_homologene_data, transfer_markers_biomart
+from .calculations import compare_marker_lists, update_scores, get_supported_biomart_organisms, get_supported_taxonomy_ids, get_dataset_names, fetch_homologs, download_homologene_data, transfer_markers_biomart, transfer_markers_homologene
 from .utils import read_whitelist
 
 def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False):
@@ -220,40 +220,70 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         homologene_organisms.remove(target_org)
         print(f"Removed {target_org} from HomoloGene source organisms as it matches the target organism.")
 
-    print("\nStarting BioMart approach...")
-    print("\nSpecify BioMart organism selection:")
-    target_organism_bm = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
-    for source_organism in biomart_organisms:
-        source_organism = source_organism.split(" ")[0]
-        source_organism_bm = select(whitelist=get_dataset_names(source_organism), heading="BioMart source organism", repo_path=repo_path)
-        print(f"Loading genes of {source_organism}...")
-        source_genes = read_whitelist(f"genes/{source_organism}", repo_path=repo_path)['whitelist']
-        print("Done!\n")
+    if len(homologene_organisms) > 0:
+        print("\nStarting HomoloGene approach...")
+        for source_organism in homologene_organisms:
+            source_organism, source_tax = source_organism.split(" ")
+            print(f"Loading genes of {source_organism}...")
+            source_genes = read_whitelist(f"genes/{source_organism}", repo_path=repo_path)['whitelist']
+            print("Done!\n")
 
-        print("Fetch necessary data from BioMart...")
-        biomart_db = fetch_homologs(source_organism_bm, target_organism_bm).dropna()
+            print("Get HomoloGene db...")
+            hg_db = download_homologene_data()
 
-        uids = source_df.loc[source_df['Organism name'] == source_organism].index.tolist()
-        source_marker_list = combine_lists(uids, repo_path=repo_path)
-        print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
-        display(source_marker_list)
+            uids = source_df.loc[source_df['Organism name'] == source_organism].index.tolist()
+            source_marker_list = combine_lists(uids, repo_path=repo_path)
+            print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
+            display(source_marker_list)
 
-        if target_counts:
-            print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.")
-            filtered_source_df = transfer_markers_biomart(biomart_db, source_marker_list, target_genes, source_whitelist=source_genes,
-                                                        calc_proportions=True, plots=True, target_counts=target_counts)
-        else:
-            filtered_source_df = source_marker_list
-        
-        print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
-        transferred_list = transfer_markers_biomart(biomart_db, filtered_source_df, target_genes, source_whitelist=source_genes,
-                                                    calc_proportions=True, plots=True, target_counts=None)
-        print("Transferred markers:")
-        display(transferred_list)
+            if target_counts:
+                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.")
+                filtered_source_df = transfer_markers_homologene(source_marker_list, source_tax, target_tax, hg_db, target_genes, source_whitelist=source_genes, calc_proportions=True, 
+                                                        plots=True, target_counts=target_counts)
+            else:
+                filtered_source_df = source_marker_list
+            
+            print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
+            transferred_list = transfer_markers_homologene(filtered_source_df, source_tax, target_tax, hg_db, target_genes,
+                                                    source_whitelist=source_genes, calc_proportions=True, plots=True)
+            print("Transferred markers:")
+            display(transferred_list)
 
-        export_marker_list(transferred_list, path="./transferred_markers", file_name=f"{source_organism}_{target_organism}_BioMart", marker_id="symbol")
+            export_marker_list(transferred_list, path="./transferred_markers", file_name=f"{source_organism}_{target_organism}_HomoloGene", marker_id="symbol")
 
-    # TODO HomoloGene approach
+    if len(biomart_organisms) > 0:
+        print("\nStarting BioMart approach...")
+        print("\nSpecify BioMart organism selection:")
+        target_organism_bm = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
+        for source_organism in biomart_organisms:
+            source_organism = source_organism.split(" ")[0]
+            source_organism_bm = select(whitelist=get_dataset_names(source_organism), heading="BioMart source organism", repo_path=repo_path)
+            print(f"Loading genes of {source_organism}...")
+            source_genes = read_whitelist(f"genes/{source_organism}", repo_path=repo_path)['whitelist']
+            print("Done!\n")
+
+            print("Fetch necessary data from BioMart...")
+            biomart_db = fetch_homologs(source_organism_bm, target_organism_bm).dropna()
+
+            uids = source_df.loc[source_df['Organism name'] == source_organism].index.tolist()
+            source_marker_list = combine_lists(uids, repo_path=repo_path)
+            print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
+            display(source_marker_list)
+
+            if target_counts:
+                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.")
+                filtered_source_df = transfer_markers_biomart(biomart_db, source_marker_list, target_genes, source_whitelist=source_genes,
+                                                            calc_proportions=True, plots=True, target_counts=target_counts)
+            else:
+                filtered_source_df = source_marker_list
+            
+            print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
+            transferred_list = transfer_markers_biomart(biomart_db, filtered_source_df, target_genes, source_whitelist=source_genes,
+                                                        calc_proportions=True, plots=True, target_counts=None)
+            print("Transferred markers:")
+            display(transferred_list)
+
+            export_marker_list(transferred_list, path="./transferred_markers", file_name=f"{source_organism}_{target_organism}_BioMart", marker_id="symbol")
     
 
 def check_organisms(biomart_orgs, homologene_orgs, source_organisms):
