@@ -164,7 +164,7 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=True):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
@@ -249,6 +249,10 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             print("Transferred markers:")
             display(transferred_list)
 
+            if weight_markers:
+                results_scored = compare_marker_lists(marker_df=transferred_list)
+                transferred_list = update_scores(df=results_scored, repo_path=repo_path)
+
             export_marker_list(transferred_list, path="./transferred_markers", file_name=f"{source_organism}_{target_organism}_HomoloGene", marker_id="symbol")
 
     if len(biomart_organisms) > 0:
@@ -282,6 +286,10 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                                                         calc_proportions=True, plots=True, target_counts=None)
             print("Transferred markers:")
             display(transferred_list)
+
+            if weight_markers:
+                results_scored = compare_marker_lists(marker_df=transferred_list)
+                transferred_list = update_scores(df=results_scored, repo_path=repo_path)
 
             export_marker_list(transferred_list, path="./transferred_markers", file_name=f"{source_organism}_{target_organism}_BioMart", marker_id="symbol")
     
