@@ -164,7 +164,7 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=True):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
@@ -181,12 +181,16 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         The path of the Marker Repo.
     target_counts : int, default 1
         If not None, filter those target genes whose number of target genes per source gene is <= target_counts.
+    weight_markers : bool, default False
+        If True, a third column containing scores is added to the transferred marker list.
 
     Returns
     -------
-    pd.DataFrame :
-        Updated DataFrame with new columns, specified column order, and updated Marker column.
+    list of str : 
+        The paths of the exported transferred marker lists.
     """
+
+    paths = []
 
     get_whitelists()
 
@@ -199,7 +203,8 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
     print("Done!\n")
 
     if source_df is None:
-        source_df = guided_search(out="metadata")
+        print("Select lists of source markers.")
+        source_df = guided_search(out="metadata", repo_path=repo_path)
     
     unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
 
@@ -253,7 +258,11 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 results_scored = compare_marker_lists(marker_df=transferred_list)
                 transferred_list = update_scores(df=results_scored, repo_path=repo_path)
 
-            export_marker_list(transferred_list, path="./transferred_markers", file_name=f"{source_organism}_{target_organism}_HomoloGene", marker_id="symbol")
+            file_name=f"{source_organism}_{target_organism}_HomoloGene"
+            if export_suffix:
+                file_name = f"{file_name}_{export_suffix}"
+
+            paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
 
     if len(biomart_organisms) > 0:
         print("\nStarting BioMart approach...")
@@ -291,8 +300,14 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 results_scored = compare_marker_lists(marker_df=transferred_list)
                 transferred_list = update_scores(df=results_scored, repo_path=repo_path)
 
-            export_marker_list(transferred_list, path="./transferred_markers", file_name=f"{source_organism}_{target_organism}_BioMart", marker_id="symbol")
-    
+            file_name=f"{source_organism}_{target_organism}_BioMart"
+            if export_suffix:
+                file_name = f"{file_name}_{export_suffix}"
+
+            paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
+
+    return paths
+
 
 def check_organisms(biomart_orgs, homologene_orgs, source_organisms):
     """
