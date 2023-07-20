@@ -217,37 +217,54 @@ def transfer_markers_homologene(df, source_organism, target_organism, hg_db, tar
     return markers_extended
 
 
-def get_panglao_ui(panglao_file="panglao_markers", organism=None):
+def get_panglao_ui(panglao_file="panglao_markers", organism="human", id_type='symbol', repo_path="."):
     """
-    Create a dictionary with gene symbols and nicknames as keys and average ubiquitousness index as values.
+    Create a dictionary with gene symbols or Ensembl IDs (based on id_type) and average ubiquitousness index as values.
     Only considers rows with the given organism.
 
     Parameters
     ----------
     panglao_file : str
         Path to the panglao markers.
-    organism : str, default None
-        Organism to consider (e.g. "Hs" or "Mm").
+    organism : str, default human
+        Organism to consider (e.g. "human" or "mouse").
+    id_type : str, default 'symbol'
+        Type of gene identifier to use as dictionary keys. 'symbol' for gene symbols, 'ensembl' for Ensembl IDs.
+    repo_path : str, default "."
+        The path of the Marker Repo.
 
     Returns
     -------
     dict :
-        Dictionary with gene symbols and nicknames as keys and average ubiquitousness index as values.
+        Dictionary with gene identifiers and average ubiquitousness index as values.
     """
-
-    df = pd.read_csv(panglao_file, sep="\t")
+    df = pd.read_csv(f"{repo_path}/{panglao_file}", sep="\t")
     
-    if organism:
-        # Filter dataframe by organism
-        df = df[df['species'].str.contains(organism, na=False)]
+    # Convert full organism name to short code for filtering dataframe
+    organism_dict = {'human': 'Hs', 'mouse': 'Mm'}
+    if organism not in organism_dict:
+        raise ValueError(f'Invalid organism {organism}. Expected "human" or "mouse".')
+    species_code = organism_dict[organism]
+
+    # Filter dataframe by organism
+    df = df[df['species'].str.contains(species_code, na=False)]
     
     panglao_ui_dict = {}
+    gene_dict = get_gene_dict(organism=organism, repo_path=repo_path)
 
     for _, row in df.iterrows():
         # Get gene symbols and nicknames
         symbols = [row['official gene symbol']]
         if pd.notna(row['nicknames']):
             symbols.extend(row['nicknames'].split('|'))
+
+        # Convert symbols to uppercase and to Ensembl IDs if id_type is 'ensembl'
+        symbols = [symbol.upper() for symbol in symbols]
+        if id_type == 'ensembl':
+            symbols = [gene_dict.get(symbol) for symbol in symbols]
+            # Remove None values (symbols that couldn't be converted to Ensembl IDs)
+            symbols = [symbol for symbol in symbols if symbol is not None]
+
 
         # Fill dictionary
         for symbol in symbols:
@@ -261,7 +278,35 @@ def get_panglao_ui(panglao_file="panglao_markers", organism=None):
     return panglao_ui_dict
 
 
-def update_scores(df, organism=None, panglao_file="panglao_markers", repo_path="."):
+def transfer_ui_to_homologs(source_organism, target_organism, ui_dict):
+    """
+    Transfer ubiquitousness index (ui) from source organism to target organism using homologous genes.
+
+    Parameters
+    ----------
+    source_organism : str
+        Name of the source organism.
+    target_organism : str
+        Name of the target organism.
+    ui_dict : dict
+        Dictionary with gene Ensembl IDs and ui as values for the source organism.
+
+    Returns
+    -------
+    pd.DataFrame :
+        DataFrame with homologous genes and their ui.
+    """
+    
+    # Fetch homologous genes
+    homologs_df = fetch_homologs(source_organism, target_organism)
+    
+    # Add a column "ui" to the DataFrame with the ui from the ui_dict
+    homologs_df['ui'] = homologs_df['Gene stable ID'].map(ui_dict)
+    
+    return homologs_df.dropna()
+
+
+def update_scores(df, organism="human", panglao_file="panglao_markers", repo_path="."):
     """
     Update the scores in the dataframe using the ubiquitousness index from the panglao database.
 
@@ -269,7 +314,7 @@ def update_scores(df, organism=None, panglao_file="panglao_markers", repo_path="
     ----------
     df : pd.DataFrame
         DataFrame with columns "Marker", "Info", and "Score". 
-    organism : str, default None
+    organism : str, default human
         Organism to consider when retrieving the ubiquitousness index (e.g. "Hs" or "Mm").
     panglao_file : str
         Path to the panglao markers.
@@ -283,7 +328,7 @@ def update_scores(df, organism=None, panglao_file="panglao_markers", repo_path="
     """
 
     # Retrieve the ubiquitousness index dictionary for the given organism
-    ui_dict = get_panglao_ui(f"{repo_path}/{panglao_file}", organism)
+    ui_dict = get_panglao_ui(panglao_file=panglao_file, organism=organism, repo_path=repo_path)
 
     # Split the "Marker" column and take the first part
     df['MainMarker'] = df['Marker'].str.split().str[0].str.upper()
