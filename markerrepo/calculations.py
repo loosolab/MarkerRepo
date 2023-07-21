@@ -278,32 +278,51 @@ def get_panglao_ui(panglao_file="panglao_markers", organism="human", id_type='sy
     return panglao_ui_dict
 
 
-def transfer_ui_to_homologs(source_organism, target_organism, ui_dict):
+def transfer_ui_to_homologs(target_organism, repo_path="."):
     """
     Transfer ubiquitousness index (ui) from source organism to target organism using homologous genes.
 
     Parameters
     ----------
-    source_organism : str
-        Name of the source organism.
     target_organism : str
         Name of the target organism.
-    ui_dict : dict
-        Dictionary with gene Ensembl IDs and ui as values for the source organism.
+    repo_path : str, default "."
+        The path of the Marker Repo.
 
     Returns
     -------
     pd.DataFrame :
         DataFrame with homologous genes and their ui.
     """
+
+    biomart_dict = {'human': 'hsapiens', 'mouse': 'mmusculus'}
+    panglao_organisms = ["human", "mouse"]
+
+    transferred_panglao_dfs = []
+
+    for organism in panglao_organisms:
+        organism_ui_dict = get_panglao_ui(repo_path=repo_path, id_type='ensembl', organism=organism)
+        biomart_source = biomart_dict[organism]
+        biomart_target = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
     
-    # Fetch homologous genes
-    homologs_df = fetch_homologs(source_organism, target_organism)
+        # Fetch homologous genes
+        organism_homologs_df = fetch_homologs(biomart_source, biomart_target)
     
-    # Add a column "ui" to the DataFrame with the ui from the ui_dict
-    homologs_df['ui'] = homologs_df['Gene stable ID'].map(ui_dict)
-    
-    return homologs_df.dropna()
+        # Map "ui" values from the organism_ui_dict to the DataFrame
+        organism_homologs_df['ui'] = organism_homologs_df['Gene stable ID'].map(organism_ui_dict)
+
+        # Append DataFrame of the current organism to the list of DataFrames
+        transferred_panglao_dfs.append(organism_homologs_df)
+
+    # Concatenate all DataFrames in the list
+    transferred_scores = pd.concat(transferred_panglao_dfs, ignore_index=True)
+
+    # Remove rows with NaNs, 'Gene stable ID' column and duplicates
+    transferred_scores = transferred_scores.dropna()
+    transferred_scores = transferred_scores.drop(columns=['Gene stable ID'])
+    transferred_scores = transferred_scores.drop_duplicates()
+
+    return transferred_scores
 
 
 def update_scores(df, organism="human", panglao_file="panglao_markers", repo_path="."):
