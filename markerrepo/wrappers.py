@@ -183,6 +183,8 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         If not None, filter those target genes whose number of target genes per source gene is <= target_counts.
     weight_markers : bool, default False
         If True, a third column containing scores is added to the transferred marker list.
+    export_suffix : str, default None
+        A suffix that will be added to the file name of the transferred marker list.
 
     Returns
     -------
@@ -256,8 +258,11 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 display(transferred_list)
 
                 if weight_markers:
-                    results_scored = compare_marker_lists(marker_df=transferred_list)
-                    transferred_list = update_scores(df=results_scored, repo_path=repo_path)
+                    # results_scored = compare_marker_lists(marker_df=transferred_list)
+                    # transferred_list = update_scores(df=results_scored, repo_path=repo_path, organism=target_organism)
+                    transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
+                    print("Weighted transferred markers:")
+                    display(transferred_list)
 
                 file_name=f"{source_organism}_{target_organism}_HomoloGene"
                 if export_suffix:
@@ -301,8 +306,11 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 display(transferred_list)
 
                 if weight_markers:
-                    results_scored = compare_marker_lists(marker_df=transferred_list)
-                    transferred_list = update_scores(df=results_scored, repo_path=repo_path)
+                    # results_scored = compare_marker_lists(marker_df=transferred_list)
+                    # transferred_list = update_scores(df=results_scored, repo_path=repo_path, organism=target_organism)
+                    transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
+                    print("Weighted transferred markers:")
+                    display(transferred_list)
 
                 file_name=f"{source_organism}_{target_organism}_BioMart"
                 if export_suffix:
