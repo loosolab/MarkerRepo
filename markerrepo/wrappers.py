@@ -258,8 +258,9 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 display(transferred_list)
 
                 if weight_markers:
-                    results_scored = compare_marker_lists(marker_df=transferred_list)
-                    transferred_list = update_scores(df=results_scored, repo_path=repo_path, organism=target_organism)
+                    # results_scored = compare_marker_lists(marker_df=transferred_list)
+                    # transferred_list = update_scores(df=results_scored, repo_path=repo_path, organism=target_organism)
+                    transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
                     print("Weighted transferred markers:")
                     display(transferred_list)
 
@@ -305,8 +306,9 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 display(transferred_list)
 
                 if weight_markers:
-                    results_scored = compare_marker_lists(marker_df=transferred_list)
-                    transferred_list = update_scores(df=results_scored, repo_path=repo_path, organism=target_organism)
+                    # results_scored = compare_marker_lists(marker_df=transferred_list)
+                    # transferred_list = update_scores(df=results_scored, repo_path=repo_path, organism=target_organism)
+                    transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
                     print("Weighted transferred markers:")
                     display(transferred_list)
 

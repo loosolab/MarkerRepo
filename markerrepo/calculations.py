@@ -374,6 +374,7 @@ def update_scores(df, organism="human", repo_path="."):
 
 
     df = df.drop(columns='MainMarker')
+    df = df.dropna()
     df.sort_values('Score', ascending=True, inplace=True)
 
     return df
