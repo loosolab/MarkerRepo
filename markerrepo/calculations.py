@@ -6,6 +6,7 @@ import urllib.request
 from .utils import read_whitelist
 from sklearn.preprocessing import MinMaxScaler
 from pybiomart import Server
+import numpy as np
 
 
 def compare_marker_lists(repo_path=".", keywords=None, marker_df=None, case_sensitive=False, exact=False):
@@ -295,6 +296,8 @@ def transfer_ui_to_homologs(target_organism, repo_path="."):
         DataFrame with homologous genes and their ui.
     """
 
+    biomart_target = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
+
     biomart_dict = {'human': 'hsapiens', 'mouse': 'mmusculus'}
     panglao_organisms = ["human", "mouse"]
 
@@ -303,7 +306,6 @@ def transfer_ui_to_homologs(target_organism, repo_path="."):
     for organism in panglao_organisms:
         organism_ui_dict = get_panglao_ui(repo_path=repo_path, id_type='ensembl', organism=organism)
         biomart_source = biomart_dict[organism]
-        biomart_target = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
     
         # Fetch homologous genes
         organism_homologs_df = fetch_homologs(biomart_source, biomart_target)
@@ -322,10 +324,17 @@ def transfer_ui_to_homologs(target_organism, repo_path="."):
     transferred_scores = transferred_scores.drop(columns=['Gene stable ID'])
     transferred_scores = transferred_scores.drop_duplicates()
 
-    return transferred_scores
+    # Extend genes
+    gene_dict = get_gene_dict(organism=target_organism, repo_path=repo_path)
+    transferred_scores = update_markers(transferred_scores, gene_dict, column=transferred_scores.columns[0])
+
+    # Convert to dict with keys (gene symbols) = first column, values (UI) = second column
+    ui_dict = pd.Series(transferred_scores[transferred_scores.columns[1]].values, 
+                            index=transferred_scores[transferred_scores.columns[0]].str.split(' ').str[0]).to_dict()
+    return ui_dict
 
 
-def update_scores(df, organism="human", panglao_file="panglao_markers", repo_path="."):
+def update_scores(df, organism="human", repo_path="."):
     """
     Update the scores in the dataframe using the ubiquitousness index from the panglao database.
 
@@ -334,9 +343,7 @@ def update_scores(df, organism="human", panglao_file="panglao_markers", repo_pat
     df : pd.DataFrame
         DataFrame with columns "Marker", "Info", and "Score". 
     organism : str, default human
-        Organism to consider when retrieving the ubiquitousness index (e.g. "Hs" or "Mm").
-    panglao_file : str
-        Path to the panglao markers.
+        Organism to consider when retrieving the ubiquitousness index.
     repo_path : str, default "."
         The path of the Marker Repo.
 
@@ -347,10 +354,20 @@ def update_scores(df, organism="human", panglao_file="panglao_markers", repo_pat
     """
 
     # Retrieve the ubiquitousness index dictionary for the given organism
-    ui_dict = get_panglao_ui(panglao_file=panglao_file, organism=organism, repo_path=repo_path)
+    panglao_organisms = ["human", "mouse"]
+
+    if organism in panglao_organisms:
+        ui_dict = get_panglao_ui(repo_path=repo_path, organism=organism)
+    else:
+        ui_dict = transfer_ui_to_homologs(target_organism=organism, repo_path=repo_path)
+    print(len(ui_dict))
 
     # Split the "Marker" column and take the first part
     df['MainMarker'] = df['Marker'].str.split().str[0].str.upper()
+
+    # Check if 'Score' column is in df
+    if 'Score' not in df.columns:
+        df['Score'] = np.nan
 
     # Update scores where the main marker is in ui_dict
     df['Score'] = df['MainMarker'].map(ui_dict).fillna(df['Score'])
