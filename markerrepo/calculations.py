@@ -359,8 +359,8 @@ def update_scores(df, organism="human", repo_path="."):
     if organism in panglao_organisms:
         ui_dict = get_panglao_ui(repo_path=repo_path, organism=organism)
     else:
+        print(f"Transferring Panglao ubiquitousness index to {organism}...")
         ui_dict = transfer_ui_to_homologs(target_organism=organism, repo_path=repo_path)
-    print(len(ui_dict))
 
     # Split the "Marker" column and take the first part
     df['MainMarker'] = df['Marker'].str.split().str[0].str.upper()
