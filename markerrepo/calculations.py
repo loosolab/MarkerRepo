@@ -279,16 +279,18 @@ def get_panglao_ui(panglao_file="panglao_markers", organism="human", id_type='sy
     return panglao_ui_dict
 
 
-def transfer_ui_to_homologs(target_organism, repo_path="."):
+def transfer_ui_to_homologs(target_organism="human", repo_path=".", biomart_target=None):
     """
     Transfer ubiquitousness index (ui) from source organism to target organism using homologous genes.
 
     Parameters
     ----------
-    target_organism : str
+    target_organism : str, default "human"
         Name of the target organism.
     repo_path : str, default "."
         The path of the Marker Repo.
+    biomart_target : str, default None
+        Name of the target organism in the BioMart database. If None, the name is inferred from the target_organism parameter.
 
     Returns
     -------
@@ -296,7 +298,8 @@ def transfer_ui_to_homologs(target_organism, repo_path="."):
         DataFrame with homologous genes and their ui.
     """
 
-    biomart_target = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
+    if biomart_target is None:
+        biomart_target = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
 
     biomart_dict = {'human': 'hsapiens', 'mouse': 'mmusculus'}
     panglao_organisms = ["human", "mouse"]
@@ -334,7 +337,7 @@ def transfer_ui_to_homologs(target_organism, repo_path="."):
     return ui_dict
 
 
-def update_scores(df, organism="human", repo_path="."):
+def update_scores(df, organism="human", repo_path=".", biomart_target=None):
     """
     Update the scores in the dataframe using the ubiquitousness index from the panglao database.
 
@@ -346,6 +349,8 @@ def update_scores(df, organism="human", repo_path="."):
         Organism to consider when retrieving the ubiquitousness index.
     repo_path : str, default "."
         The path of the Marker Repo.
+    biomart_target : str, default None
+        Name of the target organism in the BioMart database. If None, the name is inferred from the organism parameter.
 
     Returns
     -------
@@ -360,7 +365,10 @@ def update_scores(df, organism="human", repo_path="."):
         ui_dict = get_panglao_ui(repo_path=repo_path, organism=organism)
     else:
         print(f"Transferring Panglao ubiquitousness index to {organism}...")
-        ui_dict = transfer_ui_to_homologs(target_organism=organism, repo_path=repo_path)
+        if biomart_target is None:
+            ui_dict = transfer_ui_to_homologs(target_organism=organism, repo_path=repo_path)
+        else:
+            ui_dict = transfer_ui_to_homologs(biomart_target=biomart_target, repo_path=repo_path)
 
     # Split the "Marker" column and take the first part
     df['MainMarker'] = df['Marker'].str.split().str[0].str.upper()
