@@ -2,9 +2,9 @@ import pandas as pd
 import os
 import urllib.request
 from pybiomart import Server
+from .marker_repo import get_gene_dict
 from .marker_repo import combine_dfs, get_gene_dict, get_whitelists, guided_search, search_df, select, update_markers
 from .plotting import plot_gene_counts
-from .scoring import get_panglao_ui
 from .utils import read_whitelist
 from IPython.display import display
 
@@ -382,6 +382,67 @@ def get_dataset_names(organism_name):
     matching_names = [dataset_name for display_name, dataset_name in dataset_dict.items() if organism_name.lower() in display_name.lower()]
 
     return matching_names
+
+
+def get_panglao_ui(panglao_file="panglao_markers", organism="human", id_type='symbol', repo_path="."):
+    """
+    Create a dictionary with gene symbols or Ensembl IDs (based on id_type) and average ubiquitousness index as values.
+    Only considers rows with the given organism.
+
+    Parameters
+    ----------
+    panglao_file : str
+        Path to the panglao markers.
+    organism : str, default human
+        Organism to consider (e.g. "human" or "mouse").
+    id_type : str, default 'symbol'
+        Type of gene identifier to use as dictionary keys. 'symbol' for gene symbols, 'ensembl' for Ensembl IDs.
+    repo_path : str, default "."
+        The path of the Marker Repo.
+
+    Returns
+    -------
+    dict :
+        Dictionary with gene identifiers and average ubiquitousness index as values.
+    """
+    df = pd.read_csv(f"{repo_path}/{panglao_file}", sep="\t")
+
+    # Convert full organism name to short code for filtering dataframe
+    organism_dict = {'human': 'Hs', 'mouse': 'Mm'}
+    if organism not in organism_dict:
+        raise ValueError(f'Invalid organism {organism}. Expected "human" or "mouse".')
+    species_code = organism_dict[organism]
+
+    # Filter dataframe by organism
+    df = df[df['species'].str.contains(species_code, na=False)]
+
+    panglao_ui_dict = {}
+    gene_dict = get_gene_dict(organism=organism, repo_path=repo_path)
+
+    for _, row in df.iterrows():
+        # Get gene symbols and nicknames
+        symbols = [row['official gene symbol']]
+        if pd.notna(row['nicknames']):
+            symbols.extend(row['nicknames'].split('|'))
+
+        # Convert symbols to uppercase and to Ensembl IDs if id_type is 'ensembl'
+        symbols = [symbol.upper() for symbol in symbols]
+        if id_type == 'ensembl':
+            symbols = [gene_dict.get(symbol) for symbol in symbols]
+            # Remove None values (symbols that couldn't be converted to Ensembl IDs)
+            symbols = [symbol for symbol in symbols if symbol is not None]
+
+
+        # Fill dictionary
+        for symbol in symbols:
+            symbol = symbol.upper()
+            if symbol in panglao_ui_dict:
+                # If the symbol is already in the dictionary, update the value to the average
+                panglao_ui_dict[symbol] = round((panglao_ui_dict[symbol] + row['ubiquitousness index']) / 2, 3)
+            else:
+                panglao_ui_dict[symbol] = row['ubiquitousness index']
+
+    return panglao_ui_dict
 
 
 def transfer_ui_to_homologs(target_organism="human", repo_path=".", biomart_target=None):
