@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from annotate_by_marker_and_features.markerrepo.homology import transfer_ui_to_homologs
-from annotate_by_marker_and_features.markerrepo.marker_repo import combine_dfs, combine_lists, get_gene_dict, search_df
+from .homology import transfer_ui_to_homologs
+from .marker_repo import combine_dfs, combine_lists, get_gene_dict, search_df
 from sklearn.preprocessing import MinMaxScaler
 
 

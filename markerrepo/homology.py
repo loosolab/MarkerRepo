@@ -1,15 +1,12 @@
 import pandas as pd
-
-
 import os
 import urllib.request
-
 from pybiomart import Server
-from annotate_by_marker_and_features.markerrepo.marker_repo import combine_dfs, get_gene_dict, get_whitelists, guided_search, search_df, select, update_markers
-from annotate_by_marker_and_features.markerrepo.plotting import plot_gene_counts
-from annotate_by_marker_and_features.markerrepo.scoring import get_panglao_ui
-
-from annotate_by_marker_and_features.markerrepo.utils import read_whitelist
+from .marker_repo import combine_dfs, get_gene_dict, get_whitelists, guided_search, search_df, select, update_markers
+from .plotting import plot_gene_counts
+from .scoring import get_panglao_ui
+from .utils import read_whitelist
+from IPython.display import display
 
 
 def check_organisms(biomart_orgs, homologene_orgs, source_organisms):

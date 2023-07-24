@@ -1,6 +1,7 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+
 def plot_gene_counts(gene_counts_df, file_name="gene_counts_barplot.png", dpi=300):
     """
     Plots a bar plot of the target gene counts.
