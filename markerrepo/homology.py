@@ -1,60 +1,55 @@
-from .marker_repo import search_df, combine_lists, get_db, update_markers, get_gene_dict, get_whitelists, select, combine_dfs, guided_search
-from .plotting import plot_gene_counts
 import pandas as pd
 import os
 import urllib.request
-from .utils import read_whitelist
-from sklearn.preprocessing import MinMaxScaler
 from pybiomart import Server
-import numpy as np
+from .marker_repo import get_gene_dict
+from .marker_repo import combine_dfs, get_gene_dict, get_whitelists, guided_search, search_df, select, update_markers
+from .plotting import plot_gene_counts
+from .utils import read_whitelist
+from IPython.display import display
 
 
-def compare_marker_lists(repo_path=".", keywords=None, marker_df=None, case_sensitive=False, exact=False):
+def check_organisms(biomart_orgs, homologene_orgs, source_organisms):
     """
-    This function compares and scores markers from selected marker lists using Ubiquitousness Index.
-    A score of '0' signifies that the marker is the most specific within this selection, 
-    while a score of '1' indicates that the marker is the most prevalent.
+    Checks if the source organisms are supported by the BioMart or HomoloGene approach.
 
     Parameters
     ----------
-    repo_path : str, default "."
-        The path of the Marker Repo.
-    keywords : str, dict
-        Keywords for selecting marker lists. If a string, the function will check if the string is contained anywhere in the marker lists. 
-        If a dictionary, the keys are the column names and the values are the keywords to search for in those columns.
-    marker_df : pd.DataFrame
-        Input DataFrame with columns "Info", "Marker"
-    case_sensitive : bool, default: False
-        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
-    exact : bool, default: False
-        If True, the search will look for exact matches. If False, the search will look for substrings.
+    biomart_orgs : list
+        List of organisms supported by the BioMart approach.
+    homologene_orgs : list
+        List of organisms supported by the HomoloGene approach.
+    source_organisms : list
+        List of source organisms that the user wants to use for gene transfer.
 
     Returns
-    --------
-    pd.DataFrame :
-        A DataFrame containing the name ("Info"), the marker ("Marker") and the score ("Score") for each marker in the selected marker lists.
+    -------
+    lists of str :
+        - Organisms available in both approaches
+        - Organisms available in neither approach
+        - Organisms available only in the BioMart approach
+        - Organisms available only in the HomoloGene approach
     """
 
-    if marker_df is not None:
-        df = marker_df
-    else:
-        df = search_df(combine_dfs(repo_path=repo_path), keywords, case_sensitive=case_sensitive, exact=exact)
-        uids = [int(idx) for idx in df.index]
-        df = combine_lists(uids, repo_path=repo_path)
+    biomart_set = set(biomart_orgs)
+    homologene_set = set(homologene_orgs)
+    source_set = set(source_organisms)
 
-    df = df.drop_duplicates()
-    
-    # Calculate scores
-    total_lists = len(df['Info'].unique())
-    marker_counts = df['Marker'].value_counts()
-    df['Score'] = df['Marker'].apply(lambda x: marker_counts[x] / total_lists)
+    in_both = list(source_set.intersection(biomart_set).intersection(homologene_set))
+    in_neither = list(source_set.difference(biomart_set).difference(homologene_set))
+    only_in_biomart = list(source_set.intersection(biomart_set).difference(homologene_set))
+    only_in_homologene = list(source_set.intersection(homologene_set).difference(biomart_set))
 
-    # Scaling scores to be between 0 and 1
-    scaler = MinMaxScaler()
-    df['Score'] = scaler.fit_transform(df[['Score']])
-    df.sort_values('Score', ascending=True, inplace=True)
+    if in_both:
+        print("The following organisms can be used in both approaches: " + ', '.join(in_both) + ".")
+    if in_neither:
+        print("The following organisms can't be used in either approach: " + ', '.join(in_neither) + ".")
+    if only_in_biomart:
+        print("The following organisms can only be used in the BioMart approach: " + ', '.join(only_in_biomart) + ".")
+    if only_in_homologene:
+        print("The following organisms can only be used in the HomoloGene approach: " + ', '.join(only_in_homologene) + ".")
 
-    return df
+    return in_both, in_neither, only_in_biomart, only_in_homologene
 
 
 def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data", check=False):
@@ -80,7 +75,7 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
     if os.path.exists(file_name):
         if check:
             overwrite = input(f"'{file_name}' already exists. Do you want to overwrite it? (yes/no): ").lower()
-            
+
             if overwrite == 'yes':
                 # Download new data and overwrite existing file
                 urllib.request.urlretrieve(url, file_name)
@@ -106,13 +101,13 @@ def get_supported_taxonomy_ids(repo_path="."):
     ----------
     repo_path : str, default "."
         The path of the Marker Repo.
-    
+
     Returns
     -------
     list of str:
         List of supported taxonomy IDs.
     """
-    
+
     organisms = []
 
     if os.path.exists("homologene.data"):
@@ -124,7 +119,7 @@ def get_supported_taxonomy_ids(repo_path="."):
 
     # Get unique taxonomy IDs from HomoloGene db and convert them to strings
     unique_taxonomy_ids = homologene_data['Taxonomy ID'].unique().astype(str).tolist()
-    
+
     # Get support organisms from whitelist repository
     supported_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
 
@@ -134,6 +129,125 @@ def get_supported_taxonomy_ids(repo_path="."):
             organisms.append(f"{name} {tax}")
 
     return organisms
+
+
+def get_target_genes_counts(df, gene_dict, source_column='Marker', target_column='Transferred Marker'):
+    """
+    Show plot and DataFrame of count of target genes per source gene.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame resulting from a gene transfer, containing columns for source genes and target genes.
+    gene_dict : dict
+        Dictionary containing Gene Symbols and Ensembl IDs.
+    source_column : str, default 'Marker'
+        The name of the column in df that contains the source genes.
+    target_column : str, default 'Transferred Marker'
+        The name of the column in df that contains the target genes.
+    """
+
+    gene_counts_df = get_transfer_counts(df, source_column=source_column, target_column=target_column)
+    gene_counts_df = update_markers(gene_counts_df, gene_dict, column='Source Gene')
+
+    return gene_counts_df
+
+
+def process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, target_counts=None, plots=False, id_type='symbol'):
+    """
+    Process and filter genes based on given conditions.
+
+    Parameters
+    ----------
+    transfer_counts_df : pd.DataFrame
+        DataFrame containing the transfer counts data.
+    source_df : pd.DataFrame
+        DataFrame containing the source genes data.
+    source_whitelist : list
+        List of source genes to be whitelisted.
+    target_counts : int, optional
+        Maximum count of target genes allowed. If not specified, all genes are included.
+    plots : bool, default False
+        Whether to generate plots or not.
+    id_type : str, default 'symbol'
+        The type of identifiers in the transfer_counts_df. 'symbol' for gene symbols and 'ensembl' for Ensembl IDs.
+
+    Returns
+    -------
+    pd.DataFrame :
+        DataFrame containing the filtered source genes data.
+    """
+
+    id_index = 0 if id_type == 'symbol' else 1
+
+    # Calculate target genes count per source genes
+    gene_counts_df = get_target_genes_counts(transfer_counts_df, get_gene_dict(w_markers=source_whitelist))
+    print("\nCount of target genes per source gene:")
+    display(gene_counts_df)
+
+    # Plot count of target genes per source gene
+    if plots:
+        plot_gene_counts(gene_counts_df)
+
+    if target_counts:
+        filter_df = gene_counts_df.copy()
+        filter_df = filter_df.loc[filter_df['Count target genes'] <= target_counts]
+        filter_df['Source Gene'] = filter_df['Source Gene'].apply(lambda x: x.split(' ')[id_index] if len(x.split(' ')) > 1 else x)
+        source_df_copy = source_df.copy()
+        source_df_copy['Marker'] = source_df_copy['Marker'].apply(lambda x: x.split(' ')[id_index] if len(x.split(' ')) > 1 else x)
+        filtered_source_df = pd.merge(source_df_copy, filter_df, left_on='Marker', right_on='Source Gene', how='inner')
+        filtered_source_df = filtered_source_df[['Marker', 'Info']]
+
+        print(f"Filtered source DataFrame with target_counts <= {target_counts}:")
+        display(update_markers(filtered_source_df, get_gene_dict(w_markers=source_whitelist)))
+        num_filtered_genes = source_df_copy.shape[0] - filtered_source_df.shape[0]
+
+        print(f"Filtered: {num_filtered_genes} source genes, {100 - filtered_source_df.shape[0] / source_df_copy.shape[0] * 100:.2f}%")
+
+        return filtered_source_df
+
+
+def calculate_homology_proportions(df, source_genes, target_genes, id_type='symbol'):
+    """
+    Calculate the percentage of source and target genes present in a given DataFrame.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A DataFrame that contains gene identifiers for source and target organism.
+        First column: source organism, second column: target organism.
+    source_genes : list of str
+        Whole set of genes from the source organism. Format: 'GeneName Ensembl ID'.
+    target_genes : list of str
+        Whole set of genes from the target organism. Format: 'GeneName Ensembl ID'.
+    id_type : str, default 'symbol'
+        The type of identifiers in the whitelist and df. 'symbol' for gene symbols and 'ensembl' for Ensembl IDs.
+
+    Returns
+    -------
+    tuple of float
+        Tuple containing the proportion of all possible transferred genes and of these genes in the target organism.
+    """
+
+    id_index = 0 if id_type == 'symbol' else 1
+
+    # Split each string in the lists by space
+    source_genes_ids = [gene.split()[id_index].upper() for gene in source_genes]
+    target_genes_ids = [gene.split()[id_index].upper() for gene in target_genes]
+
+    # Calculate the number of source and target genes
+    num_source_genes = len(source_genes_ids)
+    num_target_genes = len(target_genes_ids)
+
+    # Find the intersection of the source/target genes and the DataFrame
+    source_intersection = df.iloc[:, 0].isin(source_genes_ids)
+    target_intersection = df.iloc[:, 1].isin(target_genes_ids)
+
+    # Calculate the percentage of genes that are in the DataFrame
+    source_percentage = (source_intersection.sum() / num_source_genes) * 100
+    target_percentage = (target_intersection.sum() / num_target_genes) * 100
+
+    return source_percentage, target_percentage
 
 
 def transfer_markers_homologene(df, source_organism, target_organism, hg_db, target_whitelist, source_whitelist, calc_proportions=False, plots=False, target_counts=None):
@@ -170,12 +284,12 @@ def transfer_markers_homologene(df, source_organism, target_organism, hg_db, tar
     df_copy = df.copy()
 
     # Adjust the Marker column in df_copy to contain only the first marker identifier (gene symbol)
-    df_copy.loc[:, 'Marker'] = df_copy['Marker'].apply(lambda x: x.split(' ')[0] if len(x.split(' ')) > 1 else x).str.upper()    
-    
+    df_copy.loc[:, 'Marker'] = df_copy['Marker'].apply(lambda x: x.split(' ')[0] if len(x.split(' ')) > 1 else x).str.upper()
+
     # Filter homologene_data for the source and target organisms
     source_data = hg_db[hg_db['Taxonomy ID'] == int(source_organism)]
     target_data = hg_db[hg_db['Taxonomy ID'] == int(target_organism)]
-    
+
     # Merge source and target data on HID
     merged_data = pd.merge(source_data, target_data, left_index=True, right_index=True, suffixes=('_source', '_target'))
     merged_data.rename(columns={'Gene Symbol_source': 'Marker', 'Gene Symbol_target': 'Transferred Marker'}, inplace=True)
@@ -189,7 +303,7 @@ def transfer_markers_homologene(df, source_organism, target_organism, hg_db, tar
     target_df = target_df[['Transferred Marker', 'Info']]
     target_df['Transferred Marker'] = target_df['Transferred Marker'].str.upper()
     target_df.drop_duplicates(inplace=True)
-    
+
     # Calculate the percentage of transferred markers
     marker_transfer_rate = target_df.shape[0] / df.shape[0] * 100
     print(f"Marker transfer rate: {marker_transfer_rate:.2f}%")
@@ -218,6 +332,58 @@ def transfer_markers_homologene(df, source_organism, target_organism, hg_db, tar
     return markers_extended
 
 
+def fetch_homologs(source_organism, target_organism):
+    """
+    Fetch homologous genes using BioMart.
+
+    Parameters
+    ----------
+    source_organism : str
+        Name of the source organism.
+    target_organism : str
+        Name of the target organism.
+
+    Returns
+    -------
+    pd.DataFrame :
+        DataFrame containing homologous genes.
+    """
+
+    # Initialize BioMart server
+    server = Server(host='http://www.ensembl.org')
+
+    # Define source and target datasets
+    source_dataset = server.marts['ENSEMBL_MART_ENSEMBL'].datasets[source_organism + '_gene_ensembl']
+    target_homolog_attribute = target_organism + '_homolog_ensembl_gene'
+
+    # Query BioMart database
+    attributes = ['ensembl_gene_id', target_homolog_attribute]
+    data = source_dataset.query(attributes=attributes)
+
+    return data
+
+
+def get_dataset_names(organism_name):
+    """
+    Retrieves the names of datasets corresponding to a specific organism.
+
+    Parameters
+    ----------
+    organism_name : str
+        The name of the organism to search for.
+
+    Returns
+    --------
+    list :
+        A list of dataset names that correspond to the input organism_name.
+    """
+
+    dataset_dict = create_dataset_dict()
+    matching_names = [dataset_name for display_name, dataset_name in dataset_dict.items() if organism_name.lower() in display_name.lower()]
+
+    return matching_names
+
+
 def get_panglao_ui(panglao_file="panglao_markers", organism="human", id_type='symbol', repo_path="."):
     """
     Create a dictionary with gene symbols or Ensembl IDs (based on id_type) and average ubiquitousness index as values.
@@ -240,7 +406,7 @@ def get_panglao_ui(panglao_file="panglao_markers", organism="human", id_type='sy
         Dictionary with gene identifiers and average ubiquitousness index as values.
     """
     df = pd.read_csv(f"{repo_path}/{panglao_file}", sep="\t")
-    
+
     # Convert full organism name to short code for filtering dataframe
     organism_dict = {'human': 'Hs', 'mouse': 'Mm'}
     if organism not in organism_dict:
@@ -249,7 +415,7 @@ def get_panglao_ui(panglao_file="panglao_markers", organism="human", id_type='sy
 
     # Filter dataframe by organism
     df = df[df['species'].str.contains(species_code, na=False)]
-    
+
     panglao_ui_dict = {}
     gene_dict = get_gene_dict(organism=organism, repo_path=repo_path)
 
@@ -309,10 +475,10 @@ def transfer_ui_to_homologs(target_organism="human", repo_path=".", biomart_targ
     for organism in panglao_organisms:
         organism_ui_dict = get_panglao_ui(repo_path=repo_path, id_type='ensembl', organism=organism)
         biomart_source = biomart_dict[organism]
-    
+
         # Fetch homologous genes
         organism_homologs_df = fetch_homologs(biomart_source, biomart_target)
-    
+
         # Map "ui" values from the organism_ui_dict to the DataFrame
         organism_homologs_df['ui'] = organism_homologs_df['Gene stable ID'].map(organism_ui_dict)
 
@@ -332,91 +498,9 @@ def transfer_ui_to_homologs(target_organism="human", repo_path=".", biomart_targ
     transferred_scores = update_markers(transferred_scores, gene_dict, column=transferred_scores.columns[0])
 
     # Convert to dict with keys (gene symbols) = first column, values (UI) = second column
-    ui_dict = pd.Series(transferred_scores[transferred_scores.columns[1]].values, 
+    ui_dict = pd.Series(transferred_scores[transferred_scores.columns[1]].values,
                             index=transferred_scores[transferred_scores.columns[0]].str.split(' ').str[0]).to_dict()
     return ui_dict
-
-
-def update_scores(df, organism="human", repo_path=".", biomart_target=None):
-    """
-    Update the scores in the dataframe using the ubiquitousness index from the panglao database.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        DataFrame with columns "Marker", "Info", and "Score". 
-    organism : str, default human
-        Organism to consider when retrieving the ubiquitousness index.
-    repo_path : str, default "."
-        The path of the Marker Repo.
-    biomart_target : str, default None
-        Name of the target organism in the BioMart database. If None, the name is inferred from the organism parameter.
-
-    Returns
-    -------
-    pd.DataFrame :
-        Updated dataframe with new scores.
-    """
-
-    # Retrieve the ubiquitousness index dictionary for the given organism
-    panglao_organisms = ["human", "mouse"]
-
-    if organism in panglao_organisms:
-        ui_dict = get_panglao_ui(repo_path=repo_path, organism=organism)
-    else:
-        print(f"Transferring Panglao ubiquitousness index to {organism}...")
-        if biomart_target is None:
-            ui_dict = transfer_ui_to_homologs(target_organism=organism, repo_path=repo_path)
-        else:
-            ui_dict = transfer_ui_to_homologs(biomart_target=biomart_target, repo_path=repo_path)
-
-    # Split the "Marker" column and take the first part
-    df['MainMarker'] = df['Marker'].str.split().str[0].str.upper()
-
-    # Check if 'Score' column is in df
-    if 'Score' not in df.columns:
-        df['Score'] = np.nan
-
-    # Update scores where the main marker is in ui_dict
-    df['Score'] = df['MainMarker'].map(ui_dict).fillna(df['Score'])
-
-
-    df = df.drop(columns='MainMarker')
-    df = df.dropna()
-    df.sort_values('Score', ascending=True, inplace=True)
-
-    return df
-
-
-def fetch_homologs(source_organism, target_organism):
-    """
-    Fetch homologous genes using BioMart.
-    
-    Parameters
-    ----------
-    source_organism : str
-        Name of the source organism.
-    target_organism : str
-        Name of the target organism.
-    
-    Returns
-    -------
-    pd.DataFrame :
-        DataFrame containing homologous genes.
-    """
-    
-    # Initialize BioMart server
-    server = Server(host='http://www.ensembl.org')
-
-    # Define source and target datasets
-    source_dataset = server.marts['ENSEMBL_MART_ENSEMBL'].datasets[source_organism + '_gene_ensembl']
-    target_homolog_attribute = target_organism + '_homolog_ensembl_gene'
-
-    # Query BioMart database
-    attributes = ['ensembl_gene_id', target_homolog_attribute]
-    data = source_dataset.query(attributes=attributes)
-    
-    return data
 
 
 def create_dataset_dict():
@@ -439,27 +523,6 @@ def create_dataset_dict():
         dataset_dict[dataset.display_name] = name.split("_")[0]
 
     return dataset_dict
-
-
-def get_dataset_names(organism_name):
-    """
-    Retrieves the names of datasets corresponding to a specific organism.
-    
-    Parameters
-    ----------
-    organism_name : str
-        The name of the organism to search for.
-
-    Returns
-    --------
-    list :
-        A list of dataset names that correspond to the input organism_name.
-    """
-
-    dataset_dict = create_dataset_dict()
-    matching_names = [dataset_name for display_name, dataset_name in dataset_dict.items() if organism_name.lower() in display_name.lower()]
-
-    return matching_names
 
 
 def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whitelist, calc_proportions=False, plots=False, target_counts=None):
@@ -531,59 +594,6 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
     return markers_extended
 
 
-def process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, target_counts=None, plots=False, id_type='symbol'):
-    """
-    Process and filter genes based on given conditions.
-
-    Parameters
-    ----------
-    transfer_counts_df : pd.DataFrame
-        DataFrame containing the transfer counts data.
-    source_df : pd.DataFrame
-        DataFrame containing the source genes data.
-    source_whitelist : list
-        List of source genes to be whitelisted.
-    target_counts : int, optional
-        Maximum count of target genes allowed. If not specified, all genes are included.
-    plots : bool, default False
-        Whether to generate plots or not.
-    id_type : str, default 'symbol'
-        The type of identifiers in the transfer_counts_df. 'symbol' for gene symbols and 'ensembl' for Ensembl IDs.
-
-    Returns
-    -------
-    pd.DataFrame :
-        DataFrame containing the filtered source genes data.
-    """
-
-    id_index = 0 if id_type == 'symbol' else 1
-    
-    # Calculate target genes count per source genes
-    gene_counts_df = get_target_genes_counts(transfer_counts_df, get_gene_dict(w_markers=source_whitelist))
-    print("\nCount of target genes per source gene:")
-    display(gene_counts_df)
-
-    # Plot count of target genes per source gene
-    if plots:
-        plot_gene_counts(gene_counts_df)
-
-    if target_counts:
-        filter_df = gene_counts_df.copy()
-        filter_df = filter_df.loc[filter_df['Count target genes'] <= target_counts]
-        filter_df['Source Gene'] = filter_df['Source Gene'].apply(lambda x: x.split(' ')[id_index] if len(x.split(' ')) > 1 else x)
-        source_df_copy = source_df.copy()
-        source_df_copy['Marker'] = source_df_copy['Marker'].apply(lambda x: x.split(' ')[id_index] if len(x.split(' ')) > 1 else x)
-        filtered_source_df = pd.merge(source_df_copy, filter_df, left_on='Marker', right_on='Source Gene', how='inner')
-        filtered_source_df = filtered_source_df[['Marker', 'Info']]
-
-        print(f"Filtered source DataFrame with target_counts <= {target_counts}:")
-        display(update_markers(filtered_source_df, get_gene_dict(w_markers=source_whitelist)))
-        num_filtered_genes = source_df_copy.shape[0] - filtered_source_df.shape[0]
-        
-        print(f"Filtered: {num_filtered_genes} source genes, {100 - filtered_source_df.shape[0] / source_df_copy.shape[0] * 100:.2f}%")
-        return filtered_source_df
-
-
 def get_supported_biomart_organisms(repo_path="."):
     """
     Returns all supported BioMart organisms in the downloaded Ensembl db.
@@ -598,7 +608,7 @@ def get_supported_biomart_organisms(repo_path="."):
     list of str:
         List of supported organisms.
     """
-    
+
     organisms = []
 
     # Get organisms from Ensembl db and convert them to strings
@@ -651,49 +661,6 @@ def select_db(biomart, homologene):
             print("\nInvalid choice. Please choose either 'biomart' or 'homologene'.")
 
 
-def calculate_homology_proportions(df, source_genes, target_genes, id_type='symbol'):
-    """
-    Calculate the percentage of source and target genes present in a given DataFrame.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        A DataFrame that contains gene identifiers for source and target organism.
-        First column: source organism, second column: target organism.
-    source_genes : list of str
-        Whole set of genes from the source organism. Format: 'GeneName Ensembl ID'.
-    target_genes : list of str
-        Whole set of genes from the target organism. Format: 'GeneName Ensembl ID'.
-    id_type : str, default 'symbol'
-        The type of identifiers in the whitelist and df. 'symbol' for gene symbols and 'ensembl' for Ensembl IDs.
-
-    Returns
-    -------
-    tuple of float
-        Tuple containing the proportion of all possible transferred genes and of these genes in the target organism.
-    """
-
-    id_index = 0 if id_type == 'symbol' else 1
-
-    # Split each string in the lists by space
-    source_genes_ids = [gene.split()[id_index].upper() for gene in source_genes]
-    target_genes_ids = [gene.split()[id_index].upper() for gene in target_genes]
-
-    # Calculate the number of source and target genes
-    num_source_genes = len(source_genes_ids)
-    num_target_genes = len(target_genes_ids)
-
-    # Find the intersection of the source/target genes and the DataFrame
-    source_intersection = df.iloc[:, 0].isin(source_genes_ids)
-    target_intersection = df.iloc[:, 1].isin(target_genes_ids)
-
-    # Calculate the percentage of genes that are in the DataFrame
-    source_percentage = (source_intersection.sum() / num_source_genes) * 100
-    target_percentage = (target_intersection.sum() / num_target_genes) * 100
-
-    return source_percentage, target_percentage
-
-
 def get_transfer_counts(df, source_column='Marker', target_column='Transferred Marker'):
     """
     Counts the number of target genes for each source gene after a gene transfer.
@@ -719,28 +686,6 @@ def get_transfer_counts(df, source_column='Marker', target_column='Transferred M
     gene_counts_df = gene_counts.reset_index()
     gene_counts_df.columns = ['Source Gene', 'Count target genes']
     gene_counts_df.sort_values('Count target genes', ascending=False, inplace=True)
-
-    return gene_counts_df
-
-
-def get_target_genes_counts(df, gene_dict, source_column='Marker', target_column='Transferred Marker'):
-    """
-    Show plot and DataFrame of count of target genes per source gene.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        DataFrame resulting from a gene transfer, containing columns for source genes and target genes.
-    gene_dict : dict
-        Dictionary containing Gene Symbols and Ensembl IDs.
-    source_column : str, default 'Marker'
-        The name of the column in df that contains the source genes.
-    target_column : str, default 'Transferred Marker'
-        The name of the column in df that contains the target genes.
-    """
-
-    gene_counts_df = get_transfer_counts(df, source_column=source_column, target_column=target_column)
-    gene_counts_df = update_markers(gene_counts_df, gene_dict, column='Source Gene')
 
     return gene_counts_df
 
@@ -790,7 +735,7 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
     print(f"Loading genes of {source_organism}...")
     source_genes = read_whitelist(f"genes/{source_organism}", repo_path=repo_path)['whitelist']
     print("Done!\n")
-    print(f"Loading genes of {target_organism}...")  
+    print(f"Loading genes of {target_organism}...")
     target_genes = read_whitelist(f"genes/{target_organism}", repo_path=repo_path)['whitelist']
     print("Done!\n")
 
@@ -880,4 +825,3 @@ def get_biomart_defaults(repo_path="."):
         return [default.strip() for default in defaults]
     else:
         return []
-
