@@ -1,5 +1,5 @@
 from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs, get_whitelists, select
-from .calculations import compare_marker_lists, update_scores, get_supported_biomart_organisms, get_supported_taxonomy_ids, get_dataset_names, fetch_homologs, download_homologene_data, transfer_markers_biomart, transfer_markers_homologene
+from .calculations import compare_marker_lists, update_scores, get_supported_biomart_organisms, get_supported_taxonomy_ids, get_dataset_names, fetch_homologs, download_homologene_data, transfer_markers_biomart, transfer_markers_homologene, get_biomart_defaults
 from .utils import read_whitelist
 
 def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False):
@@ -275,11 +275,22 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
 
     if len(biomart_source_organisms) > 0 and target_org in biomart_organisms:
         print("\nStarting BioMart approach...")
-        print("\nSpecify BioMart organism selection:")
-        target_organism_bm = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
+        print("\nSpecify BioMart target organism selection:")
+        default_org = next((x for x in get_biomart_defaults(repo_path=repo_path) if x in get_dataset_names(target_organism)), None)
+        if default_org:
+            print(f"Default organism: {default_org}")
+            target_organism_bm = default_org
+        else:
+            target_organism_bm = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
         for source_organism in biomart_source_organisms:
             source_organism = source_organism.split(" ")[0]
-            source_organism_bm = select(whitelist=get_dataset_names(source_organism), heading="BioMart source organism", repo_path=repo_path)
+            print("\nSpecify BioMart source organism selection:")
+            default_org = next((x for x in get_biomart_defaults(repo_path=repo_path) if x in get_dataset_names(source_organism)), None)
+            if default_org:
+                print(f"Default organism: {default_org}")
+                source_organism_bm = default_org
+            else:
+                source_organism_bm = select(whitelist=get_dataset_names(source_organism), heading="BioMart source organism", repo_path=repo_path)
             print(f"Loading genes of {source_organism}...")
             source_genes = read_whitelist(f"genes/{source_organism}", repo_path=repo_path)['whitelist']
             print("Done!\n")

@@ -823,3 +823,61 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
     else:
         print(f'The preparations have been completed successfully.\nPlease continue by following the steps in the section "Transfer markers from one organism to another using HomoloGene db".')
         return source_df, source_tax, target_tax, hg_db, target_genes, source_genes
+
+
+def set_biomart_defaults(repo_path="."):
+    """
+    Processes the BioMart dataset dictionary to handle organisms with more than one value. In such cases, prompts the user to select a value.
+    The processed dictionary is then saved to a file, with one value per line.
+
+    Parameters
+    ----------
+    repo_path : str, default "."
+        The path of the Marker Repo.
+
+    Returns
+    -------
+    str :
+        The path of the saved file.
+    """
+
+    default_orgs = []
+
+    orgs = get_supported_biomart_organisms(repo_path=repo_path)
+    for org in orgs:
+        biomart_orgs = (get_dataset_names(org.split(" ")[0]))
+        if len(biomart_orgs) > 1:
+            print(f"Please select the BioMart organism for {org}:")
+            default_orgs.append(select(whitelist=biomart_orgs, heading="BioMart organism", repo_path=repo_path))
+
+    defaults_path = os.path.join(repo_path, "biomart_defaults")
+    with open(defaults_path, "w") as f:
+        for org in default_orgs:
+            f.write(f"{org}\n")
+
+    return defaults_path
+
+
+def get_biomart_defaults(repo_path="."):
+    """
+    Retrieves the default BioMart organisms from the biomart_defaults file.
+
+    Parameters
+    ----------
+    repo_path : str, default "."
+        The path of the Marker Repo.
+
+    Returns
+    -------
+    list of str :
+        The default BioMart organisms.
+    """
+
+    defaults_path = os.path.join(repo_path, "biomart_defaults")
+    if os.path.exists(defaults_path):
+        with open(defaults_path, "r") as f:
+            defaults = f.readlines()
+        return [default.strip() for default in defaults]
+    else:
+        return []
+
