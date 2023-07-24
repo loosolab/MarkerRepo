@@ -396,6 +396,7 @@ def fetch_homologs(source_organism, target_organism):
     pd.DataFrame :
         DataFrame containing homologous genes.
     """
+    
     # Initialize BioMart server
     server = Server(host='http://www.ensembl.org')
 

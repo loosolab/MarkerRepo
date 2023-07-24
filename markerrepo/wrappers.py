@@ -211,25 +211,26 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
     unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
 
     source_organisms = [' '.join(map(str, tup)) for tup in unique_organisms.values]
+
     biomart_organisms = get_supported_biomart_organisms(repo_path=repo_path)
     homologene_organisms = get_supported_taxonomy_ids(repo_path=repo_path)
 
     in_both, in_neither, only_in_biomart, only_in_homologene = check_organisms(biomart_organisms, homologene_organisms, source_organisms)
-    biomart_organisms = in_both + only_in_biomart
 
+    biomart_source_organisms = in_both + only_in_biomart
     print("")
-    if target_org in biomart_organisms:
-        biomart_organisms.remove(target_org)
+    if target_org in biomart_source_organisms:
+        biomart_source_organisms.remove(target_org)
         print(f"Removed {target_org} from BioMart source organisms as it matches the target organism.")
 
-    homologene_organisms = in_both + only_in_homologene
-    if target_org in homologene_organisms:
-        homologene_organisms.remove(target_org)
+    homologene_source_organisms = in_both + only_in_homologene
+    if target_org in homologene_source_organisms:
+        homologene_source_organisms.remove(target_org)
         print(f"Removed {target_org} from HomoloGene source organisms as it matches the target organism.")
 
-    if len(homologene_organisms) > 0:
+    if len(homologene_source_organisms) > 0 and target_org in homologene_organisms:
         print("\nStarting HomoloGene approach...")
-        for source_organism in homologene_organisms:
+        for source_organism in homologene_source_organisms:
             source_organism, source_tax = source_organism.split(" ")
             print(f"Loading genes of {source_organism}...")
             source_genes = read_whitelist(f"genes/{source_organism}", repo_path=repo_path)['whitelist']
@@ -272,11 +273,11 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             else:
                 print("Source DataFrame is empty.")
 
-    if len(biomart_organisms) > 0:
+    if len(biomart_source_organisms) > 0 and target_org in biomart_organisms:
         print("\nStarting BioMart approach...")
         print("\nSpecify BioMart organism selection:")
         target_organism_bm = select(whitelist=get_dataset_names(target_organism), heading="BioMart target organism", repo_path=repo_path)
-        for source_organism in biomart_organisms:
+        for source_organism in biomart_source_organisms:
             source_organism = source_organism.split(" ")[0]
             source_organism_bm = select(whitelist=get_dataset_names(source_organism), heading="BioMart source organism", repo_path=repo_path)
             print(f"Loading genes of {source_organism}...")
