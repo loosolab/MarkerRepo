@@ -65,19 +65,16 @@ def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists"
     match style:
         case "two_column":
             print("Preparing two column style marker list...")
-            
         case "score":
             print("Preparing score style marker list...")
             marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
-            
         case "panglao":
             print("Preparing panglao style marker list...")
             marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
-            marker_list = update_scores(marker_list)
+            marker_list = update_scores(marker_list, repo_path=repo_path)
             marker_list = transform_list_to_panglao(df=marker_list, organism=organism, tissue=tissue)
         case _:
             print("Style not recognized. Try 'two_column', 'score' or 'panglao'")
-
 
     if path or file_name:
         # Export marker list
