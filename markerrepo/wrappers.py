@@ -1,53 +1,7 @@
-from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs, get_whitelists, select
+from .homology import check_organisms
+from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs, get_whitelists, select, get_selected_lists
 from .calculations import compare_marker_lists, update_scores, get_supported_biomart_organisms, get_supported_taxonomy_ids, get_dataset_names, fetch_homologs, download_homologene_data, transfer_markers_biomart, transfer_markers_homologene, get_biomart_defaults
 from .utils import read_whitelist
-
-def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False):
-    """
-    Searches the database for given keywords and combines the found marker lists into a new DataFrame.
-
-    Parameters
-    ----------
-    keywords : dict or str, default None
-        The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
-        keywords as values, or a single string to search for in the entire DataFrame.
-    repo_path : str, default "."
-        The path of the Marker Repo.
-    metadata_df : pd.DataFrame, default None
-        A DataFrame containing the metadata of a selection of marker lists.
-    case_sensitive : bool, default False
-        If True, the function will consider the case of the keywords. If False, the function will ignore the case.
-    exact : bool, default False
-        If True, the function will search for exact matches of the keywords. If False, the function will search for the keywords as substrings.
-
-    Returns
-    --------
-    pd.DataFrame :
-        The DataFrame conaining the combined lists.
-    """
-
-    if keywords:
-        db = combine_dfs(repo_path=repo_path)
-        df = search_df(db, keywords, case_sensitive=case_sensitive, exact=exact)
-        if df.empty:
-            raise Exception(
-                        f"No search results available!")
-    elif metadata_df is not None:
-        df = metadata_df
-    else:
-        raise Exception(
-                    f"You need to specify keywords or a metadata DataFrame!")
-
-
-    # Get UIDs and combine lists
-    uids = [int(idx) for idx in df.index]
-    combined_df = combine_lists(uids, repo_path=repo_path)
-
-    # Drop duplicates, keep one marker only, rearrange column order
-    markers_filtered = combined_df.drop_duplicates()
-    markers_filtered = markers_filtered[['Info', 'Marker']]
-
-    return markers_filtered
 
 
 def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists", file_name="marker_list", case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
@@ -209,7 +163,6 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         source_df = guided_search(out="metadata", repo_path=repo_path)
     
     unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
-
     source_organisms = [' '.join(map(str, tup)) for tup in unique_organisms.values]
 
     biomart_organisms = get_supported_biomart_organisms(repo_path=repo_path)
@@ -334,45 +287,3 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 
     return paths
 
-
-def check_organisms(biomart_orgs, homologene_orgs, source_organisms):
-    """
-    Checks if the source organisms are supported by the BioMart or HomoloGene approach.
-    
-    Parameters
-    ----------
-    biomart_orgs : list
-        List of organisms supported by the BioMart approach.
-    homologene_orgs : list
-        List of organisms supported by the HomoloGene approach.
-    source_organisms : list
-        List of source organisms that the user wants to use for gene transfer.
-
-    Returns
-    -------
-    lists of str :
-        - Organisms available in both approaches
-        - Organisms available in neither approach
-        - Organisms available only in the BioMart approach
-        - Organisms available only in the HomoloGene approach
-    """
-
-    biomart_set = set(biomart_orgs)
-    homologene_set = set(homologene_orgs)
-    source_set = set(source_organisms)
-
-    in_both = list(source_set.intersection(biomart_set).intersection(homologene_set))
-    in_neither = list(source_set.difference(biomart_set).difference(homologene_set))
-    only_in_biomart = list(source_set.intersection(biomart_set).difference(homologene_set))
-    only_in_homologene = list(source_set.intersection(homologene_set).difference(biomart_set))
-
-    if in_both:
-        print("The following organisms can be used in both approaches: " + ', '.join(in_both) + ".")
-    if in_neither:
-        print("The following organisms can't be used in either approach: " + ', '.join(in_neither) + ".")
-    if only_in_biomart:
-        print("The following organisms can only be used in the BioMart approach: " + ', '.join(only_in_biomart) + ".")
-    if only_in_homologene:
-        print("The following organisms can only be used in the HomoloGene approach: " + ', '.join(only_in_homologene) + ".")
-
-    return in_both, in_neither, only_in_biomart, only_in_homologene

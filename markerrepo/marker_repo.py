@@ -1006,3 +1006,51 @@ def get_valid_filename(prompt="Enter file name or path: "):
 
 
         return file_name
+
+
+def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False):
+    """
+    Searches the database for given keywords and combines the found marker lists into a new DataFrame.
+
+    Parameters
+    ----------
+    keywords : dict or str, default None
+        The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
+        keywords as values, or a single string to search for in the entire DataFrame.
+    repo_path : str, default "."
+        The path of the Marker Repo.
+    metadata_df : pd.DataFrame, default None
+        A DataFrame containing the metadata of a selection of marker lists.
+    case_sensitive : bool, default False
+        If True, the function will consider the case of the keywords. If False, the function will ignore the case.
+    exact : bool, default False
+        If True, the function will search for exact matches of the keywords. If False, the function will search for the keywords as substrings.
+
+    Returns
+    --------
+    pd.DataFrame :
+        The DataFrame conaining the combined lists.
+    """
+
+    if keywords:
+        db = combine_dfs(repo_path=repo_path)
+        df = search_df(db, keywords, case_sensitive=case_sensitive, exact=exact)
+        if df.empty:
+            raise Exception(
+                        f"No search results available!")
+    elif metadata_df is not None:
+        df = metadata_df
+    else:
+        raise Exception(
+                    f"You need to specify keywords or a metadata DataFrame!")
+
+
+    # Get UIDs and combine lists
+    uids = [int(idx) for idx in df.index]
+    combined_df = combine_lists(uids, repo_path=repo_path)
+
+    # Drop duplicates, keep one marker only, rearrange column order
+    markers_filtered = combined_df.drop_duplicates()
+    markers_filtered = markers_filtered[['Info', 'Marker']]
+
+    return markers_filtered
