@@ -1,6 +1,7 @@
-from .homology import check_organisms
+from .scoring import compare_marker_lists, update_scores
+from .homology import check_organisms, download_homologene_data, fetch_homologs, get_dataset_names, get_supported_biomart_organisms, get_supported_taxonomy_ids, transfer_markers_biomart, transfer_markers_homologene
 from .marker_repo import search_df, combine_lists, export_marker_list, guided_search, combine_dfs, get_whitelists, select, get_selected_lists
-from .calculations import compare_marker_lists, update_scores, get_supported_biomart_organisms, get_supported_taxonomy_ids, get_dataset_names, fetch_homologs, download_homologene_data, transfer_markers_biomart, transfer_markers_homologene, get_biomart_defaults
+from .homology import get_biomart_defaults
 from .utils import read_whitelist
 
 
