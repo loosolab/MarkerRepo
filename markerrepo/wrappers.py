@@ -149,9 +149,18 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
 
     get_whitelists()
 
+    biomart_organisms = get_supported_biomart_organisms(repo_path=repo_path)
+    homologene_organisms = get_supported_taxonomy_ids(repo_path=repo_path)
+    supported_organisms = list(set(biomart_organisms + homologene_organisms))
+
     if not target_org:
-        target_org = select(key="organism", heading="target organism:")
+        target_org = select(whitelist=supported_organisms, heading="target organism:")
     target_organism, target_tax = target_org.split(" ")
+
+    if target_org not in biomart_organisms:
+        biomart_organisms = []
+    if target_org not in homologene_organisms:
+        homologene_organisms = []
 
     print(f"Loading genes of {target_organism}...")  
     target_genes = read_whitelist(f"genes/{target_organism}", repo_path=repo_path)['whitelist']
@@ -164,21 +173,19 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
     unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
     source_organisms = [' '.join(map(str, tup)) for tup in unique_organisms.values]
 
-    biomart_organisms = get_supported_biomart_organisms(repo_path=repo_path)
-    homologene_organisms = get_supported_taxonomy_ids(repo_path=repo_path)
-
-    in_both, in_neither, only_in_biomart, only_in_homologene = check_organisms(biomart_organisms, homologene_organisms, source_organisms)
+    in_both, in_neither, only_in_biomart, only_in_homologene = check_organisms(biomart_organisms, homologene_organisms, source_organisms, target_org)
+    print("")
+    if in_both:
+        print("The following source organisms can be used in both approaches: " + ', '.join(in_both) + ".")
+    if in_neither:
+        print("The following source organisms can't be used in either approach: " + ', '.join(in_neither) + ".")
+    if only_in_biomart:
+        print("The following source organisms can only be used in the BioMart approach: " + ', '.join(only_in_biomart) + ".")
+    if only_in_homologene:
+        print("The following source organisms can only be used in the HomoloGene approach: " + ', '.join(only_in_homologene) + ".")
 
     biomart_source_organisms = in_both + only_in_biomart
-    print("")
-    if target_org in biomart_source_organisms:
-        biomart_source_organisms.remove(target_org)
-        print(f"Removed {target_org} from BioMart source organisms as it matches the target organism.")
-
     homologene_source_organisms = in_both + only_in_homologene
-    if target_org in homologene_source_organisms:
-        homologene_source_organisms.remove(target_org)
-        print(f"Removed {target_org} from HomoloGene source organisms as it matches the target organism.")
 
     if len(homologene_source_organisms) > 0 and target_org in homologene_organisms:
         print("\nStarting HomoloGene approach...")
@@ -211,9 +218,9 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 display(transferred_list)
 
                 if weight_markers:
-                    # results_scored = compare_marker_lists(marker_df=transferred_list)
-                    # transferred_list = update_scores(df=results_scored, repo_path=repo_path, organism=target_organism)
-                    transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
+                    transferred_list = compare_marker_lists(marker_df=transferred_list)
+                    if target_organism in biomart_organisms:
+                        transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
                     print("Weighted transferred markers:")
                     display(transferred_list)
 
@@ -270,9 +277,9 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 display(transferred_list)
 
                 if weight_markers:
-                    # results_scored = compare_marker_lists(marker_df=transferred_list)
-                    # transferred_list = update_scores(df=results_scored, repo_path=repo_path, organism=target_organism)
-                    transferred_list = update_scores(df=transferred_list, repo_path=repo_path, biomart_target=target_organism_bm)
+                    transferred_list = compare_marker_lists(marker_df=transferred_list)
+                    if target_organism in biomart_organisms:
+                        transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
                     print("Weighted transferred markers:")
                     display(transferred_list)
 

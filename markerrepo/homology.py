@@ -9,7 +9,7 @@ from .utils import read_whitelist
 from IPython.display import display
 
 
-def check_organisms(biomart_orgs, homologene_orgs, source_organisms):
+def check_organisms(biomart_orgs, homologene_orgs, source_orgs, target_org):
     """
     Checks if the source organisms are supported by the BioMart or HomoloGene approach.
 
@@ -19,8 +19,10 @@ def check_organisms(biomart_orgs, homologene_orgs, source_organisms):
         List of organisms supported by the BioMart approach.
     homologene_orgs : list
         List of organisms supported by the HomoloGene approach.
-    source_organisms : list
+    source_orgs : list
         List of source organisms that the user wants to use for gene transfer.
+    target_org : str
+        Name and tax ID of the target organism.
 
     Returns
     -------
@@ -31,23 +33,16 @@ def check_organisms(biomart_orgs, homologene_orgs, source_organisms):
         - Organisms available only in the HomoloGene approach
     """
 
-    biomart_set = set(biomart_orgs)
-    homologene_set = set(homologene_orgs)
-    source_set = set(source_organisms)
+    if target_org in source_orgs:
+        source_orgs.remove(target_org)
+        print(f"\nRemoved {target_org} from source organisms as it matches the target organism.")
 
-    in_both = list(source_set.intersection(biomart_set).intersection(homologene_set))
-    in_neither = list(source_set.difference(biomart_set).difference(homologene_set))
-    only_in_biomart = list(source_set.intersection(biomart_set).difference(homologene_set))
-    only_in_homologene = list(source_set.intersection(homologene_set).difference(biomart_set))
+    source_orgs = set(source_orgs)
 
-    if in_both:
-        print("The following organisms can be used in both approaches: " + ', '.join(in_both) + ".")
-    if in_neither:
-        print("The following organisms can't be used in either approach: " + ', '.join(in_neither) + ".")
-    if only_in_biomart:
-        print("The following organisms can only be used in the BioMart approach: " + ', '.join(only_in_biomart) + ".")
-    if only_in_homologene:
-        print("The following organisms can only be used in the HomoloGene approach: " + ', '.join(only_in_homologene) + ".")
+    in_both = list(source_orgs.intersection(biomart_orgs).intersection(homologene_orgs))
+    in_neither = list(source_orgs.difference(biomart_orgs).difference(homologene_orgs))
+    only_in_biomart = list(source_orgs.intersection(biomart_orgs).difference(homologene_orgs))
+    only_in_homologene = list(source_orgs.intersection(homologene_orgs).difference(biomart_orgs))
 
     return in_both, in_neither, only_in_biomart, only_in_homologene
 
