@@ -537,12 +537,21 @@ def select(whitelist=None, key=None, heading=None, repo_path="."):
 
         for i, value in enumerate(whitelist):
             print(str(i+1) + ":\t" + value)
-    
+
     if len(whitelist) == 1:
         selection = whitelist[0]
     else:
-        selection = whitelist[int(input())-1]
-        
+        while True:
+            try:
+                user_input = int(input())
+                if user_input < 1 or user_input > len(whitelist):
+                    raise ValueError
+                else:
+                    selection = whitelist[user_input-1]
+                    break
+            except ValueError:
+                print("Invalid input. Please enter a number corresponding to the options above.")
+            
     print(f"Selection: {selection}\n")
 
     return selection
