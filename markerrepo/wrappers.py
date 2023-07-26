@@ -117,7 +117,7 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None, ui=False):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
@@ -138,6 +138,8 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         If True, a third column containing scores is added to the transferred marker list.
     export_suffix : str, default None
         A suffix that will be added to the file name of the transferred marker list.
+    ui : bool, default False
+        If True, try to update scores using the Panglao ubiquitousness index.
 
     Returns
     -------
@@ -219,7 +221,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
 
                 if weight_markers:
                     transferred_list = compare_marker_lists(marker_df=transferred_list)
-                    if target_organism in biomart_organisms:
+                    if target_org in biomart_organisms and ui:
                         transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
                     print("Weighted transferred markers:")
                     display(transferred_list)
@@ -278,7 +280,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
 
                 if weight_markers:
                     transferred_list = compare_marker_lists(marker_df=transferred_list)
-                    if target_organism in biomart_organisms:
+                    if target_org in biomart_organisms and ui:
                         transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
                     print("Weighted transferred markers:")
                     display(transferred_list)
@@ -291,5 +293,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             else:
                 print("Source DataFrame is empty.")
                 
+    print("\nFinished!")
+
     return paths
 

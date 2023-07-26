@@ -820,3 +820,25 @@ def get_biomart_defaults(repo_path="."):
         return [default.strip() for default in defaults]
     else:
         return []
+    
+
+def get_supported_organisms(repo_path="."):
+    """
+    Retrieves all supported organisms from the Biomart and HomoloGene databases.
+
+    Parameters
+    ----------
+    repo_path : str, default "."
+        The path of the Marker Repo.
+
+    Returns
+    -------
+    list of str :
+        The supported organisms.
+    """
+    
+    biomart_organisms = get_supported_biomart_organisms(repo_path=repo_path)
+    homologene_organisms = get_supported_taxonomy_ids(repo_path=repo_path)
+    supported_organisms = list(set(biomart_organisms + homologene_organisms))
+
+    return supported_organisms
