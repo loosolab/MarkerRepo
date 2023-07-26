@@ -16,4 +16,5 @@ dependencies:
   - pip:
     - gitpython
     - pybiomart
+    - scanpy
     - .

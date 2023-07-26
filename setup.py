@@ -15,5 +15,6 @@ setup(
         'GitPython',
         'scikit-learn',
         'pybiomart',
+        'scanpy',
     ],
 )
