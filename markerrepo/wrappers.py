@@ -219,10 +219,14 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 print("Transferred markers:")
                 display(transferred_list)
 
-                if weight_markers:
-                    transferred_list = compare_marker_lists(marker_df=transferred_list)
+                if weight_markers:                   
                     if target_org in biomart_organisms and ui:
-                        transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
+                        default_org = next((x for x in get_biomart_defaults(repo_path=repo_path) if x in get_dataset_names(target_organism)), None)
+                        if default_org:
+                            transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism, biomart_target=default_org)
+                        else:
+                            transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
+                    transferred_list = compare_marker_lists(marker_df=transferred_list)
                     print("Weighted transferred markers:")
                     display(transferred_list)
 
@@ -279,9 +283,13 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 display(transferred_list)
 
                 if weight_markers:
-                    transferred_list = compare_marker_lists(marker_df=transferred_list)
                     if target_org in biomart_organisms and ui:
-                        transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
+                        default_org = next((x for x in get_biomart_defaults(repo_path=repo_path) if x in get_dataset_names(target_organism)), None)
+                        if default_org:
+                            transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism, biomart_target=default_org)
+                        else:
+                            transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism, biomart_target=target_organism_bm)
+                    transferred_list = compare_marker_lists(marker_df=transferred_list)
                     print("Weighted transferred markers:")
                     display(transferred_list)
 
