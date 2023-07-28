@@ -6,38 +6,40 @@ import scanpy as sc
 from IPython.display import display
 
 
-def annot_ct(adata=None, genes_adata=None, output_path=None, db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", db="panglao", species="Hs", inplace=True, header=False):
+def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False):
     """
     If the script is called via a package (atactoolbox), please use this function.
     This function calculates potential cell types per cluster and adds them to the obs table of the anndata object.
 
     Parameters
     ----------
+    genes_adata : anndata.AnnData
+        The anndata object which contains clustered data, gene names as index as well as rank genes groups.
     adata : anndata.AnnData, default None
-        The anndata object containing clustered data to annotate.
-    genes_adata : anndata.AnnData, default None
-        The anndata object which contains gene names as index as well as rank genes groups.
-    output_path : string, default None
+        The anndata object to add the annotations to. If None, the annotations will be written to genes_adata.
+    output_path : string, default "."
         The path to the folder where the annotation file will be written and where the ranks folder will be created.
     db_path : string, default None
         The path to the cell type marker gene database file.
     cluster_path : string, default None
         The path to the folder which contains the "cluster files": Tab-separated files containing the genes and
-        the corresponding ranked scores.
+        the corresponding ranked scores. Use only if you already created your own cluster files.
     cluster_column : string, default None
-        The column of the .obs table which contains the clustering information.
+        The column of the .obs table which contains the clustering information. E.g. "louvain" or "leiden".
     rank_genes_column : string, default None
-        The column of the .uns table which contains the rank genes scores.
+        The column of the .uns table which contains the rank genes scores. E.g. "rank_genes_groups".
     sample : string, default "sample"
-        The name of the sample.
+        The name of the sample. E.g. "sample1" or "zebrafish". This will be used for naming the output files.
     ct_column : string, default "cell_types"
-        The column of the .obs table which will include the new cell type annotation.
+        The column of the .obs table of the anndata object (adata or genes_adata) which will include the new cell type annotation.
     tissue : string, default "all"
         If tissue is not "all", only marker genes found in the entered tissue will be taken into account.
-    db : string, default "panglao"
-        The name of the cell type marker gene database which will be used.
+        This only works if you use the whole panglao database. If you use custom databases (such as combined lists of the marker repo), 
+        you can ignore this parameter.
     species : string, default "hs"
         The species of the data. (Hs or Mm supported)
+        This only works if you use the whole panglao database. If you use custom databases (such as combined lists of the marker repo), 
+        you can ignore this parameter.
     inplace : boolean, default True
         Whether to add the annotations to the adata object in place.
     header : bool, default False
@@ -50,6 +52,9 @@ def annot_ct(adata=None, genes_adata=None, output_path=None, db_path=None, clust
     """
     
     go_on = True
+
+    if not adata:
+        adata = genes_adata
 
     if not inplace:
         adata = adata.copy()
@@ -96,7 +101,7 @@ def annot_ct(adata=None, genes_adata=None, output_path=None, db_path=None, clust
             print("Starting cell type annotation.")
             print(output_path, ct_path, cluster_column)
             perform_cell_type_annotation(
-                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, db=db, species=species, header=header)
+                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header)
 
             # Add information to the adata object
             print("Adding information to the adata object.")
@@ -116,7 +121,7 @@ def annot_ct(adata=None, genes_adata=None, output_path=None, db_path=None, clust
             print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
                   "\nTissue: " + tissue, "\nDB: " + db)
             perform_cell_type_annotation(
-                f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, db=db, header=header)
+                f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header)
             print(f"Cell type annotation of output path {ct_path}/ finished.")
 
         else:
@@ -353,7 +358,7 @@ def calc_ranks(cm_dict, annotated_clusters):
     return ct_dict
 
 
-def get_cell_types(cluster_path, db_path, tissue="all", db="panglao", species="Hs", header=False):
+def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=False):
     """
     Prepare database and clusters for upcoming ranking calculations.
 
@@ -366,8 +371,6 @@ def get_cell_types(cluster_path, db_path, tissue="all", db="panglao", species="H
         The path to the cell type marker gene database file.
     tissue : string, default "all"
         If tissue is not "all", only marker genes found in the entered tissue will be taken into account.
-    db : string, default "panglao"
-        The name of the cell type marker gene database which will be used.
     species : string, default "hs"
         The species of the data.
     header : bool, default False
@@ -380,12 +383,7 @@ def get_cell_types(cluster_path, db_path, tissue="all", db="panglao", species="H
         the ubiquitousness index per cell type for each cluster.
     """
 
-    if db == "panglao":
-        db_dict = get_panglao(db_path, tissue=tissue, species=species, header=header)
-    else:
-        print("DB " + db + " not supported.")
-        exit(1)
-
+    db_dict = get_panglao(db_path, tissue=tissue, species=species, header=header)
     annotated_clusters = get_annotated_clusters(cluster_path=cluster_path)
 
     return calc_ranks(db_dict, annotated_clusters)
@@ -433,7 +431,7 @@ def get_annotated_clusters(cluster_path):
     return annotated_clusters
 
 
-def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", db="panglao", species="Hs", header=False):
+def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False):
     """
     Performs cell type identification, generate cell type assignment table
     and create ranks folder with files for further investigation (one per cluster).
@@ -449,8 +447,6 @@ def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", db
         the corresponding ranked scores.
     tissue : string, default "all"
         If tissue is not "all", only marker genes found in the entered tissue will be taken into account.
-    db : string, default "panglao"
-        The name of the cell type marker gene database which will be used.
     species : string, default "hs"
         The species of the data.
     header : bool, default False
@@ -461,8 +457,7 @@ def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", db
     if not os.path.exists(opath):
         os.makedirs(opath)
 
-    ct_dict = get_cell_types(cluster_path, db_path, tissue,
-                             db=db, species=species, header=header)
+    ct_dict = get_cell_types(cluster_path, db_path, tissue, species=species, header=header)
     write_annotation(ct_dict, output)
 
 
