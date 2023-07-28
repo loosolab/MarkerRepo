@@ -78,7 +78,7 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                 return
 
         print(f"Output folder: {ct_path}/", "\nDB file: " + db_path, f"\nCluster folder: {cluster_path}/",
-              "\nTissue: " + tissue, "\nDB: " + db)
+              "\nTissue: " + tissue)
         if adata and genes_adata and cluster_column:
             # Create folders containing the annotation assignment table aswell as the detailed scoring files per cluster
             if not os.path.exists(f'{cluster_path}'):
@@ -119,7 +119,7 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
 
         elif cluster_path:
             print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
-                  "\nTissue: " + tissue, "\nDB: " + db)
+                  "\nTissue: " + tissue)
             perform_cell_type_annotation(
                 f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header)
             print(f"Cell type annotation of output path {ct_path}/ finished.")
