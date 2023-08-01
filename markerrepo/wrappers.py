@@ -31,6 +31,10 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
 
     paths = []
 
+    weighted = True if style == "score" or style == "ui" else False
+    ui = True if style == "ui" else False
+    custom_file_name = False if file_name else True
+
     while True:  
         df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="Organism name", search_terms=[f"+{organism}"])
 
@@ -39,7 +43,7 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
             print("Trying to create marker lists via homology...")
 
             paths.extend(transfer_markers(target_org=organism, source_df=None, repo_path=repo_path, target_counts=1, 
-                          weight_markers=True, export_suffix="annotation", ui=True, custom_file_name=True))
+                          weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name))
         else:
             print(f"Found {len(df)} marker lists for the given organism {organism}.")
             display(df)
