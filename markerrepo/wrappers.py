@@ -176,7 +176,7 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False, filter_transferred=True):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
@@ -203,6 +203,8 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         If True, the user can specify a custom file name for the exported marker list.
     ensemble : bool, default False
         If True, the Ensembl IDs will be used instead of the gene symbols.
+    filter_transferred : bool, default True
+        If True, filter all marker lists which have already been transferred.
 
     Returns
     -------
@@ -233,7 +235,10 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
 
     if source_df is None:
         print("Select lists of source markers.")
-        source_df = guided_search(out="metadata", repo_path=repo_path)
+        if filter_transferred:
+            # Select only lists which were not transferred before
+            df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="tags_transferred", search_terms=[f"nan"])
+            source_df = guided_search(df=df, out="metadata", repo_path=repo_path)
     
     unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
     source_organisms = [' '.join(map(str, tup)) for tup in unique_organisms.values]
