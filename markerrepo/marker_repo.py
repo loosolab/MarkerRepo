@@ -326,7 +326,7 @@ def export_marker_list(df, path="./exported_lists", file_name=None, header=False
         print(f"Folder {os.path.abspath(path)} created.")
 
     if marker_id == "ensembl":
-        df['Marker'] = df['Marker'].apply(lambda x: x.split(' ')[1])
+        df['Marker'] = df['Marker'].apply(lambda x: x.split(' ')[1] if len(x.split(' ')) > 1 else x.split(' ')[0])
     elif marker_id == "symbol":
         df['Marker'] = df['Marker'].apply(lambda x: x.split(' ')[0])
 

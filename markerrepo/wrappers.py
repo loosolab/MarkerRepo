@@ -6,7 +6,7 @@ from .utils import read_whitelist
 from IPython.display import display
 
 
-def create_marker_lists(organism, repo_path=".", style="score", path=".", file_name=None):
+def create_marker_lists(organism, repo_path=".", style="score", path=".", file_name=None, ensembl=False):
     """
     Creates marker lists for a given organism.
 
@@ -22,6 +22,8 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
         The path of the exported marker lists.
     file_name : str, default None
         The name of the exported marker lists.
+    ensembl : bool, default False
+        If True, the Ensembl IDs will be used instead of the gene symbols.
 
     Returns
     -------
@@ -43,12 +45,12 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
             print("Trying to create marker lists via homology...")
 
             paths.extend(transfer_markers(target_org=organism, source_df=None, repo_path=repo_path, target_counts=1, 
-                          weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name))
+                          weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name, ensemble=ensembl))
         else:
             print(f"Found {len(df)} marker lists for the given organism {organism}.")
             display(df)
             print(f"Please specify the marker lists you want to use for the annotation.")
-            paths.append(convert_markers(style=style, repo_path=repo_path, df=guided_search(repo_path=repo_path, df=df, out="marker_list"), path=path, file_name=file_name))
+            paths.append(convert_markers(style=style, repo_path=repo_path, df=guided_search(repo_path=repo_path, df=df, out="marker_list"), path=path, file_name=file_name, ensembl=ensembl))
 
         user_input = input("Do you want to add another marker list? (yes/no): ")
         if user_input.lower() != "yes":
@@ -174,7 +176,7 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
@@ -199,6 +201,8 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         If True, try to update scores using the Panglao ubiquitousness index.
     custom_file_name : bool, default False
         If True, the user can specify a custom file name for the exported marker list.
+    ensemble : bool, default False
+        If True, the Ensembl IDs will be used instead of the gene symbols.
 
     Returns
     -------
@@ -207,7 +211,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
     """
 
     paths = []
-
+    marker_id = "ensembl" if ensemble else "symbol"
     get_whitelists()
 
     biomart_organisms = get_supported_biomart_organisms(repo_path=repo_path)
@@ -296,7 +300,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 else:
                     file_name = get_valid_filename(prompt="Enter file name: ")
 
-                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
+                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id=marker_id))
             else:
                 print("Source DataFrame is empty.")
 
@@ -362,7 +366,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
                 else:
                     file_name = get_valid_filename(prompt="Enter file name: ")
 
-                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
+                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id=marker_id))
             else:
                 print("Source DataFrame is empty.")
                 
