@@ -491,7 +491,7 @@ def write_annotation(ct_dict, output):
                 c_file.write(dic + "\t" + str(next(iter(sorted_dict))) + "\n")
 
 
-def validate_settings(repo_path, h5ad_path, organism, rank_genes_column, genes_column, column, ensembl, col_to_search, search_terms):
+def validate_settings(repo_path, adata, organism, rank_genes_column, genes_column, column, ensembl, col_to_search, search_terms):
     """
     Validates user settings including file paths, anndata object columns, and specified organism.
 
@@ -499,8 +499,8 @@ def validate_settings(repo_path, h5ad_path, organism, rank_genes_column, genes_c
     ----------
     repo_path : str
         Path to the marker repository.
-    h5ad_path : str
-        Path to the h5ad file.
+    adata : anndata.AnnData
+        The loaded AnnData object.
     organism : str or int
         Organism name, taxon ID, or both. E.g., "mouse", 10090, or "mouse 10090".
     rank_genes_column : str, default None
@@ -518,56 +518,64 @@ def validate_settings(repo_path, h5ad_path, organism, rank_genes_column, genes_c
 
     Returns
     -------
-    list of str or anndata.AnnData :
-        List of error messages if errors are found, otherwise the AnnData object.
-    """
+    bool :
+        Returns True if all settings are valid, otherwise prints the errors and returns False.
+    """ 
 
     errors = []
 
-    # Validate if paths exist
+    # Validate if repo_path exists
     if not os.path.exists(repo_path):
         errors.append(f"Repo path {repo_path} does not exist.")
-    if not os.path.exists(h5ad_path):
-        errors.append(f"H5AD path {h5ad_path} does not exist.")
 
+    if adata is None:
+        errors.append("No AnnData object provided.")
+        
     # List of valid organisms and their tax IDs
     get_whitelists(repo_path=repo_path)
     valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
 
     # Validate the organism
-    organism_str = str(organism)
-    if not any(organism_str in valid_entry for valid_entry in valid_organisms):
-        errors.append(f"Invalid organism or taxon ID {organism}. Available options: {valid_organisms}")
-
-    # Validate if h5ad file can be loaded and contains required columns
-    try:
-        adata = sc.read_h5ad(h5ad_path)
-    except Exception as e:
-        errors.append(f"Error loading h5ad file: {e}")
-        return errors
+    organism_str = str(organism).strip()
+    is_valid_organism = any(organism_str == valid_entry.split(" ")[0] or organism_str == valid_entry.split(" ")[1] or organism_str == valid_entry for valid_entry in valid_organisms)
     
-    # Validate .obs and .var table columns
+    if not is_valid_organism:
+        formatted_valid_organisms = "\n  - " + "\n  - ".join(valid_organisms)
+        errors.append(f"Invalid organism or taxon ID {organism}.\nAvailable options:{formatted_valid_organisms}\n")
+
+    # Validate obs and var columns
     if rank_genes_column and rank_genes_column not in adata.obs.columns:
-        errors.append(f"Invalid rank_genes_column {rank_genes_column}. Available columns in adata.obs: {list(adata.obs.columns)}")
+        formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
+        errors.append(f"Invalid rank_genes_column {rank_genes_column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
 
     if genes_column and genes_column not in adata.var.columns:
-        errors.append(f"Invalid genes_column {genes_column}. Available columns in adata.var: {list(adata.var.columns)}")
+        formatted_var_columns = "\n  - " + "\n  - ".join(adata.var.columns)
+        errors.append(f"Invalid genes_column {genes_column}.\nAvailable columns in adata.var:{formatted_var_columns}\n")
 
     if column and column not in adata.obs.columns:
-        errors.append(f"Invalid column {column}. Available columns in adata.obs: {list(adata.obs.columns)}")
+        formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
+        errors.append(f"Invalid column {column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
 
     # Validate col_to_search using the columns from the combined DataFrames in the repo
     combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
     if col_to_search and col_to_search not in combined_df_columns:
-        errors.append(f"Invalid col_to_search {col_to_search}. It should be one of {combined_df_columns}")
+        formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
+        errors.append(f"Invalid col_to_search {col_to_search}.\nAvailable columns:{formatted_combined_df_columns}\n")
+
 
     if errors:
-        return errors
+        print("Validation failed due to the following errors:")
+        print("-" * 40)
+        for i, error in enumerate(errors, 1):
+            print(f"{i}. {error}")
+        print("-" * 40)
+
+        return False
     else:
         print("All settings are valid.")
         print(f"Summary of settings:")
+        print("-" * 40)
         print(f"  Repo path: {repo_path}")
-        print(f"  H5AD path: {h5ad_path}")
         print(f"  Organism: {organism}")
         print(f"  Rank genes column: {rank_genes_column}")
         print(f"  Genes column: {genes_column}")
@@ -575,54 +583,46 @@ def validate_settings(repo_path, h5ad_path, organism, rank_genes_column, genes_c
         print(f"  Ensembl IDs: {ensembl}")
         print(f"  Column to search: {col_to_search}")
         print(f"  Search terms: {search_terms}")
+        print("-" * 40)
 
-        return adata
+        return True
     
 
-def list_possible_settings(repo_path, h5ad_path):
+def list_possible_settings(repo_path, adata):
     """
-    Lists all possible settings based on the repo and h5ad file.
+    Lists all possible settings based on the repo and AnnData object.
 
     Parameters
     ----------
     repo_path : str
         Path to the marker repository.
-    h5ad_path : str
-        Path to the h5ad file.
+    adata : anndata.AnnData
+        The loaded AnnData object.
     """
 
     if not os.path.exists(repo_path):
         print(f"Repo path {repo_path} does not exist.")
         return
 
-    if not os.path.exists(h5ad_path):
-        print(f"H5AD path {h5ad_path} does not exist.")
-        return
-
-    try:
-        adata = sc.read_h5ad(h5ad_path)
-    except Exception as e:
-        print(f"Error loading h5ad file: {e}")
-        return
-
-    print("\n----- Possible Settings -----")
-
+    print("Possible Settings:")
+    print("-" * 40)
+    
     valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
-    print("\nPossible Organisms or Taxon IDs:")
+    print("1. Possible Organisms or Taxon IDs:")
     for org in valid_organisms:
         print(f"  - {org}")
 
-    print("\nAvailable Columns in adata.obs:")
+    print("\n2. Available Columns in adata.obs:")
     for col in adata.obs.columns:
         print(f"  - {col}")
 
-    print("\nAvailable Columns in adata.var:")
+    print("\n3. Available Columns in adata.var:")
     for col in adata.var.columns:
         print(f"  - {col}")
 
     combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
-    print("\nAvailable Columns to Search in Marker Repository:")
+    print("\n4. Available Columns to Search in Marker Repository:")
     for col in combined_df_columns:
         print(f"  - {col}")
-
-    print("\n-----------------------------")
+    
+    print("-" * 40)
