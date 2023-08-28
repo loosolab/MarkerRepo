@@ -788,7 +788,7 @@ def get_valid_filename(prompt="Enter file name or path: "):
         return file_name
 
 
-def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False):
+def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False, order=["Info", "Marker"]):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
 
@@ -805,7 +805,9 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sens
         If True, the function will consider the case of the keywords. If False, the function will ignore the case.
     exact : bool, default False
         If True, the function will search for exact matches of the keywords. If False, the function will search for the keywords as substrings.
-
+    order : list of str, default ["Info", "Marker"]
+        The order of the columns in the resulting DataFrame.
+        
     Returns
     --------
     pd.DataFrame :
@@ -831,6 +833,34 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sens
 
     # Drop duplicates, keep one marker only, rearrange column order
     markers_filtered = combined_df.drop_duplicates()
-    markers_filtered = markers_filtered[['Info', 'Marker']]
+    markers_filtered = markers_filtered[order]
 
     return markers_filtered
+
+
+def update_organism(organism, repo_path):
+    """
+    Updates the organism input to include both the organism name and the taxon ID, based on the whitelist.
+
+    Parameters
+    ----------
+    organism : str or int
+        The input organism as either the name, taxon ID, or both.
+    repo_path : str
+        Path to the marker repository.
+
+    Returns
+    -------
+    str :
+        The updated organism name and taxon ID as a string, or None if not found.
+    """
+    
+    valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
+    organism_str = str(organism).lower()
+    
+    for entry in valid_organisms:
+        entry_lower = entry.lower()
+        if organism_str in entry_lower:
+            return entry
+            
+    return None

@@ -4,6 +4,7 @@ import statistics
 import pandas as pd
 import scanpy as sc
 from IPython.display import display
+from .marker_repo import read_whitelist, get_whitelists, combine_dfs
 
 
 def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False):
@@ -488,3 +489,140 @@ def write_annotation(ct_dict, output):
                     d_file.write("\n")
             if len(sorted_dict.keys()) > 0:
                 c_file.write(dic + "\t" + str(next(iter(sorted_dict))) + "\n")
+
+
+def validate_settings(repo_path, h5ad_path, organism, rank_genes_column, genes_column, column, ensembl, col_to_search, search_terms):
+    """
+    Validates user settings including file paths, anndata object columns, and specified organism.
+
+    Parameters
+    ----------
+    repo_path : str
+        Path to the marker repository.
+    h5ad_path : str
+        Path to the h5ad file.
+    organism : str or int
+        Organism name, taxon ID, or both. E.g., "mouse", 10090, or "mouse 10090".
+    rank_genes_column : str, default None
+        Column in .obs table where ranked genes are stored. None if no ranking performed yet.
+    genes_column : str, default None
+        Column in .var table where gene symbols or IDs are stored. None if index column already suits the need.
+    column : str
+        The column in .obs table of the clustering you want to annotate. E.g., "leiden" or "louvain".
+    ensembl : bool
+        True if the index of .var tables are Ensembl IDs, False otherwise.
+    col_to_search : str
+        Column to search in for marker list selection. None to search all columns.
+    search_terms : list of str
+        Search terms for marker list selection. "-" to exclude, "+" must contain.
+
+    Returns
+    -------
+    list of str or anndata.AnnData :
+        List of error messages if errors are found, otherwise the AnnData object.
+    """
+
+    errors = []
+
+    # Validate if paths exist
+    if not os.path.exists(repo_path):
+        errors.append(f"Repo path {repo_path} does not exist.")
+    if not os.path.exists(h5ad_path):
+        errors.append(f"H5AD path {h5ad_path} does not exist.")
+
+    # List of valid organisms and their tax IDs
+    get_whitelists(repo_path=repo_path)
+    valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
+
+    # Validate the organism
+    organism_str = str(organism)
+    if not any(organism_str in valid_entry for valid_entry in valid_organisms):
+        errors.append(f"Invalid organism or taxon ID {organism}. Available options: {valid_organisms}")
+
+    # Validate if h5ad file can be loaded and contains required columns
+    try:
+        adata = sc.read_h5ad(h5ad_path)
+    except Exception as e:
+        errors.append(f"Error loading h5ad file: {e}")
+        return errors
+    
+    # Validate .obs and .var table columns
+    if rank_genes_column and rank_genes_column not in adata.obs.columns:
+        errors.append(f"Invalid rank_genes_column {rank_genes_column}. Available columns in adata.obs: {list(adata.obs.columns)}")
+
+    if genes_column and genes_column not in adata.var.columns:
+        errors.append(f"Invalid genes_column {genes_column}. Available columns in adata.var: {list(adata.var.columns)}")
+
+    if column and column not in adata.obs.columns:
+        errors.append(f"Invalid column {column}. Available columns in adata.obs: {list(adata.obs.columns)}")
+
+    # Validate col_to_search using the columns from the combined DataFrames in the repo
+    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
+    if col_to_search and col_to_search not in combined_df_columns:
+        errors.append(f"Invalid col_to_search {col_to_search}. It should be one of {combined_df_columns}")
+
+    if errors:
+        return errors
+    else:
+        print("All settings are valid.")
+        print(f"Summary of settings:")
+        print(f"  Repo path: {repo_path}")
+        print(f"  H5AD path: {h5ad_path}")
+        print(f"  Organism: {organism}")
+        print(f"  Rank genes column: {rank_genes_column}")
+        print(f"  Genes column: {genes_column}")
+        print(f"  Clustering column: {column}")
+        print(f"  Ensembl IDs: {ensembl}")
+        print(f"  Column to search: {col_to_search}")
+        print(f"  Search terms: {search_terms}")
+
+        return adata
+    
+
+def list_possible_settings(repo_path, h5ad_path):
+    """
+    Lists all possible settings based on the repo and h5ad file.
+
+    Parameters
+    ----------
+    repo_path : str
+        Path to the marker repository.
+    h5ad_path : str
+        Path to the h5ad file.
+    """
+
+    if not os.path.exists(repo_path):
+        print(f"Repo path {repo_path} does not exist.")
+        return
+
+    if not os.path.exists(h5ad_path):
+        print(f"H5AD path {h5ad_path} does not exist.")
+        return
+
+    try:
+        adata = sc.read_h5ad(h5ad_path)
+    except Exception as e:
+        print(f"Error loading h5ad file: {e}")
+        return
+
+    print("\n----- Possible Settings -----")
+
+    valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
+    print("\nPossible Organisms or Taxon IDs:")
+    for org in valid_organisms:
+        print(f"  - {org}")
+
+    print("\nAvailable Columns in adata.obs:")
+    for col in adata.obs.columns:
+        print(f"  - {col}")
+
+    print("\nAvailable Columns in adata.var:")
+    for col in adata.var.columns:
+        print(f"  - {col}")
+
+    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
+    print("\nAvailable Columns to Search in Marker Repository:")
+    for col in combined_df_columns:
+        print(f"  - {col}")
+
+    print("\n-----------------------------")

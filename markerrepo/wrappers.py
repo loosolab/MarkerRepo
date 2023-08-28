@@ -6,7 +6,7 @@ from .utils import read_whitelist
 from IPython.display import display
 
 
-def create_marker_lists(organism, repo_path=".", style="score", path=".", file_name=None, ensembl=False):
+def create_marker_lists(organism, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None):
     """
     Creates marker lists for a given organism.
 
@@ -24,6 +24,10 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
         The name of the exported marker lists.
     ensembl : bool, default False
         If True, the Ensembl IDs will be used instead of the gene symbols.
+    col_to_search : str, default None
+        The column of the DataFrame to search in.
+    search_terms : list of str, default None
+        The search terms to search for in the DataFrame.
 
     Returns
     -------
@@ -44,14 +48,27 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
             print("No marker lists found for this organism.")
             print("Trying to create marker lists via homology...")
 
-            paths.extend(transfer_markers(target_org=organism, source_df=None, repo_path=repo_path, target_counts=1, 
+            source_df = None
+            if search_terms:
+                source_df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search=col_to_search, search_terms=search_terms)
+            paths.extend(transfer_markers(target_org=organism, source_df=source_df, repo_path=repo_path, target_counts=1, 
                           weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name, ensemble=ensembl))
         else:
             print(f"Found {len(df)} marker lists for the given organism {organism}.")
             display(df)
-            print(f"Please specify the marker lists you want to use for the annotation.")
-            paths.append(convert_markers(style=style, repo_path=repo_path, df=guided_search(repo_path=repo_path, df=df, out="marker_list"), path=path, file_name=file_name, ensembl=ensembl))
+            if search_terms:
+                df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms)
+                print(f"Found {len(df)} marker lists for the given search terms.")
+                display(df)
+                df = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
+                paths.append(convert_markers(style=style, repo_path=repo_path, df=df, path=path, file_name=file_name, ensembl=ensembl))
+            else:
+                print(f"Please specify the marker lists you want to use for the annotation.")
+                paths.append(convert_markers(style=style, repo_path=repo_path, df=guided_search(repo_path=repo_path, df=df, out="marker_list"), path=path, file_name=file_name, ensembl=ensembl))
 
+        if search_terms:
+            return paths
+        
         user_input = input("Do you want to add another marker list? (yes/no): ")
         if user_input.lower() != "yes":
             break 
