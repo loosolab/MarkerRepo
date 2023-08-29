@@ -84,7 +84,7 @@ def update_scores(df, organism="human", repo_path=".", biomart_target=None):
         if biomart_target is None:
             ui_dict = transfer_ui_to_homologs(target_organism=organism, repo_path=repo_path)
         else:
-            ui_dict = transfer_ui_to_homologs(biomart_target=biomart_target, repo_path=repo_path)
+            ui_dict = transfer_ui_to_homologs(biomart_target=biomart_target, repo_path=repo_path, target_organism=organism)
 
     # Split the "Marker" column and take the first part
     df['MainMarker'] = df['Marker'].str.split().str[0].str.upper()

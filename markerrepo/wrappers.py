@@ -1,12 +1,82 @@
 from .scoring import compare_marker_lists, update_scores
 from .homology import check_organisms, download_homologene_data, fetch_homologs, get_dataset_names, get_supported_biomart_organisms, get_supported_taxonomy_ids, transfer_markers_biomart, transfer_markers_homologene
-from .marker_repo import combine_lists, export_marker_list, guided_search, get_whitelists, select, get_selected_lists
+from .marker_repo import combine_lists, export_marker_list, guided_search, get_whitelists, select, get_selected_lists, search_df, combine_dfs, get_valid_filename
 from .homology import get_biomart_defaults
 from .utils import read_whitelist
 from IPython.display import display
 
 
-def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists", file_name="marker_list", case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
+def create_marker_lists(organism, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None):
+    """
+    Creates marker lists for a given organism.
+
+    Parameters
+    ----------
+    organism : str
+        The organism of the marker lists.
+    repo_path : str, default "."
+        The path of the Marker Repo.
+    style : str, default "score"
+        The style of the marker lists. Currently there are four options available: "two_column", "score", "ui" and "panglao"
+    path : str, default "."
+        The path of the exported marker lists.
+    file_name : str, default None
+        The name of the exported marker lists.
+    ensembl : bool, default False
+        If True, the Ensembl IDs will be used instead of the gene symbols.
+    col_to_search : str, default None
+        The column of the DataFrame to search in.
+    search_terms : list of str, default None
+        The search terms to search for in the DataFrame.
+
+    Returns
+    -------
+    List of paths to the created marker lists.
+
+    """
+
+    paths = []
+
+    weighted = True if style == "score" or style == "ui" else False
+    ui = True if style == "ui" else False
+    custom_file_name = False if file_name else True
+
+    while True:  
+        df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="Organism name", search_terms=[f"+{organism}"])
+
+        if df.empty:
+            print("No marker lists found for this organism.")
+            print("Trying to create marker lists via homology...")
+
+            source_df = None
+            if search_terms:
+                source_df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search=col_to_search, search_terms=search_terms)
+            paths.extend(transfer_markers(target_org=organism, source_df=source_df, repo_path=repo_path, target_counts=1, 
+                          weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name, ensemble=ensembl))
+        else:
+            print(f"Found {len(df)} marker lists for the given organism {organism}.")
+            display(df)
+            if search_terms:
+                df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms)
+                print(f"Found {len(df)} marker lists for the given search terms.")
+                display(df)
+                df = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
+                paths.append(convert_markers(style=style, repo_path=repo_path, df=df, path=path, file_name=file_name, ensembl=ensembl))
+            else:
+                print(f"Please specify the marker lists you want to use for the annotation.")
+                paths.append(convert_markers(style=style, repo_path=repo_path, df=guided_search(repo_path=repo_path, df=df, out="marker_list"), path=path, file_name=file_name, ensembl=ensembl))
+
+        if search_terms:
+            return paths
+        
+        user_input = input("Do you want to add another marker list? (yes/no): ")
+        if user_input.lower() != "yes":
+            break 
+
+    return paths
+
+
+def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists", file_name=None, case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
     Optionally, it can export the DataFrame to a file.
@@ -30,7 +100,7 @@ def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists"
         If True, the function will search for exact matches of the keywords. If False, the function will search for the keywords as substrings.
     style : str, default "two_column"
         The format style of which the exported marker list should look like.
-        Currently there are three options available: "two_column", "score" and "panglao"
+        Currently there are four options available: "two_column", "score", "ui" and "panglao"
     organism : str, default "Hs"
         Organism of panglao style markers.
     tissue : str, default "all"
@@ -68,17 +138,23 @@ def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists"
         case "score":
             print("Preparing score style marker list...")
             marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
+        case "ui":
+            print("Preparing ui style marker list...")
+            marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
+            marker_list = update_scores(marker_list, repo_path=repo_path)
         case "panglao":
             print("Preparing panglao style marker list...")
             marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
             marker_list = update_scores(marker_list, repo_path=repo_path)
             marker_list = transform_list_to_panglao(df=marker_list, organism=organism, tissue=tissue)
         case _:
-            print("Style not recognized. Try 'two_column', 'score' or 'panglao'")
+            print("Style not recognized. Try 'two_column', 'score', 'ui' or 'panglao'")
 
     if path or file_name:
         # Export marker list
         return export_marker_list(marker_list, path=path, file_name=file_name)
+    elif path and not file_name:
+        return export_marker_list(marker_list, path=path, file_name=get_valid_filename(prompt="Enter file name: "))
     else:
         return marker_list
 
@@ -117,7 +193,7 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False, filter_transferred=True):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
@@ -138,6 +214,14 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         If True, a third column containing scores is added to the transferred marker list.
     export_suffix : str, default None
         A suffix that will be added to the file name of the transferred marker list.
+    ui : bool, default False
+        If True, try to update scores using the Panglao ubiquitousness index.
+    custom_file_name : bool, default False
+        If True, the user can specify a custom file name for the exported marker list.
+    ensemble : bool, default False
+        If True, the Ensembl IDs will be used instead of the gene symbols.
+    filter_transferred : bool, default True
+        If True, filter all marker lists which have already been transferred.
 
     Returns
     -------
@@ -146,7 +230,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
     """
 
     paths = []
-
+    marker_id = "ensembl" if ensemble else "symbol"
     get_whitelists()
 
     biomart_organisms = get_supported_biomart_organisms(repo_path=repo_path)
@@ -168,7 +252,10 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
 
     if source_df is None:
         print("Select lists of source markers.")
-        source_df = guided_search(out="metadata", repo_path=repo_path)
+        if filter_transferred:
+            # Select only lists which were not transferred before
+            df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="tags_transferred", search_terms=[f"nan"])
+            source_df = guided_search(df=df, out="metadata", repo_path=repo_path)
     
     unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
     source_organisms = [' '.join(map(str, tup)) for tup in unique_organisms.values]
@@ -204,31 +291,38 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             display(source_marker_list)
 
             if target_counts:
-                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.")
+                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.\n")
                 filtered_source_df = transfer_markers_homologene(source_marker_list, source_tax, target_tax, hg_db, target_genes, source_whitelist=source_genes, calc_proportions=True, 
                                                         plots=True, target_counts=target_counts)
             else:
                 filtered_source_df = source_marker_list
             
             if not filtered_source_df.empty:
-                print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
+                print(f"Create DataFrame containing the transferred genes based on the filter criteria.\n")
                 transferred_list = transfer_markers_homologene(filtered_source_df, source_tax, target_tax, hg_db, target_genes,
-                                                        source_whitelist=source_genes, calc_proportions=True, plots=True)
-                print("Transferred markers:")
+                                                        source_whitelist=source_genes, calc_proportions=False, plots=True)
+                print("\nTransferred markers:")
                 display(transferred_list)
 
-                if weight_markers:
+                if weight_markers:                   
+                    if target_org in biomart_organisms and ui:
+                        default_org = next((x for x in get_biomart_defaults(repo_path=repo_path) if x in get_dataset_names(target_organism)), None)
+                        if default_org:
+                            transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism, biomart_target=default_org)
+                        else:
+                            transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
                     transferred_list = compare_marker_lists(marker_df=transferred_list)
-                    if target_organism in biomart_organisms:
-                        transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
                     print("Weighted transferred markers:")
                     display(transferred_list)
 
-                file_name=f"{source_organism}_{target_organism}_HomoloGene"
-                if export_suffix:
-                    file_name = f"{file_name}_{export_suffix}"
+                if not custom_file_name:
+                    file_name=f"{source_organism}_{target_organism}_HomoloGene"
+                    if export_suffix:
+                        file_name = f"{file_name}_{export_suffix}"
+                else:
+                    file_name = get_valid_filename(prompt="Enter file name: ")
 
-                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
+                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id=marker_id))
             else:
                 print("Source DataFrame is empty.")
 
@@ -263,33 +357,42 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             display(source_marker_list)
 
             if target_counts:
-                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.")
+                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.\n")
                 filtered_source_df = transfer_markers_biomart(biomart_db, source_marker_list, target_genes, source_whitelist=source_genes,
                                                             calc_proportions=True, plots=True, target_counts=target_counts)
             else:
                 filtered_source_df = source_marker_list
             
             if not filtered_source_df.empty:
-                print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
+                print(f"Create DataFrame containing the transferred genes based on the filter criteria.\n")
                 transferred_list = transfer_markers_biomart(biomart_db, filtered_source_df, target_genes, source_whitelist=source_genes,
-                                                            calc_proportions=True, plots=True, target_counts=None)
-                print("Transferred markers:")
+                                                            calc_proportions=False, plots=True, target_counts=None)
+                print("\nTransferred markers:")
                 display(transferred_list)
 
                 if weight_markers:
+                    if target_org in biomart_organisms and ui:
+                        default_org = next((x for x in get_biomart_defaults(repo_path=repo_path) if x in get_dataset_names(target_organism)), None)
+                        if default_org:
+                            transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism, biomart_target=default_org)
+                        else:
+                            transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism, biomart_target=target_organism_bm)
                     transferred_list = compare_marker_lists(marker_df=transferred_list)
-                    if target_organism in biomart_organisms:
-                        transferred_list = update_scores(df=transferred_list, repo_path=repo_path, organism=target_organism)
                     print("Weighted transferred markers:")
                     display(transferred_list)
 
-                file_name=f"{source_organism}_{target_organism}_BioMart"
-                if export_suffix:
-                    file_name = f"{file_name}_{export_suffix}"
+                if not custom_file_name:
+                    file_name=f"{source_organism}_{target_organism}_BioMart"
+                    if export_suffix:
+                        file_name = f"{file_name}_{export_suffix}"
+                else:
+                    file_name = get_valid_filename(prompt="Enter file name: ")
 
-                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id="symbol"))
+                paths.append(export_marker_list(transferred_list, path="./transferred_markers", file_name=file_name, marker_id=marker_id))
             else:
                 print("Source DataFrame is empty.")
                 
+    print("\nFinished!")
+
     return paths
 
