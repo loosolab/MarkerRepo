@@ -291,17 +291,17 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             display(source_marker_list)
 
             if target_counts:
-                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.")
+                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.\n")
                 filtered_source_df = transfer_markers_homologene(source_marker_list, source_tax, target_tax, hg_db, target_genes, source_whitelist=source_genes, calc_proportions=True, 
                                                         plots=True, target_counts=target_counts)
             else:
                 filtered_source_df = source_marker_list
             
             if not filtered_source_df.empty:
-                print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
+                print(f"Create DataFrame containing the transferred genes based on the filter criteria.\n")
                 transferred_list = transfer_markers_homologene(filtered_source_df, source_tax, target_tax, hg_db, target_genes,
-                                                        source_whitelist=source_genes, calc_proportions=True, plots=True)
-                print("Transferred markers:")
+                                                        source_whitelist=source_genes, calc_proportions=False, plots=True)
+                print("\nTransferred markers:")
                 display(transferred_list)
 
                 if weight_markers:                   
@@ -357,17 +357,17 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             display(source_marker_list)
 
             if target_counts:
-                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.")
+                print(f"Filter source DataFrame by the number of target genes per source gene: remove all source genes that lead to more than {target_counts} target genes.\n")
                 filtered_source_df = transfer_markers_biomart(biomart_db, source_marker_list, target_genes, source_whitelist=source_genes,
                                                             calc_proportions=True, plots=True, target_counts=target_counts)
             else:
                 filtered_source_df = source_marker_list
             
             if not filtered_source_df.empty:
-                print(f"Create DataFrame containing the transferred genes based on the filter criteria.")
+                print(f"Create DataFrame containing the transferred genes based on the filter criteria.\n")
                 transferred_list = transfer_markers_biomart(biomart_db, filtered_source_df, target_genes, source_whitelist=source_genes,
-                                                            calc_proportions=True, plots=True, target_counts=None)
-                print("Transferred markers:")
+                                                            calc_proportions=False, plots=True, target_counts=None)
+                print("\nTransferred markers:")
                 display(transferred_list)
 
                 if weight_markers:

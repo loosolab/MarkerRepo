@@ -197,7 +197,7 @@ def process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, ta
         display(update_markers(filtered_source_df, get_gene_dict(w_markers=source_whitelist)))
         num_filtered_genes = source_df_copy.shape[0] - filtered_source_df.shape[0]
 
-        print(f"Filtered: {num_filtered_genes} source genes, {100 - filtered_source_df.shape[0] / source_df_copy.shape[0] * 100:.2f}%")
+        print(f"Filtered: {num_filtered_genes} source genes, {100 - filtered_source_df.shape[0] / source_df_copy.shape[0] * 100:.2f}%\n")
 
         return filtered_source_df
 
@@ -301,14 +301,14 @@ def transfer_markers_homologene(df, source_organism, target_organism, hg_db, tar
 
     # Calculate the percentage of transferred markers
     marker_transfer_rate = target_df.shape[0] / df.shape[0] * 100
-    print(f"Marker transfer rate: {marker_transfer_rate:.2f}%")
+    print(f"The Marker Transfer Rate is {marker_transfer_rate:.2f}%, indicating the percentage of successfully transferred markers from the source to the target organism.")
 
     target_genes_list = [entry.split(' ')[0].upper() for entry in target_whitelist]
     filtered_df = target_df[target_df['Transferred Marker'].isin(target_genes_list)]
 
-    # Calculate the percentage of transferred markers after filtering
-    marker_filtered_transfer_rate = filtered_df.shape[0] / df_copy.shape[0] * 100
-    print(f"Marker transfer rate after filtering: {marker_filtered_transfer_rate:.2f}%")
+    # # Calculate the percentage of transferred markers after filtering
+    # marker_filtered_transfer_rate = filtered_df.shape[0] / df_copy.shape[0] * 100
+    # print(f"Marker transfer rate after filtering: {marker_filtered_transfer_rate:.2f}%")
 
     target_df.rename(columns={'Transferred Marker': 'Marker'}, inplace=True)
 
@@ -316,8 +316,10 @@ def transfer_markers_homologene(df, source_organism, target_organism, hg_db, tar
         if source_whitelist is not None and target_whitelist is not None:
             # Calculate the proportions
             possible_transfer_rate, transferred_genes_in_target = calculate_homology_proportions(merged_data, source_whitelist, target_whitelist, id_type='symbol')
-            print(f"Possible transfer rate of all genes: {possible_transfer_rate:.2f}%")
-            print(f"Proportion of transferred genes in all genes of target organism: {transferred_genes_in_target:.2f}%")
+
+            print(f"\nGeneral information:")
+            print(f"Percentage of genes that can potentially be transferred from the source organism: {possible_transfer_rate:.2f}%")
+            print(f"If all genes from the source organism were transferred, they would cover {transferred_genes_in_target:.2f}% of all genes of the target organism.")
 
     if target_counts:
         return process_and_filter_genes(merged_data, df, source_whitelist, target_counts=target_counts, plots=plots)
@@ -559,14 +561,14 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
 
     # Calculate the percentage of transferred markers
     marker_transfer_rate = merged_df.shape[0] / source_df.shape[0] * 100
-    print(f"Marker transfer rate: {marker_transfer_rate:.2f}%")
+    print(f"The Marker Transfer Rate is {marker_transfer_rate:.2f}%, indicating the percentage of successfully transferred markers from the source to the target organism.")
 
     target_genes_list = [entry.split(' ')[1] for entry in target_whitelist]
     filtered_df = merged_df[merged_df[biomart_df.columns[1]].isin(target_genes_list)]
 
-    # Calculate the percentage of transferred markers after filtering
-    marker_filtered_transfer_rate = filtered_df.shape[0] / source_df.shape[0] * 100
-    print(f"Marker transfer rate after filtering: {marker_filtered_transfer_rate:.2f}%")
+    # # Calculate the percentage of transferred markers after filtering
+    # marker_filtered_transfer_rate = filtered_df.shape[0] / source_df.shape[0] * 100
+    # print(f"Marker transfer rate after filtering: {marker_filtered_transfer_rate:.2f}%")
 
     # Create the target dataframe
     target_df = merged_df[[biomart_df.columns[1], 'Info']].copy()
@@ -574,12 +576,13 @@ def transfer_markers_biomart(biomart_df, source_df, target_whitelist, source_whi
     target_df.drop_duplicates(inplace=True)
 
     if calc_proportions:
-            if source_whitelist is not None:
-                # Calculate the proportions
-                possible_transfer_rate, transferred_genes_in_target = calculate_homology_proportions(biomart_df, source_whitelist, target_whitelist, id_type="ensembl")
+        if source_whitelist is not None:
+            # Calculate the proportions
+            possible_transfer_rate, transferred_genes_in_target = calculate_homology_proportions(biomart_df, source_whitelist, target_whitelist, id_type="ensembl")
 
-                print(f"Possible transfer rate of all genes: {possible_transfer_rate:.2f}%")
-                print(f"Proportion of transferred genes in all genes of target organism: {transferred_genes_in_target:.2f}%")
+            print(f"\nGeneral information:")
+            print(f"Percentage of genes that can potentially be transferred from the source organism: {possible_transfer_rate:.2f}%")
+            print(f"If all genes from the source organism were transferred, they would cover {transferred_genes_in_target:.2f}% of all genes of the target organism.")
 
     if target_counts:
         return process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, target_counts=target_counts, plots=plots, id_type='ensembl')
