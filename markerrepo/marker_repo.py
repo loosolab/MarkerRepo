@@ -449,7 +449,7 @@ def show_statistics(metadata, repo_path=".", dpi=120):
     plt.show()
 
 
-def get_whitelists(repo_path="."):
+def get_whitelists(repo_path=".", update=False):
     """
     Fetches whitelists of the metadata_whitelist repository.
     
@@ -457,17 +457,32 @@ def get_whitelists(repo_path="."):
     ----------
     repo_path : str, default "."
         The path of the Marker Repo.
+    update : bool, default False
+        Whether to update the repo if it already exists.
     """
 
-    # Based on https://gitlab.gwdg.de/loosolab/software/metadata-organizer/-/blob/main/metaTools.py
-    print('Fetching whitelists...')
-    if not os.path.exists(f"{repo_path}/metadata_whitelists"):
-        repo = git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git/', f"{repo_path}/metadata_whitelists")
+    print('Initiating whitelist fetching...')
+    repo_full_path = os.path.join(repo_path, "metadata_whitelists")
+
+    # Check if path exists
+    if os.path.exists(repo_full_path):
+        print(f"Directory {repo_full_path} already exists.")
+        # If update is True, pull the latest changes
+        if update:
+            print("Updating the existing repository...")
+            repo = git.Repo(repo_full_path)
+            o = repo.remotes.origin
+            o.pull()
+            print("Repository updated.")
+        else:
+            print("Update is set to False. Skipping update.")
     else:
-        repo = git.Repo('metadata_whitelists')
-        o = repo.remotes.origin
-        o.pull()
-    print("Done!\n")
+        # Clone the repository if it doesn't exist
+        print("Directory does not exist. Cloning the repository...")
+        git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git', repo_full_path)
+        print("Repository cloned.")
+
+    print("Whitelist fetching process completed.\n")
 
 
 def update_markers(df, marker_dict, column='Marker'):
