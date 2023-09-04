@@ -6,7 +6,7 @@ from .utils import read_whitelist
 from IPython.display import display
 
 
-def create_marker_lists(organism, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None):
+def create_marker_lists(organism, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None, force_homology=False):
     """
     Creates marker lists for a given organism.
 
@@ -28,6 +28,8 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
         The column of the DataFrame to search in.
     search_terms : list of str, default None
         The search terms to search for in the DataFrame.
+    force_homology : bool, default False
+        If True, the function will try to create marker lists via homology even if marker lists for the given organism already exist.
 
     Returns
     -------
@@ -42,10 +44,11 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
     custom_file_name = False if file_name else True
 
     while True:  
-        df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="Organism name", search_terms=[f"+{organism}"])
+        df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="Organism name", search_terms=[f"+{organism.split(' ')[0]}"])
 
-        if df.empty:
-            print("No marker lists found for this organism.")
+        if df.empty or force_homology:
+            if not force_homology:
+                print("No marker lists found for this organism.")
             print("Trying to create marker lists via homology...")
 
             source_df = None
@@ -54,7 +57,7 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
             paths.extend(transfer_markers(target_org=organism, source_df=source_df, repo_path=repo_path, target_counts=1, 
                           weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name, ensemble=ensembl))
         else:
-            print(f"Found {len(df)} marker lists for the given organism {organism}.")
+            print(f"Found {len(df)} marker lists for the given organism {organism.split(' ')[0]}.")
             display(df)
             if search_terms:
                 df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms)
