@@ -15,7 +15,7 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
     Parameters
     ----------
     genes_adata : anndata.AnnData
-        The anndata object which contains clustered data, gene names as index as well as rank genes groups.
+        The anndata object which contains clustered data, gene IDs as index as well as rank genes groups.
     adata : anndata.AnnData, default None
         The anndata object to add the annotations to. If None, the annotations will be written to genes_adata.
     output_path : string, default "."
@@ -64,13 +64,12 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         cluster_path = f"{output_path}/ranked/clusters/{cluster_column}"
         ct_path = f"{output_path}/ranked/output/{cluster_column}"
 
-        for folder in [cluster_path, ct_path]:
-            if os.path.exists(folder):
-                print(f"Warning: The path {folder}/ already exists!\nAll files will be overritten.")
-                go_on = False
+        if os.path.exists(ct_path):
+            print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overritten.")
+            go_on = False
 
         if not go_on:
-            go_on = input("Do you want to continue? Enter yes or no: ")
+            go_on = input("Do you want to continue? (yes/no): ")
             go_on = True if go_on == "yes" else False
 
             if not go_on:
@@ -82,21 +81,22 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
               "\nTissue: " + tissue)
         if adata and genes_adata and cluster_column:
             # Create folders containing the annotation assignment table aswell as the detailed scoring files per cluster
-            if not os.path.exists(f'{cluster_path}'):
-                os.makedirs(f'{cluster_path}')
-                print(f'Created folder: {cluster_path}')
-
             if not os.path.exists(f'{ct_path}'):
                 os.makedirs(f'{ct_path}')
                 print(f'Created folder: {ct_path}')
 
-            # Write one file per cluster containing gene names and ranked gene scores
-            print("Writing one file per cluster containing gene names and ranked gene scores.")
-            for cluster in adata.obs[f'{cluster_column}'].unique():
-                with open(f'{cluster_path}/{sample}.cluster_{cluster}', 'w') as file:
-                    for index, gene in enumerate(genes_adata.uns[f'{rank_genes_column}']['names'][cluster]):
-                        score = genes_adata.uns[f'{rank_genes_column}']['scores'][cluster][index]
-                        file.write(f'{gene.split("_")[0]}\t{score}\n')
+            # Check if cluster_path exists
+            if os.path.exists(cluster_path):
+                user_input = input(f"The folder {cluster_path} already exists.\nDo you want to skip creating new ranked cluster files and keep the old ones? (yes/no): ")
+                if user_input.lower() == 'yes':
+                    print("Skipping the creation of new ranked cluster files.")
+                else:
+                    print("Creating new ranked cluster files.")
+                    write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column)
+            else:
+                # Create folder if it doesn't exist and write files
+                os.makedirs(cluster_path)
+                write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column)
 
             # Perform the actual cell type annotation per clustering resolution
             print("Starting cell type annotation.")
@@ -198,6 +198,38 @@ def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1"):
         cluster = file.split("_")[1]
         df = pd.read_csv(f'{path}/{file}', sep='\t', names=[f"Cluster {cluster}: Cell type", "Score", "Hits", "Number of marker genes", "Mean of UI"])
         display(df.head(n))
+
+
+def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column):
+    """
+    Writes one file per cluster that contains gene IDs and their corresponding scores, sorted by ranking.
+
+    Parameters
+    ----------
+    cluster_path : string, default None
+        The path to the folder which contains the "cluster files": Tab-separated files containing the genes and
+        the corresponding ranked scores. Use only if you already created your own cluster files.
+    sample : string, default "sample"
+        The name of the sample. E.g. "sample1" or "zebrafish". This will be used for naming the output files.
+    adata : anndata.AnnData, default None
+        The anndata object to add the annotations to.
+    cluster_column : string, default None
+        The column of the .obs table which contains the clustering information. E.g. "louvain" or "leiden".
+    genes_adata : anndata.AnnData
+        The anndata object which contains clustered data, gene ID as index as well as rank genes groups.
+    rank_genes_column : string, default None
+        The column of the .uns table which contains the rank genes scores. E.g. "rank_genes_groups".
+    """
+
+    clusters = adata.obs[f'{cluster_column}'].unique()
+    total_clusters = len(clusters)
+
+    for index, cluster in enumerate(clusters):
+        with open(f'{cluster_path}/{sample}.cluster_{cluster}', 'w') as file:
+            print(f"Writing ranked cluster file {sample}.cluster_{cluster} ({index+1}/{total_clusters})")
+            for i, gene in enumerate(genes_adata.uns[f'{rank_genes_column}']['names'][cluster]):
+                score = genes_adata.uns[f'{rank_genes_column}']['scores'][cluster][i]
+                file.write(f'{gene.split("_")[0]}\t{score}\n')
 
 
 def get_panglao(path, tissue="all", species=None, header=False):
@@ -341,7 +373,8 @@ def calc_ranks(cm_dict, annotated_clusters):
 
             if count > 4:
                 ub_mean = round(statistics.mean(ub_scores))
-                ct_dict[c][celltype] = [round(sum(ranks) / math.sqrt(len(ranks))), count, gene_count,
+                # TODO
+                ct_dict[c][celltype] = [round(sum(ranks) / math.sqrt(gene_count)), count, gene_count,
                                         ub_mean]
 
     for ct in cm_dict.keys():
@@ -422,14 +455,16 @@ def get_annotated_clusters(cluster_path):
 
         sum_dict = {}
         for gene in annotated_dict[cname]:
-            if gene[0] in sum_dict.keys():
-                sum_dict[gene[0]] += gene[1]
-            else:
-                sum_dict[gene[0]] = gene[1]
+            if gene[1] > 0:  # Only consider positive values
+                if gene[0] in sum_dict.keys():
+                    sum_dict[gene[0]] += gene[1]
+                else:
+                    sum_dict[gene[0]] = gene[1]
 
         annotated_clusters[cname] = sum_dict
 
     return annotated_clusters
+
 
 
 def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False):
