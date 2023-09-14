@@ -4,7 +4,7 @@ import statistics
 import pandas as pd
 import scanpy as sc
 from IPython.display import display
-from .marker_repo import read_whitelist, get_whitelists, combine_dfs
+from .marker_repo import read_whitelist, get_whitelists, combine_dfs, export_marker_list
 
 
 def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False):
@@ -661,3 +661,35 @@ def list_possible_settings(repo_path, adata):
         print(f"  - {col}")
     
     print("-" * 40)
+
+
+def export_markers_from_anndata(adata, n=50, rank_genes_column='rank_genes_groups', file_name='ranked_markers'):
+    """
+    Export the top N marker genes per cluster from an anndata object's ranked genes groups.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The anndata object containing the ranked genes.
+    n : int, default: 50
+        The number of top genes per cluster to export.
+    rank_genes_column : str, default: 'rank_genes_groups'
+        The key/column name where the ranked genes are stored in the anndata object.
+    file_name : str, default: 'ranked_markers'
+        The file name to save the exported marker list.
+
+    Returns
+    -------
+    str :
+        The path where the marker list is saved.
+    """
+    
+    df = sc.get.rank_genes_groups_df(adata, group=None, key=rank_genes_column)
+    df_sorted = df.sort_values(by=['group', 'scores'], ascending=[True, False])
+    df_sliced = df_sorted.groupby('group').head(n)
+    
+    marker_gene_df = df_sliced[['names', 'group']]
+    
+    path = export_marker_list(marker_gene_df, file_name=file_name)
+    
+    return path
