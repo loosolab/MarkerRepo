@@ -80,7 +80,7 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         print(f"Output folder: {ct_path}/", "\nDB file: " + db_path, f"\nCluster folder: {cluster_path}/",
               "\nTissue: " + tissue)
         if adata and genes_adata and cluster_column:
-            # Create folders containing the annotation assignment table aswell as the detailed scoring files per cluster
+            # Create folders containing the annotation assignment table as well as the detailed scoring files per cluster
             if not os.path.exists(f'{ct_path}'):
                 os.makedirs(f'{ct_path}')
                 print(f'Created folder: {ct_path}')
@@ -374,7 +374,7 @@ def calc_ranks(cm_dict, annotated_clusters):
             if count > 4:
                 ub_mean = round(statistics.mean(ub_scores))
                 # TODO
-                ct_dict[c][celltype] = [round(sum(ranks) / math.sqrt(gene_count)), count, gene_count,
+                ct_dict[c][celltype.rstrip()] = [round(sum(ranks) / math.sqrt(gene_count)), count, gene_count,
                                         ub_mean]
 
     for ct in cm_dict.keys():
