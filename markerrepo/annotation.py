@@ -665,7 +665,7 @@ def list_possible_settings(repo_path, adata):
 
 def export_markers_from_anndata(adata, n=50, rank_genes_column='rank_genes_groups', file_name='ranked_markers'):
     """
-    Export the top N marker genes per cluster from an anndata object's ranked genes groups.
+    Export the top n marker genes per cluster from an anndata object's ranked genes groups.
 
     Parameters
     ----------
@@ -690,6 +690,45 @@ def export_markers_from_anndata(adata, n=50, rank_genes_column='rank_genes_group
     
     marker_gene_df = df_sliced[['names', 'group']]
     
+    # Display the top row of each unique group
+    top_rows = df_sliced.groupby('group').first()
+    top_rows.rename(columns={"names": "Marker gene", "scores": "Score"}, inplace=True)
+    top_rows.index.name = "Cell type"
+    top_rows_subset = top_rows[["Marker gene", "Score"]]
+    display(top_rows_subset)
+
     path = export_marker_list(marker_gene_df, file_name=file_name)
     
     return path
+
+
+def compare_cell_types(adata, column, marker_lists):
+    """
+    Group the observation DataFrame of an anndata object by a specific column and include relevant cell types from given marker lists.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The anndata object containing the .obs DataFrame.
+    column : str
+        The column by which to group the .obs DataFrame.
+    marker_lists : list of str
+        List of paths to marker list files.
+
+    Returns
+    -------
+    DataFrame :
+        A grouped DataFrame based on the specified column, incorporating relevant cell types from the marker lists.
+    """
+    
+    obs_df = adata.obs
+    columns_to_keep = [column]
+    
+    for marker_list in marker_lists:
+        name = marker_list.split("/")[-1]
+        columns_to_keep.append(f"cell_types_{name}")
+        
+    filtered_obs_df = obs_df[columns_to_keep]
+    grouped_obs_df = filtered_obs_df.groupby(column).agg('first')
+    
+    return grouped_obs_df
