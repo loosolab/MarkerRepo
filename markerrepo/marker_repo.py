@@ -46,6 +46,8 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
         Either the filtered search results as metadata or as a combined list of markers.
     """
 
+    flags = 0 if case_sensitive else re.IGNORECASE
+    
     must_include_terms = [term.lstrip('+') for term in search_terms if term.startswith('+')]
     positive_terms = [term for term in search_terms if not term.startswith('-') and not term.startswith('+')]
     negative_terms = [term.lstrip('-') for term in search_terms if term.startswith('-')]
@@ -57,18 +59,25 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
 
     if col_to_search:
         for term in must_include_terms:
-            df = df[df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE)))]
-        for term in positive_terms:
-            df = df[df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE)))]
+            df = df[df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
+        
+        if positive_terms:
+            positive_mask = pd.concat([df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags))) for term in positive_terms], axis=1).any(axis=1)
+            df = df[positive_mask]
+            
         for term in negative_terms:
-            df = df[~df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=0 if case_sensitive else re.IGNORECASE)))]
+            df = df[~df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
+            
     else:
         for term in must_include_terms:
-            df = df[df.apply(lambda x: x.astype(str).str.contains(term, flags=0 if case_sensitive else re.IGNORECASE, regex=True).any(), axis=1)]
-        for term in positive_terms:
-            df = df[df.apply(lambda x: x.astype(str).str.contains(term, flags=0 if case_sensitive else re.IGNORECASE, regex=True).any(), axis=1)]
+            df = df[df.apply(lambda x: x.astype(str).str.contains(term, flags=flags, regex=True).any(), axis=1)]
+        
+        if positive_terms:
+            positive_mask = pd.concat([df.apply(lambda x: x.astype(str).str.contains(term, flags=flags, regex=True).any(), axis=1) for term in positive_terms], axis=1).any(axis=1)
+            df = df[positive_mask]
+            
         for term in negative_terms:
-            df = df[~df.apply(lambda x: x.astype(str).str.contains(term, flags=0 if case_sensitive else re.IGNORECASE, regex=True).any(), axis=1)]
+            df = df[~df.apply(lambda x: x.astype(str).str.contains(term, flags=flags, regex=True).any(), axis=1)]
 
     if out == "marker_list":
         if repo_path is None:
