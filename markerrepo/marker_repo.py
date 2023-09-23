@@ -113,6 +113,7 @@ def guided_search(repo_path=".", df=None, out="metadata"):
         df = combine_dfs(repo_path=repo_path)
 
     df_copy = df.copy()
+    df_copy = df_copy.reset_index()
     columns = df_copy.columns.tolist()
     page = 1
     per_page = 10
@@ -141,7 +142,11 @@ def guided_search(repo_path=".", df=None, out="metadata"):
 
         col_to_search = None
         if column:
-            col_to_search = columns[int(column) - 1]
+            try:
+                col_to_search = columns[int(column) - 1]
+            except (IndexError, ValueError):
+                print("Invalid column identifier. Please try again.")
+                continue
 
             unique_entries = input("Do you want to see all unique entries in this column? (yes/no) ")
             if unique_entries.lower() == 'yes':
