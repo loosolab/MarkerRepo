@@ -6,13 +6,13 @@ from .utils import read_whitelist
 from IPython.display import display
 
 
-def create_marker_lists(organism, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None, force_homology=False):
+def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None, force_homology=False):
     """
     Creates marker lists for a given organism.
 
     Parameters
     ----------
-    organism : str
+    organism : str, default None
         The organism of the marker lists.
     repo_path : str, default "."
         The path of the Marker Repo.
@@ -43,8 +43,11 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
     ui = True if style == "ui" else False
     custom_file_name = False if file_name else True
 
-    while True:  
-        df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="Organism name", search_terms=[f"+{organism.split(' ')[0]}"])
+    while True:
+        if organism:  
+            df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="Organism name", search_terms=[f"+{organism.split(' ')[0]}"])
+        else:
+            df = combine_dfs(repo_path=repo_path)
 
         if df.empty or force_homology:
             if not force_homology:
@@ -57,8 +60,9 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
             paths.extend(transfer_markers(target_org=organism, source_df=source_df, repo_path=repo_path, target_counts=1, 
                           weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name, ensemble=ensembl))
         else:
-            print(f"Found {len(df)} marker lists for the given organism {organism.split(' ')[0]}.")
-            display(df)
+            if organism:
+                print(f"Found {len(df)} marker lists for the given organism {organism.split(' ')[0]}.")
+                display(df)
             if search_terms:
                 df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms)
                 print(f"Found {len(df)} marker lists for the given search terms.")
@@ -67,7 +71,9 @@ def create_marker_lists(organism, repo_path=".", style="score", path=".", file_n
                 paths.append(convert_markers(style=style, repo_path=repo_path, df=df, path=path, file_name=file_name, ensembl=ensembl))
             else:
                 print(f"Please specify the marker lists you want to use for the annotation.")
-                paths.append(convert_markers(style=style, repo_path=repo_path, df=guided_search(repo_path=repo_path, df=df, out="marker_list"), path=path, file_name=file_name, ensembl=ensembl))
+                df = guided_search(repo_path=repo_path, df=df, out="metadata")
+                df = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
+                paths.append(convert_markers(style=style, repo_path=repo_path, df=df, path=path, file_name=file_name, ensembl=ensembl))
 
         if search_terms:
             return paths
