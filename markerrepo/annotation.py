@@ -232,33 +232,40 @@ def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata
                 file.write(f'{gene.split("_")[0]}\t{score}\n')
 
 
-def get_panglao(path, tissue="all", species=None, header=False):
+def parse_marker_database(file_path, tissue="all", species=None, header=False):
     """
-    Read and parse the panglao cell type marker gene database file.
+    Parse a marker gene database file to extract marker genes for various cell types.
+
+    The function can handle two types of general file formats:
+    - Two-column: [Gene Symbol, Cell Type]
+    - Three-column: [Gene Symbol, Cell Type, Score]
+    Additionally, it can process a specialized six-column format specific to the PanglaoDB.
 
     Parameters
     ----------
-    path : string
-        The path to the panglao cell type marker gene database file.
-    tissue : string, default "all"
-        If tissue is not "all", only marker genes found in the entered tissue will be taken into account.
-    species : string, default None
-        The species of the data. If species is None, all rows will be read.
-    header : bool, default False
-        Skip first line if header is True.
+    file_path : str
+        The path to the marker gene file.
+    tissue : str, default "all"
+        The target tissue type. If set to "all", markers from all tissues will be included.
+        Only applicable when processing the PanglaoDB format.
+    species : str, default None
+        The target species. If None, markers from all species will be included.
+        Only applicable when processing the PanglaoDB format.
+    skip_header : bool, default False
+        Whether to skip the first line of the file as a header.
 
     Returns
     -------
-    dictionary :
-        Dictionary which contains a dictionary per cell type. The inner dictionary contains the corresponding
-        marker genes (keys) and the values of the ubiquitousness indices (values).
+    dict :
+        A dictionary where each key is a cell type and the value is another dictionary. 
+        The inner dictionary maps marker genes (keys) to their score (values), if available.
     """
 
     tissues = [tissue]
     panglao_dict = {}
     panglao_rank_dict = {}
 
-    with open(path, "r") as panglao_file:
+    with open(file_path, "r") as panglao_file:
         if header:
             panglao_file.readline()
         for line in panglao_file.readlines():
@@ -281,7 +288,7 @@ def get_panglao(path, tissue="all", species=None, header=False):
                 if ct not in panglao_dict.keys():
                     panglao_dict[ct] = []
                 panglao_dict[ct].append((us, gene_symb.strip()))
-            else:  # six-column file
+            else:  # six-column file -> whole PanglaoDB
                 spec, gene_symb, ct, n_genes, ub_i, organ = line_split
                 us = float(ub_i)
                 if us != 0:
@@ -417,7 +424,7 @@ def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=Fal
         the ubiquitousness index per cell type for each cluster.
     """
 
-    db_dict = get_panglao(db_path, tissue=tissue, species=species, header=header)
+    db_dict = parse_marker_database(db_path, tissue=tissue, species=species, header=header)
     annotated_clusters = get_annotated_clusters(cluster_path=cluster_path)
 
     return calc_ranks(db_dict, annotated_clusters)
