@@ -4,7 +4,7 @@ from .marker_repo import combine_lists, export_marker_list, guided_search, get_w
 from .homology import get_biomart_defaults
 from .utils import read_whitelist
 from IPython.display import display
-
+import os
 
 def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None, force_homology=False):
     """
@@ -36,6 +36,12 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     List of paths to the created marker lists.
 
     """
+
+    if not os.path.exists(repo_path):
+        raise FileNotFoundError(f"The specified repository path '{repo_path}' does not exist.")
+
+    if style not in ["two_column", "score", "ui", "panglao"]:
+        raise ValueError("The parameter 'style' must be one of 'two_column', 'score', 'ui', or 'panglao'.")
 
     paths = []
 
@@ -125,6 +131,9 @@ def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists"
         If path is specified, the function returns the absolute path to the file where the marker list was saved.
         If path is not specified, the function returns the DataFrame.
     """
+
+    if not os.path.exists(repo_path):
+        raise FileNotFoundError(f"The specified repository path '{repo_path}' does not exist.")
 
     if gs:
         marker_list = guided_search(repo_path=repo_path, out="marker_list")
@@ -237,6 +246,9 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
     list of str : 
         The paths of the exported transferred marker lists.
     """
+
+    if not os.path.exists(repo_path):
+        raise FileNotFoundError(f"The specified repository path '{repo_path}' does not exist.")
 
     paths = []
     marker_id = "ensembl" if ensemble else "symbol"
