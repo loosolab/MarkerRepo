@@ -52,6 +52,21 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
     Else, a copy of the adata object is returned with the annotations added.
     """
     
+    if db_path is None:
+        raise ValueError("The parameter 'db_path' must be provided. This is the path to the cell type marker gene database file.")
+    elif not os.path.exists(db_path):
+        raise FileNotFoundError(f"The specified database file path '{db_path}' does not exist.")
+    
+    if cluster_column is None:
+        raise ValueError("The parameter 'cluster_column' must be provided. This is the column in the .obs table of the AnnData object that contains the clustering information.")
+    elif cluster_column not in genes_adata.obs.columns:
+        raise KeyError(f"The specified cluster column '{cluster_column}' does not exist in the .obs table of the provided AnnData object.")
+    
+    if rank_genes_column is None:
+        raise ValueError("The parameter 'rank_genes_column' must be provided. This is the column in the .uns table of the AnnData object that contains the rank genes scores.")
+    elif rank_genes_column not in genes_adata.uns.keys():
+        raise KeyError(f"The specified rank genes column '{rank_genes_column}' does not exist in the .uns table of the provided AnnData object.")
+
     go_on = True
 
     if not adata:
@@ -261,6 +276,9 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
         The inner dictionary maps marker genes (keys) to their score (values), if available.
     """
 
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The specified file {file_path} was not found.")
+
     tissues = [tissue]
     panglao_dict = {}
     panglao_rank_dict = {}
@@ -288,7 +306,7 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
                 if ct not in panglao_dict.keys():
                     panglao_dict[ct] = []
                 panglao_dict[ct].append((us, gene_symb.strip()))
-            else:  # six-column file -> whole PanglaoDB
+            elif len(line_split) == 6:  # six-column file -> whole PanglaoDB
                 spec, gene_symb, ct, n_genes, ub_i, organ = line_split
                 us = float(ub_i)
                 if us != 0:
@@ -318,6 +336,8 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
                             genes.append((us, n_genes))
                         for gene in genes:
                             panglao_dict[ct].append(gene)
+            else:
+                raise ValueError(f"The file format is not recognized. Please use a two-column, three-column, or PanglaoDB six-column format. Got {len(line_split)}.")
 
     for ct in panglao_dict.keys():
         rank_dict = {}
