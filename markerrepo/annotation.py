@@ -349,23 +349,28 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
     return panglao_rank_dict
 
 
-def calc_ranks(cm_dict, annotated_clusters):
+def calc_ranks(cm_dict, annotated_clusters, min_hits=4):
     """
-    Identify cell types of each cluster by ranking each potential cell type using fitting genes, ranked scores,
-    quantity of available marker genes per cell type aswell as using the panglao ubiquitousness index.
-
+    Calculate cell type annotation scores for each cluster.
+    The annotation score for each cell type in a cluster is calculated based on the 
+    sum of the product of the ranked scores and ubiquitousness scores, 
+    divided by the square root of the total number of marker genes for that cell type.
+    
     Parameters
     ----------
-    cm_dict : dictionary
-        Dictionary which contains the cell marker database.
-    annotated_clusters :
-        Dictionary which contains the summed up ranked scores per gene for each cluster.
+    cm_dict : dict
+        Dictionary containing the cell marker database. The keys are cell types,
+        and the values are dictionaries containing gene names as keys and ubiquitousness scores as values.
+    annotated_clusters : dict
+        Dictionary containing the ranked scores for each gene in each cluster.
+    min_hits : int, default 4
+        Minimum number of hits required to consider a cell type for annotation.
 
     Returns
     -------
-    dictionary :
-        The dictionary which contains the scores, the quantity of hits, the overall marker genes and
-        the ubiquitousness index per cell type for each cluster.
+    dict :
+        Dictionary containing annotation scores, number of hits, total marker genes, 
+        and the mean ubiquitousness index for each cell type in each cluster.
     """
 
     ct_dict = {}
@@ -393,16 +398,9 @@ def calc_ranks(cm_dict, annotated_clusters):
                     ub_scores.append(ub_score)
                     count += 1
 
-            # ranks = sorted(ranks, reverse=True)
-
-            # if count >= 10:
-            #     ranks = ranks[:10]
-
-            if count > 4:
+            if count >= min_hits:
                 ub_mean = round(statistics.mean(ub_scores))
-                # TODO
-                ct_dict[c][celltype.rstrip()] = [round(sum(ranks) / math.sqrt(gene_count)), count, gene_count,
-                                        ub_mean]
+                ct_dict[c][celltype.rstrip()] = [round(sum(ranks) / math.sqrt(gene_count)), count, gene_count, ub_mean]
 
     for ct in cm_dict.keys():
         for gene in cm_dict[ct].keys():
@@ -412,9 +410,9 @@ def calc_ranks(cm_dict, annotated_clusters):
     data_hits = list(set(data_hits))
     db_genes = list(set(db_genes))
 
-    print(f"The database contains {str(len(db_genes))} different genes.\
-          \nThe input data contains {str(len(data_genes))} different genes.\
-          \nThe genes of the input data overlap with {str(len(data_hits))} genes in total, {str(round(len(data_hits) / len(db_genes), 2) * 100)} percent.")
+    print(f"The database contains {len(db_genes)} different genes. \
+          \nThe input data contains {len(data_genes)} different genes. \
+          \nThe genes of the input data overlap with {len(data_hits)} genes in total, {round(len(data_hits) / len(db_genes) * 100)} percent.")
 
     return ct_dict
 
@@ -450,35 +448,54 @@ def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=Fal
     return calc_ranks(db_dict, annotated_clusters)
 
 
-def get_annotated_clusters(cluster_path):
+def get_annotated_clusters(cluster_path, show_duplicates=False):
     """
-    Read cluster files and sum ranked scores if genes appear more than once per file.
+    Reads cluster files from a specified directory to aggregate positive ranked scores
+    for each gene within each cluster.
 
     Parameters
     ----------
-    cluster_path : string
-        The path to the folder which contains the "cluster files": Tab-separated files containing the
-        genes and the corresponding ranked scores.
+    cluster_path : str
+        The path to the folder containing the cluster files.
+    show_duplicates : bool, optional
+        Whether to show duplicate genes with positive scores. Default is False.
 
     Returns
     -------
-    dictionary :
-        Dictionary which contains the summed up ranked scores per gene for each cluster.
+    dict :
+        A dictionary where keys are cluster names and values are dictionaries of genes with their 
+        aggregated positive ranked scores.
     """
 
     annotated_clusters = {}
     files = os.listdir(cluster_path)
     for file in [x for x in files if not x.startswith(".")]:
         cname = file.split(".cluster_")[1]
-        annotated_dict = {}
-        with open(cluster_path + file) as cfile:
+        annotated_dict = {}        
+        duplicate_genes = {}
+
+        with open(os.path.join(cluster_path, file)) as cfile:
             annotated_dict[cname] = []
             lines = cfile.readlines()
             for line in lines:
                 split = line.split("\t")
                 if len(split) == 2:
-                    annotated_dict[cname].append(
-                        [split[0].upper(), float(split[1].rstrip())])
+                    gene = split[0].upper()
+                    score = float(split[1].rstrip())
+                    annotated_dict[cname].append([gene, score])
+
+                    # Check for duplicate genes if show_duplicates is True
+                    if show_duplicates and score > 0:
+                        if gene in duplicate_genes:
+                            duplicate_genes[gene].append(score)
+                        else:
+                            duplicate_genes[gene] = [score]
+
+        # Output duplicate genes and their scores if show_duplicates is True
+        if show_duplicates:
+            for gene, scores in duplicate_genes.items():
+                if len(scores) > 1:
+                    print(f"Duplicate gene found in cluster {cname}: {gene} with scores {scores}")
 
         sum_dict = {}
         for gene in annotated_dict[cname]:
@@ -491,7 +508,6 @@ def get_annotated_clusters(cluster_path):
         annotated_clusters[cname] = sum_dict
 
     return annotated_clusters
-
 
 
 def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False):
@@ -539,6 +555,7 @@ def write_annotation(ct_dict, output):
         The path to the folder where the annotation file will be written.
 
     """
+
     with open(output + "/annotation.txt", "w") as c_file:
         for dic in ct_dict.keys():
             sorted_dict = dict(
