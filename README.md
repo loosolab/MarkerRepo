@@ -2,10 +2,9 @@
 
 The easiest way to get started with this project is by running the Jupyter notebooks available in the `notebooks` folder. Before you can use these notebooks, make sure to follow the steps outlined below to set up your Conda environment and install necessary packages.
 
-**Note:** If you're new to this project and want to get familiar with its core functionalities, it's recommended to start with the [`search_and_combine_lists.ipynb`](#search_and_combine_listsipynb-search-and-combine-lists) notebook.
-## Pre-requisites: Set up your Conda environment
-
 If you haven't already, make sure to set up your Conda environment by following the steps in the [Install the Conda environment and add it to Jupyter as a Kernel](#install-the-conda-environment-and-add-it-to-jupyter-as-a-kernel) section.
+
+**Note:** If you're new to this project and want to get familiar with its core functionalities, it's recommended to start with the [`search_and_combine_lists.ipynb`](#search_and_combine_listsipynb-search-and-combine-lists) notebook.
 
 ## Notebook Descriptions
 
