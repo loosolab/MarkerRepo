@@ -2,6 +2,7 @@
 
 The easiest way to get started with this project is by running the Jupyter notebooks available in the `notebooks` folder. Before you can use these notebooks, make sure to follow the steps outlined below to set up your Conda environment and install necessary packages.
 
+**Note:** If you're new to this project and want to get familiar with its core functionalities, it's recommended to start with the [`search_and_combine_lists.ipynb`](#search_and_combine_listsipynb-search-and-combine-lists) notebook.
 ## Pre-requisites: Set up your Conda environment
 
 If you haven't already, make sure to set up your Conda environment by following the steps in the [Install the Conda environment and add it to Jupyter as a Kernel](#install-the-conda-environment-and-add-it-to-jupyter-as-a-kernel) section.
@@ -29,14 +30,14 @@ The notebook guides you through the entire annotation workflow. It starts by loa
 - When you have clustered h5ad files that require cell type annotation.
 - When you want to utilize customized marker lists for annotation.
 
-### guided_annotation.ipynb: Step-by-Step Cell Type Annotation
+### guided_annotation.ipynb: Step-by-Step Guided Cell Type Annotation
 
 The `guided_annotation.ipynb` notebook is an interactive variant of the `annotation.ipynb` notebook. Unlike its counterpart, which is designed for a seamless, uninterrupted workflow, this notebook guides you through the annotation process step-by-step. It allows you to manually enter parameters at different stages, making it ideal for experimental setups where you may be unsure of the optimal parameters to use.
 
 **When to Use:**
-you're in the exploratory phase and wish to experiment with different parameters.
-- If y
-- If ou're not yet certain about the ideal settings for annotation and want a guided, interactive process.
+
+- If you're in the exploratory phase and wish to experiment with different parameters.
+- If you're not yet certain about the ideal settings for annotation and want a guided, interactive process.
 
 **Note:** If you already know all the parameters you want to use and prefer a notebook that can be executed in one go, it's recommended to use the `annotation.ipynb` notebook instead.
 
