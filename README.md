@@ -1,3 +1,11 @@
+# Quickstart
+
+The easiest way to get started with this project is by running the Jupyter notebooks available in the `notebooks` folder. Before you can use these notebooks, make sure to follow the steps outlined below to set up your Conda environment and install necessary packages.
+
+## Pre-requisites: Set up your Conda environment
+
+If you haven't already, make sure to set up your Conda environment by following the steps in the Install the Conda environment and add it to Jupyter as a Kernel section.
+
 # Install the Conda environment and add it to Jupyter as a Kernel
 
 Follow these steps to install the Conda environment and add it to Jupyter as a Kernel.
