@@ -1,0 +1,59 @@
+marker_list:
+- markers:
+  - RSPO3 ENSG00000146374
+  - PCP4 ENSG00000183036
+  name: Inhibitory neuron
+- markers:
+  - KLF4 ENSG00000136826
+  - VIM ENSG00000026025
+  - VCAN ENSG00000038427
+  name: Neuroepithelial cell
+- markers:
+  - NEFM ENSG00000104722
+  - PCP4 ENSG00000183036
+  - NEFL ENSG00000277586
+  name: Retinal ganglion cell
+- markers:
+  - RCVRN ENSG00000109047
+  - GNGT1 ENSG00000127928
+  - NRL ENSG00000129535
+  - DCX ENSG00000077279
+  - CRX ENSG00000105392
+  - MAP2 ENSG00000078018
+  - RALGAPA1 ENSG00000174373
+  name: Neuron
+- markers:
+  - AGT ENSG00000135744
+  - GFAP ENSG00000131095
+  - GLUL ENSG00000135821
+  - HES1 ENSG00000114315
+  name: Astrocyte
+- markers:
+  - DKK3 ENSG00000050165
+  - SOX9 ENSG00000125398
+  name: Mller glial cell
+- markers:
+  - PAX6 ENSG00000007372
+  - GLI3 ENSG00000106571
+  - SOX2 ENSG00000181449
+  - TOP2A ENSG00000131747
+  name: Proliferative neural progenitor cell
+- markers:
+  - PAX6 ENSG00000007372
+  - SOX2 ENSG00000181449
+  name: Radial glial cell
+metadata:
+  date: 27.03.2020
+  id: '168874554445668'
+  list_name: HCM_human_cerebral-organoid
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: brain

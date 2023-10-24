@@ -1,0 +1,65 @@
+marker_list:
+- markers:
+  - CD19 ENSG00000177455
+  - CD34 ENSG00000174059
+  - CD44 ENSG00000026508
+  - ALCAM ENSG00000170017
+  - ANPEP ENSG00000166825
+  - ERBB2 ENSG00000141736
+  - ITGA5 ENSG00000161638
+  - ITGAV ENSG00000138448
+  - ITGB1 ENSG00000150093
+  - KIT ENSG00000157404
+  - MME ENSG00000196549
+  - NCAM1 ENSG00000149294
+  - NGFR ENSG00000064300
+  - NT5E ENSG00000135318
+  - PECAM1 ENSG00000261371
+  - PTPRC ENSG00000081237
+  - TFRC ENSG00000072274
+  - THY1 ENSG00000154096
+  - TNFRSF1A ENSG00000067182
+  - VCAM1 ENSG00000162692
+  - NOTCH1 ENSG00000148400
+  - MCAM ENSG00000076706
+  name: Mesenchymal stem cell
+- markers:
+  - CD44 ENSG00000026508
+  - THY1 ENSG00000154096
+  - CD9 ENSG00000010278
+  - ALCAM ENSG00000170017
+  - ICAM1 ENSG00000090339
+  - MCAM ENSG00000076706
+  name: Mesenchymal progenitor cell
+- markers:
+  - COL2A1 ENSG00000139219
+  - SOX9 ENSG00000125398
+  - ACAN ENSG00000157766
+  - COMP ENSG00000105664
+  name: Chondrocyte
+- markers:
+  - CD44 ENSG00000026508
+  - NT5E ENSG00000135318
+  - THY1 ENSG00000154096
+  - CD9 ENSG00000010278
+  - MCAM ENSG00000076706
+  - ALCAM ENSG00000170017
+  name: Stem cell
+- markers:
+  - MCAM ENSG00000076706
+  name: Cartilage progenitor cell
+metadata:
+  date: 27.03.2020
+  id: '1688745544507913'
+  list_name: HCM_human_cartilage
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: cartilage

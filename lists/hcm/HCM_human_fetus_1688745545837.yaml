@@ -1,0 +1,37 @@
+marker_list:
+- markers:
+  - PECAM1 ENSG00000261371
+  name: Immune cell
+- markers:
+  - CD4 ENSG00000010610
+  - CD8A ENSG00000153563
+  name: T cell
+- markers:
+  - CD163 ENSG00000177575
+  name: Myeloid cell
+- markers:
+  - CD7 ENSG00000173762
+  - NCAM1 ENSG00000149294
+  name: Natural killer cell
+- markers:
+  - PECAM1 ENSG00000261371
+  name: Stromal cell
+- markers:
+  - PECAM1 ENSG00000261371
+  - EMCN ENSG00000164035
+  name: Pan-endothelial cell
+metadata:
+  date: 27.03.2020
+  id: '1688745545837'
+  list_name: HCM_human_fetus
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: fetus

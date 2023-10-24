@@ -1,92 +1,174 @@
-# annotate_by_marker_and_features
+# MarkerRepo: A Central Repository for Marker List Management and Application
+
+MarkerRepo is a project that integrates marker list management with cell type annotation of single cell data. The repository consists of multiple Jupyter notebooks, each focusing on a specific task such as marker list curation, cell type annotation, or marker homology.
+
+## Table of Contents
+- [Quickstart](#quickstart)
+- [Notebook Descriptions](#notebook-descriptions)
+  - [annotation.ipynb: Cell Type Annotation](#annotationipynb-cell-type-annotation)
+  - [guided_annotation.ipynb: Step-by-Step Guided Cell Type Annotation](#guided_annotationipynb-step-by-step-guided-cell-type-annotation)
+  - [homology.ipynb: Transfer Marker Genes Across Organisms Using Homology](#homologyipynb-transfer-marker-genes-across-organisms-using-homology)
+  - [scoring.ipynb: Scoring](#scoringipynb-scoring)
+  - [search_and_combine_lists.ipynb: Search and Combine Lists](#search_and_combine_listsipynb-search-and-combine-lists)
+  - [submit_lists.ipynb: Create and Upload Your Own Marker Lists](#submit_listsipynb-create-and-upload-your-own-marker-lists)
+- [Install the Conda environment and add it to Jupyter as a Kernel](#install-the-conda-environment-and-add-it-to-jupyter-as-a-kernel)
+- [Installing the MarkerRepo Package](#installing-the-markerrepo-package)
+
+# Quickstart
+
+The easiest way to get started with this project is by running the Jupyter notebooks available in the `notebooks` folder. Before you can use these notebooks, make sure to follow the steps outlined below to set up your Conda environment and install necessary packages.
+
+If you haven't already, make sure to set up your Conda environment by following the steps in the [Install the Conda environment and add it to Jupyter as a Kernel](#install-the-conda-environment-and-add-it-to-jupyter-as-a-kernel) section.
+
+**Note:** If you're new to this project and want to get familiar with its core functionalities, it's recommended to start with the [`search_and_combine_lists.ipynb`](#search_and_combine_listsipynb-search-and-combine-lists) notebook.
+
+## Notebook Descriptions
+
+This section provides an overview of the Jupyter notebooks available in the `notebooks` folder and what each notebook is designed to do.
+
+### annotation.ipynb: Cell Type Annotation
+
+The `annotation.ipynb` notebook serves as a comprehensive tool for annotating clustered h5ad files using the Marker Repo package. 
+
+The notebook guides you through the entire annotation workflow. It starts by loading essential packages and setting up your Anndata object. Next, it offers options for gene ranking if not already done, followed by marker list creation and cell type annotation.
+
+**Key Features:**
+
+- Validating your initial settings and Anndata object.
+- Ranking genes within clusters if not pre-ranked.
+- Creating customized marker lists based on organism and other filtering criteria.
+- Annotating cell types using the created marker lists.
+- Visualizing annotation results on UMAP plots.
+
+**When to Use:**
+
+- When you have clustered h5ad files that require cell type annotation.
+- When you want to utilize customized marker lists for annotation.
+
+### guided_annotation.ipynb: Step-by-Step Guided Cell Type Annotation
+
+The `guided_annotation.ipynb` notebook is an interactive variant of the `annotation.ipynb` notebook. Unlike its counterpart, which is designed for a seamless, uninterrupted workflow, this notebook guides you through the annotation process step-by-step. It allows you to manually enter parameters at different stages, making it ideal for experimental setups where you may be unsure of the optimal parameters to use.
+
+**When to Use:**
+
+- If you're in the exploratory phase and wish to experiment with different parameters.
+- If you're not yet certain about the ideal settings for annotation and want a guided, interactive process.
+
+**Note:** If you already know all the parameters you want to use and prefer a notebook that can be executed in one go, it's recommended to use the `annotation.ipynb` notebook instead.
+
+### homology.ipynb: Transfer Marker Genes Across Organisms Using Homology
+
+The `homology.ipynb` notebook enables the transfer of marker genes from a source organism to a target organism using homology-based methods. It offers two distinct approaches: one utilizing BioMart and Ensembl, and the other using the HomoloGene database. The notebook is structured to guide you through each step of the process, from selecting the appropriate method and organisms to the actual gene transfer.
+
+**Key Features:**
+- Interactive selection of source markers, target organisms, and other parameters.
+- Wrapper function to streamline the gene transfer process.
+- Offers the ability to select from a range of supported organisms, each backed by either Ensembl, or HomoloGene
+
+**When to Use:**
+
+- When you need to transfer marker genes from one organism to another, especially 
+- when no marker lists are available for the organism you are analyzing, and you need a reliable method for generating them.
+
+### scoring.ipynb: Scoring
+
+The `scoring.ipynb` notebook allows for the weighting of individual markers using various functions. It enables the scoring of markers based on ubiquitousness index. 
+
+**Key Features:**
+- Enables comparison and scoring of markers from selected lists.
+- Export functionality for scored marker lists.
+
+**When to Use:**
+- When you need to prioritize or weight marker genes for your analyses.
+- When you are working with marker lists from multiple sources and need to generate a unified, weighted list.
+
+### search_and_combine_lists.ipynb: Search and Combine Lists
+
+The `search_and_combine_lists.ipynb` notebook provides a guide for searching and combining marker lists from the marker repository. It covers the process from selection to export, with wrapper functions streamlining the steps for various output formats and needs.
+
+**Key Features:**
+- Guided Search to compile a selection of marker lists based on metadata or other criteria.
+- Combining and formatting selected lists into a unified DataFrame.
+- Export options for different formats such as "two_column" or "score".
+- Wrapper functions to automate the entire process for custom requirements.
+
+**When to Use:**
+- To familiarize yourself with the core functionalities of the Marker Repo.
+- When you need a tailored marker list, assembled from multiple sources or based on specific criteria.
+- When you require custom formatting styles for your marker lists.
+
+### submit_lists.ipynb: Create and Upload Your Own Marker Lists
+
+The `submit_lists.ipynb` notebook is designed to allow you to upload your own marker lists to the repository. This notebook takes you through every step, from entering metadata about your list to actually submitting it. It even supports validation and curation using whitelists, ensuring that your list is both accurate and useful.
+
+**Key Features:**
+- Step-by-step guide to entering metadata for your marker list.
+- Utilizes whitelists for marker validation and curation.
+- Allows for the automated entry of markers, which can be in the form of genes or genomic regions.
+- Final validation step before publishing, ensuring that your list adheres to the repository's format and standards.
+
+**When to Use:**
+- When you have developed a unique marker list and wish to share it with the broader scientific community.
+- When you want to ensure the quality and reliability of your marker list through guided validation steps.
+- For a seamless process of contributing to the repository, making your work easily accessible and usable by others.
+
+# Install the Conda environment and add it to Jupyter as a Kernel
+
+Follow these steps to install the Conda environment and add it to Jupyter as a Kernel.
+
+## Step 1: Install the Conda environment
+
+1. Open your terminal
+2. Navigate to the `environment.yaml` file in the repository
+3. Run one of the following commands:
+
+`conda env create -f environment.yaml`
 
 
+`mamba env create -f environment.yaml`
 
-## Getting started
+This command creates a new Conda environment named `marker-repo` as described in the `environment.yaml` file.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Step 2: Activate the Conda environment
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+You need to activate the environment before using it or adding it as a Kernel to Jupyter. To do this, run:
 
-## Add your files
+`conda activate marker-repo`
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
 
-```
-cd existing_repo
-git remote add origin https://gitlab.gwdg.de/loosolab/software/annotate_by_marker_and_features.git
-git branch -M main
-git push -uf origin main
-```
+## Step 3: Add the environment to Jupyter as a Kernel
 
-## Integrate with your tools
+Add `marker-repo` as a Kernel in Jupyter by running:
 
-- [ ] [Set up project integrations](https://gitlab.gwdg.de/loosolab/software/annotate_by_marker_and_features/-/settings/integrations)
+`python -m ipykernel install --user --name=marker-repo`
 
-## Collaborate with your team
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+After this step, `marker-repo` should appear as an available option when choosing a Kernel in Jupyter.
 
-## Test and Deploy
+## Step 4: Deactivate the Conda environment
 
-Use the built-in continuous integration in GitLab.
+Once you are done, you can deactivate the `marker-repo` environment by running:
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+`conda deactivate`
 
-***
+That's it! You have successfully created a Conda environment, activated it, and added it as a Kernel in Jupyter. Select the `marker-repo` Kernel in the provided notebooks and begin working on your project.
 
-# Editing this README
+# Installing the MarkerRepo Package
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+The MarkerRepo package allows you to use the functionalities of MarkerRepo in external environments. Follow these steps to install the package:
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## Step 1: Activate the Conda environment
 
-## Name
-Choose a self-explaining name for your project.
+Before installing the package, make sure to activate the Conda environment where you want the package installed. Run:
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+`conda activate your-env`
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## Step 2: Install the MarkerRepo package
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+With the Conda environment activated, navigate to the root directory of the MarkerRepo package and run:
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+`pip install .`
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+This command installs the MarkerRepo package into your `your-env` Conda environment.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Now you can import and use the MarkerRepo package in any Python script or notebook running in the `your-env` Conda environment.

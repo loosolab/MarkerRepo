@@ -1,0 +1,24 @@
+marker_list:
+- markers:
+  - NT5E ENSG00000135318
+  - ITGB1 ENSG00000150093
+  - CD44 ENSG00000026508
+  - ALCAM ENSG00000170017
+  - ITGA5 ENSG00000161638
+  - THY1 ENSG00000154096
+  name: Mesenchymal stem cell
+metadata:
+  date: 27.03.2020
+  id: '1688745545764487'
+  list_name: HCM_human_gingiva
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: gingiva

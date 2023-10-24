@@ -1,0 +1,203 @@
+marker_list:
+- markers:
+  - BMI1 ENSG00000168283
+  - ALCAM ENSG00000170017
+  - PROM1 ENSG00000007062
+  - SOX9 ENSG00000125398
+  name: Stem cell
+- markers:
+  - LGR5 ENSG00000139292
+  name: Intestinal stem cell
+- markers:
+  - ALCAM ENSG00000170017
+  name: Cancer stem cell
+- markers:
+  - CD8A ENSG00000153563
+  - IDO1 ENSG00000131203
+  name: Cytotoxic T cell
+- markers:
+  - FOXP3 ENSG00000049768
+  - IL2RA ENSG00000134460
+  name: Regulatory T(Treg) cell
+- markers:
+  - CCR7 ENSG00000126353
+  - SELL ENSG00000188404
+  name: Nave or central memory  T cell
+- markers:
+  - NKG7 ENSG00000105374
+  - GZMA ENSG00000145649
+  - KLRD1 ENSG00000134539
+  - PRF1 ENSG00000180644
+  - GZMB ENSG00000100453
+  - GZMH ENSG00000100450
+  - KLRK1 ENSG00000213809
+  - CTSW ENSG00000172543
+  - GNLY ENSG00000115523
+  - KLRB1 ENSG00000111796
+  name: Cytotoxic cell
+- markers:
+  - CD8B ENSG00000172116
+  - CD8A ENSG00000153563
+  name: CD8 T cell
+- markers:
+  - THY1 ENSG00000154096
+  - DCN ENSG00000011465
+  - LUM ENSG00000139329
+  - COL1A1 ENSG00000108821
+  - COL14A1 ENSG00000187955
+  - CAV1 ENSG00000105974
+  - ACTA2 ENSG00000107796
+  - COL1A2 ENSG00000164692
+  - COL3A1 ENSG00000168542
+  - FN1 ENSG00000115414
+  - COL6A1 ENSG00000142156
+  name: Fibroblast
+- markers:
+  - ACTA2 ENSG00000107796
+  name: Smooth muscle cell
+- markers:
+  - GAST ENSG00000184502
+  - CHGA ENSG00000100604
+  - EPCAM ENSG00000119888
+  - SST ENSG00000157005
+  - TFF3 ENSG00000160180
+  name: Gastric neuroendocrine cell
+- markers:
+  - VWF ENSG00000110799
+  - SELP ENSG00000174175
+  - PECAM1 ENSG00000261371
+  - SELE ENSG00000007908
+  - ENG ENSG00000106991
+  - CDH5 ENSG00000179776
+  name: Endothelial cell
+- markers:
+  - CD14 ENSG00000170458
+  - CD68 ENSG00000129226
+  - CD163 ENSG00000177575
+  - FCGR3A ENSG00000203747
+  name: Macrophage
+- markers:
+  - MUC2 ENSG00000198788
+  name: Intestinal epithelial cell
+- markers:
+  - PDGFRB ENSG00000113721
+  - RGS5 ENSG00000232995
+  - ACTA2 ENSG00000107796
+  - MCAM ENSG00000076706
+  name: Pericyte
+- markers:
+  - ACTA2 ENSG00000107796
+  - THY1 ENSG00000154096
+  - CAV1 ENSG00000105974
+  - DCN ENSG00000011465
+  - COL14A1 ENSG00000187955
+  - COL1A1 ENSG00000108821
+  - LUM ENSG00000139329
+  name: Myofibroblast
+- markers:
+  - GNLY ENSG00000115523
+  - NCR1 ENSG00000189430
+  - XCL2 ENSG00000143185
+  - NKG7 ENSG00000105374
+  name: Natural killer cell
+- markers:
+  - PDX1 ENSG00000139515
+  - GAST ENSG00000184502
+  name: Antrum gastric epithelial cell
+- markers:
+  - CLEC4C ENSG00000198178
+  - CD83 ENSG00000112149
+  - IRF4 ENSG00000137265
+  - ID2 ENSG00000115738
+  - HLA-DQA2 ENSG00000237541
+  - IL3RA ENSG00000185291
+  name: Dendritic cell
+- markers:
+  - CPA3 ENSG00000163751
+  - TPSAB1 ENSG00000172236
+  - MS4A2 ENSG00000149534
+  - TPSB2 ENSG00000197253
+  name: Mast cell
+- markers:
+  - CBLIF ENSG00000134812
+  name: Gastric parietal cell
+- markers:
+  - CD3D ENSG00000167286
+  - CD3E ENSG00000198851
+  - CD3G ENSG00000160654
+  - CD2 ENSG00000116824
+  name: T cell
+- markers:
+  - CD69 ENSG00000110848
+  - ITGAE ENSG00000083457
+  - ITGA1 ENSG00000213949
+  name: Tissue resident effector memory T cell
+- markers:
+  - FCGR3A ENSG00000203747
+  - CD14 ENSG00000170458
+  name: Monocyte
+- markers:
+  - LGR5 ENSG00000139292
+  - TNFRSF19 ENSG00000127863
+  name: Gastric stem cell
+- markers:
+  - MUC5AC ENSG00000215182
+  - TFF2 ENSG00000160181
+  - TFF1 ENSG00000160182
+  - PGC ENSG00000096088
+  - MUC6 ENSG00000184956
+  - EPCAM ENSG00000119888
+  - KRT18 ENSG00000111057
+  - KRT8 ENSG00000170421
+  - SFN ENSG00000175793
+  - KRT5 ENSG00000186081
+  - KRT14 ENSG00000186847
+  name: Epithelial cell
+- markers:
+  - SDC1 ENSG00000115884
+  name: Plasma cell
+- markers:
+  - MS4A1 ENSG00000156738
+  - CD19 ENSG00000177455
+  - CD79A ENSG00000105369
+  - MZB1 ENSG00000170476
+  - JCHAIN ENSG00000132465
+  name: B cell
+- markers:
+  - CHGA ENSG00000100604
+  name: Endocrine cell
+- markers:
+  - ATP4A ENSG00000105675
+  name: Parietal cell
+- markers:
+  - ANO1 ENSG00000131620
+  - KIT ENSG00000157404
+  name: Cancer cell
+- markers:
+  - IL3RA ENSG00000185291
+  - LYZ ENSG00000090382
+  - LAMP3 ENSG00000078081
+  - CLEC4C ENSG00000198178
+  - CD14 ENSG00000170458
+  - TPSAB1 ENSG00000172236
+  - CD68 ENSG00000129226
+  name: Myeloid cell
+- markers:
+  - PDPN ENSG00000162493
+  - CCL21 ENSG00000137077
+  name: Fibroblastic reticular cell
+metadata:
+  date: 27.03.2020
+  id: '1688745545577087'
+  list_name: HCM_human_gastrointestinal-tract
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: gastrointestinal-tract

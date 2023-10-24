@@ -1,0 +1,65 @@
+marker_list:
+- markers:
+  - PROM1 ENSG00000007062
+  - POU5F1 ENSG00000204531
+  - NANOG ENSG00000111704
+  - SOX2 ENSG00000181449
+  name: Cancer stem cell
+- markers:
+  - TP63 ENSG00000073282
+  - S100A7 ENSG00000143556
+  name: Squamous cell
+- markers:
+  - PDCD1 ENSG00000188389
+  - LAG3 ENSG00000089692
+  - CTLA4 ENSG00000163599
+  name: Exhausted CD8+ T cell
+- markers:
+  - MRC1 ENSG00000260314
+  - CD163 ENSG00000177575
+  - IL10 ENSG00000136634
+  name: M2 macrophage
+- markers:
+  - FOXP3 ENSG00000049768
+  name: Regulatory T(Treg) cell
+- markers:
+  - APOBEC3A ENSG00000128383
+  name: Cancer cell
+- markers:
+  - CD14 ENSG00000170458
+  - CD163 ENSG00000177575
+  name: Myeloid cell
+- markers:
+  - PECAM1 ENSG00000261371
+  - CD34 ENSG00000174059
+  name: Endothelial cell
+- markers:
+  - KIT ENSG00000157404
+  - TPSAB1 ENSG00000172236
+  name: Mast cell
+- markers:
+  - MZB1 ENSG00000170476
+  - CD79A ENSG00000105369
+  name: B cell
+- markers:
+  - COL1A1 ENSG00000108821
+  - PDGFRB ENSG00000113721
+  name: Mesenchymal cell
+- markers:
+  - EPCAM ENSG00000119888
+  name: Epithelial cell
+metadata:
+  date: 27.03.2020
+  id: '1688745545485379'
+  list_name: HCM_human_gall-bladder
+  marker_type: Genes
+  organism:
+    organism_name: human
+    taxonomy_id: '9606'
+  source: bio-bigdata.hrbmu.edu.cn/CellMarker
+  submitter:
+    email: Micha-Frederick.Kessler@mpi-bn.mpg.de
+    name: Kessler, Micha Frederick
+  tags:
+    list_type: Cell type annotation
+    tissue: gallbladder
