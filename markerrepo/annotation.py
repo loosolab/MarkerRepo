@@ -7,7 +7,7 @@ from IPython.display import display
 from .marker_repo import read_whitelist, get_whitelists, combine_dfs, export_marker_list
 
 
-def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False):
+def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4):
     """
     If the script is called via a package (atactoolbox), please use this function.
     This function calculates potential cell types per cluster and adds them to the obs table of the anndata object.
@@ -45,6 +45,8 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         Whether to add the annotations to the adata object in place.
     header : bool, default False
         Skip first line if header is True.
+    min_hits : int, default 4
+        Minimum number of hits required to consider a cell type for annotation.
 
     Returns
     --------
@@ -117,7 +119,7 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
             print("Starting cell type annotation.")
             print(output_path, ct_path, cluster_column)
             perform_cell_type_annotation(
-                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header)
+                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header, min_hits=min_hits)
 
             # Add information to the adata object
             print("Adding information to the adata object.")
@@ -417,7 +419,7 @@ def calc_ranks(cm_dict, annotated_clusters, min_hits=4):
     return ct_dict
 
 
-def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=False):
+def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=False, min_hits=4):
     """
     Prepare database and clusters for upcoming ranking calculations.
 
@@ -434,6 +436,8 @@ def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=Fal
         The species of the data.
     header : bool, default False
         Skip first line if header is True.
+    min_hits : int, default 4
+        Minimum number of hits required to consider a cell type for annotation.
 
     Returns
     -------
@@ -445,7 +449,7 @@ def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=Fal
     db_dict = parse_marker_database(db_path, tissue=tissue, species=species, header=header)
     annotated_clusters = get_annotated_clusters(cluster_path=cluster_path)
 
-    return calc_ranks(db_dict, annotated_clusters)
+    return calc_ranks(db_dict, annotated_clusters, min_hits=min_hits)
 
 
 def get_annotated_clusters(cluster_path, show_duplicates=False):
@@ -510,7 +514,7 @@ def get_annotated_clusters(cluster_path, show_duplicates=False):
     return annotated_clusters
 
 
-def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False):
+def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False, min_hits=4):
     """
     Performs cell type identification, generate cell type assignment table
     and create ranks folder with files for further investigation (one per cluster).
@@ -530,13 +534,15 @@ def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", sp
         The species of the data.
     header : bool, default False
         Skip first line if header is True.
+    min_hits : int, default 4
+        Minimum number of hits required to consider a cell type for annotation.
     """
 
     opath = output + "/ranks/"
     if not os.path.exists(opath):
         os.makedirs(opath)
 
-    ct_dict = get_cell_types(cluster_path, db_path, tissue, species=species, header=header)
+    ct_dict = get_cell_types(cluster_path, db_path, tissue, species=species, header=header, min_hits=min_hits)
     write_annotation(ct_dict, output)
 
 
