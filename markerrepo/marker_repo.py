@@ -45,6 +45,16 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
     pd.DataFrame :
         Either the filtered search results as metadata or as a combined list of markers.
     """
+    
+    if not os.path.exists(repo_path):
+        raise FileNotFoundError(f"The specified repository path '{repo_path}' does not exist.")
+    
+    if out not in ["metadata", "marker_list"]:
+        raise ValueError("The parameter 'out' must be either 'metadata' or 'marker_list'.")
+    
+    if col_to_search is not None:
+        if col_to_search not in df.columns:
+            raise ValueError(f"The specified column '{col_to_search}' does not exist in the DataFrame. Available columns are: {', '.join(df.columns)}.")
 
     flags = 0 if case_sensitive else re.IGNORECASE
     
@@ -107,6 +117,12 @@ def guided_search(repo_path=".", df=None, out="metadata"):
     pd.DataFrame
         Either the filtered search results as metadata or as a combined list of markers.
     """
+
+    if not os.path.exists(repo_path):
+        raise FileNotFoundError(f"The specified repository path '{repo_path}' does not exist.")
+    
+    if out not in ["metadata", "marker_list"]:
+        raise ValueError("The parameter 'out' must be either 'metadata' or 'marker_list'.")
 
     # Get the DataFrame if not provided
     if df is None:

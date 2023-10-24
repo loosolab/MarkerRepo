@@ -1,3 +1,6 @@
+# This code is based on the GitLab repository "metadata organizer", which can be found at the following URL:
+# https://gitlab.gwdg.de/loosolab/software/metadata-organizer
+
 import yaml
 import os
 import copy

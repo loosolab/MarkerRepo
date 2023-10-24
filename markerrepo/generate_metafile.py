@@ -1,3 +1,6 @@
+# This code is based on the GitLab repository "metadata organizer", which can be found at the following URL:
+# https://gitlab.gwdg.de/loosolab/software/metadata-organizer
+
 import sys
 from tabulate import tabulate
 from .utils import read_in_yaml, save_as_yaml, find_keys, get_whitelist
