@@ -1,3 +1,19 @@
+# MarkerRepo: A Central Repository for Marker List Management and Application
+
+MarkerRepo is a project that integrates marker list management with cell type annotation of single cell data. The repository consists of multiple Jupyter notebooks, each focusing on a specific task such as marker list curation, cell type annotation, or marker homology.
+
+## Table of Contents
+- [Quickstart](#quickstart)
+- [Notebook Descriptions](#notebook-descriptions)
+  - [annotation.ipynb: Cell Type Annotation](#annotationipynb-cell-type-annotation)
+  - [guided_annotation.ipynb: Step-by-Step Guided Cell Type Annotation](#guided_annotationipynb-step-by-step-guided-cell-type-annotation)
+  - [homology.ipynb: Transfer Marker Genes Across Organisms Using Homology](#homologyipynb-transfer-marker-genes-across-organisms-using-homology)
+  - [scoring.ipynb: Scoring](#scoringipynb-scoring)
+  - [search_and_combine_lists.ipynb: Search and Combine Lists](#search_and_combine_listsipynb-search-and-combine-lists)
+  - [submit_lists.ipynb: Create and Upload Your Own Marker Lists](#submit_listsipynb-create-and-upload-your-own-marker-lists)
+- [Install the Conda environment and add it to Jupyter as a Kernel](#install-the-conda-environment-and-add-it-to-jupyter-as-a-kernel)
+- [Installing the MarkerRepo Package](#installing-the-markerrepo-package)
+
 # Quickstart
 
 The easiest way to get started with this project is by running the Jupyter notebooks available in the `notebooks` folder. Before you can use these notebooks, make sure to follow the steps outlined below to set up your Conda environment and install necessary packages.
