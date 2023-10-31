@@ -752,9 +752,9 @@ def export_markers_from_anndata(adata, n=50, rank_genes_column='rank_genes_group
     return path
 
 
-def compare_cell_types(adata, column, marker_lists):
+def compare_cell_types(adata, column, obs_columns):
     """
-    Group the observation DataFrame of an anndata object by a specific column and include relevant cell types from given marker lists.
+    Group the observation DataFrame of an anndata object by a specific column and include relevant cell types from given obs columns.
 
     Parameters
     ----------
@@ -762,22 +762,18 @@ def compare_cell_types(adata, column, marker_lists):
         The anndata object containing the .obs DataFrame.
     column : str
         The column by which to group the .obs DataFrame.
-    marker_lists : list of str
-        List of paths to marker list files.
+    obs_columns : list of str
+        List of column names in the .obs DataFrame to keep for the comparison.
 
     Returns
     -------
     DataFrame :
-        A grouped DataFrame based on the specified column, incorporating relevant cell types from the marker lists.
+        A grouped DataFrame based on the specified column, incorporating relevant cell types from the obs columns.
     """
     
     obs_df = adata.obs
-    columns_to_keep = [column]
+    columns_to_keep = [column] + obs_columns  # Include the grouping column and additional columns from obs_columns
     
-    for marker_list in marker_lists:
-        name = marker_list.split("/")[-1]
-        columns_to_keep.append(f"cell_types_{name}")
-        
     filtered_obs_df = obs_df[columns_to_keep]
     grouped_obs_df = filtered_obs_df.groupby(column).agg('first')
     
@@ -806,5 +802,5 @@ def reformat_marker_list(input_path, suffix="_SCSA"):
     df.columns = ["marker", "cell_name"]
     output_path = f"{input_path}{suffix}"
     df.to_csv(output_path, index=False, sep='\t')
-    
+
     return output_path
