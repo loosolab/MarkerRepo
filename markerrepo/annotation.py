@@ -782,3 +782,29 @@ def compare_cell_types(adata, column, marker_lists):
     grouped_obs_df = filtered_obs_df.groupby(column).agg('first')
     
     return grouped_obs_df
+
+
+def reformat_marker_list(input_path, suffix="_SCSA"):
+    """
+    Reformat a TSV marker list for compatibility with SCSA.
+
+    Parameters
+    ----------
+    input_path : str
+        Path to the input TSV marker list.
+    suffix : str, optional
+        Suffix to append to output file name. Default is '_SCSA'.
+
+    Returns
+    -------
+    str
+        Path where the reformatted marker list is saved.
+    """
+
+    df = pd.read_csv(input_path, header=None, sep='\t')
+    df = df.iloc[:, :2]
+    df.columns = ["marker", "cell_name"]
+    output_path = f"{input_path}{suffix}"
+    df.to_csv(output_path, index=False, sep='\t')
+    
+    return output_path
