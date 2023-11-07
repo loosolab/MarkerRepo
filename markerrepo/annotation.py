@@ -771,6 +771,9 @@ def compare_cell_types(adata, column, obs_columns):
         A grouped DataFrame based on the specified column, incorporating relevant cell types from the obs columns.
     """
     
+    if column in obs_columns:
+        obs_columns.remove(column)
+
     obs_df = adata.obs
     columns_to_keep = [column] + obs_columns  # Include the grouping column and additional columns from obs_columns
     
