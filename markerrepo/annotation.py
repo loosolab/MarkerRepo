@@ -194,18 +194,69 @@ def modify_ct(adata=None, annotation_dir=None, clustering_column="leiden_0.1", c
         return adata
 
 
-def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1"):
+def calculate_normalized_diffs(df):
     """
-    Show dataframes of each cluster which shows score, hits, number of genes and mean of the UI of every potential cell type.
+    Calculate both normal and scaled normalized difference scores for adjacent cell type pairs in a DataFrame.
+
+    This function first calculates the normal normalized differences between each cell type and 
+    its immediate successor based on their scores. Then, it scales these differences within a range of 0 to 100,
+    where the highest difference is scaled to 100 and the lowest to 0.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        A DataFrame sorted by 'Score', containing cell types and their corresponding scores.
+
+    Returns
+    -------
+    tuple of dicts :
+        The first dictionary contains the normal normalized differences, and the second dictionary 
+        contains the scaled normalized differences, both keyed by cell type.
+    """
+
+    # Calculate normal normalized diffs
+    normal_diffs = {}
+    for i in range(len(df) - 1):
+        score_current = df.at[i, 'Score']
+        score_next = df.at[i + 1, 'Score']
+        normalized_diff = (score_current - score_next) / score_current if score_current != 0 else 0
+        normal_diffs[df.at[i, 'Cell type']] = normalized_diff
+    normal_diffs[df.at[len(df) - 1, 'Cell type']] = 0
+
+    # Scale normalized diffs
+    scaled_diffs = normal_diffs.copy()
+    max_diff = max(scaled_diffs.values())
+    min_diff = min(scaled_diffs.values())
+    range_diff = max_diff - min_diff
+    if range_diff != 0:
+        for key in scaled_diffs:
+            scaled_diffs[key] = round((scaled_diffs[key] - min_diff) / range_diff * 100)
+    else:
+        for key in scaled_diffs:
+            scaled_diffs[key] = 0  # or 100 if all diffs are the same
+
+    return normal_diffs, scaled_diffs
+
+
+def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1", show_diff=False):
+    """
+    Display dataframes for each cluster showing scores, hits, number of genes, mean of UI. Optionally, 
+    it can also show both normal and scaled normalized differences of every potential cell type.
+
+    For each cluster, this function reads the corresponding file, sorts the cell types based on their scores.
+    If show_diff is True, it calculates both normal and scaled normalized differences between each cell type 
+    and its immediate successor, and then displays the dataframe with these additional columns.
 
     Parameters
     ----------
     annotation_dir : string, default None
-        The path where the annotation files are being stored (should be the same path as the output_path parameter of the annot_ct function).
+        The directory path where the annotation files are stored.
     n : int, default 5
-        The maximum number of rows to show
-    clustering_column : string, default "leiden"
-        The clustering column of the obs table which has been used for cell type annotation.
+        The maximum number of rows to display for each cluster.
+    clustering_column : string, default "leiden_0.1"
+        The clustering column used for cell type annotation.
+    show_diff : bool, default False
+        Whether to show the normalized differences in the output.
     """
 
     path = f'{annotation_dir}/ranked/output/{clustering_column}/ranks'
@@ -213,8 +264,18 @@ def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1"):
     files = os.listdir(path)
     for file in files:
         cluster = file.split("_")[1]
-        df = pd.read_csv(f'{path}/{file}', sep='\t', names=[f"Cluster {cluster}: Cell type", "Score", "Hits", "Number of marker genes", "Mean of UI"])
-        display(df.head(n))
+        ct_column = f"Cluster {cluster}"
+        df = pd.read_csv(f'{path}/{file}', sep='\t', names=[ct_column, "Score", "Hits", "Number of marker genes", "Mean of UI"])
+
+        df_sorted = df.sort_values(by='Score', ascending=False).reset_index(drop=True)
+
+        if show_diff:
+            # Calculate and add both normal and scaled diffs to the DataFrame if show_diff is True
+            normal_diffs, scaled_diffs = calculate_normalized_diffs(df_sorted.rename(columns={ct_column: "Cell type"}))
+            df_sorted['Normalized Diff'] = df_sorted[ct_column].apply(lambda x: normal_diffs.get(x, 0))
+            df_sorted['Scaled Diff'] = df_sorted[ct_column].apply(lambda x: scaled_diffs.get(x, 0))
+
+        display(df_sorted.head(n))
 
 
 def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column):
