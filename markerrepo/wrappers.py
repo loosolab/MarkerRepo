@@ -1,10 +1,11 @@
 from .scoring import compare_marker_lists, update_scores
 from .homology import check_organisms, download_homologene_data, fetch_homologs, get_dataset_names, get_supported_biomart_organisms, get_supported_taxonomy_ids, transfer_markers_biomart, transfer_markers_homologene
-from .marker_repo import combine_lists, export_marker_list, guided_search, get_whitelists, select, get_selected_lists, search_df, combine_dfs, get_valid_filename
+from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename
 from .homology import get_biomart_defaults
-from .utils import read_whitelist
+from .utils import read_whitelist, get_whitelists
 from IPython.display import display
 import os
+
 
 def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None, force_homology=False):
     """
@@ -252,7 +253,6 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
 
     paths = []
     marker_id = "ensembl" if ensemble else "symbol"
-    get_whitelists()
 
     biomart_organisms = get_supported_biomart_organisms(repo_path=repo_path)
     homologene_organisms = get_supported_taxonomy_ids(repo_path=repo_path)
@@ -303,8 +303,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             source_genes = read_whitelist(f"genes/{source_organism}", repo_path=repo_path)['whitelist']
             print("Done!\n")
 
-            print("Get HomoloGene db...")
-            hg_db = download_homologene_data()
+            hg_db = download_homologene_data(repo_path=repo_path)
 
             uids = source_df.loc[source_df['Organism name'] == source_organism].index.tolist()
             source_marker_list = combine_lists(uids, repo_path=repo_path)

@@ -4,7 +4,8 @@ import statistics
 import pandas as pd
 import scanpy as sc
 from IPython.display import display
-from .marker_repo import read_whitelist, get_whitelists, combine_dfs, export_marker_list
+from .marker_repo import read_whitelist, combine_dfs, export_marker_list
+from .utils import get_whitelists
 
 
 def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4):
