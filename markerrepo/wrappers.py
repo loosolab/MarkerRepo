@@ -2,7 +2,7 @@ from .scoring import compare_marker_lists, update_scores
 from .homology import check_organisms, download_homologene_data, fetch_homologs, get_dataset_names, get_supported_biomart_organisms, get_supported_taxonomy_ids, transfer_markers_biomart, transfer_markers_homologene
 from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename
 from .homology import get_biomart_defaults
-from .utils import read_whitelist, get_whitelists
+from .utils import read_whitelist
 from IPython.display import display
 import os
 

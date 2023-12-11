@@ -434,12 +434,14 @@ def combine_lists(uids, repo_path="."):
     dfs = []
     for file in get_uid_paths(uids, repo_path=repo_path):
         dfs.append(get_marker_list(file))
+
+    if not dfs:
+        print("No lists found.")
+        return pd.DataFrame()
         
     # Perform outer join
     combined_df = pd.concat(dfs).reset_index(drop=True)
     combined_df.drop_duplicates(inplace=True)
-    
-    # TODO: inner join, etc ...
 
     return combined_df
 
