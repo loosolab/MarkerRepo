@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import git
 from .parsing import get_marker_lists, process_file, split_marker_elements
 from .utils import read_whitelist
 import yaml
@@ -14,6 +13,7 @@ import math
 import re
 import time
 import random
+
 
 def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path="."):
     """
@@ -434,12 +434,14 @@ def combine_lists(uids, repo_path="."):
     dfs = []
     for file in get_uid_paths(uids, repo_path=repo_path):
         dfs.append(get_marker_list(file))
+
+    if not dfs:
+        print("No lists found.")
+        return pd.DataFrame()
         
     # Perform outer join
     combined_df = pd.concat(dfs).reset_index(drop=True)
     combined_df.drop_duplicates(inplace=True)
-    
-    # TODO: inner join, etc ...
 
     return combined_df
 
@@ -479,42 +481,6 @@ def show_statistics(metadata, repo_path=".", dpi=120):
         stat_df.plot(kind='bar', title=key, ax=axes[axes_arr[count]])
     
     plt.show()
-
-
-def get_whitelists(repo_path=".", update=False):
-    """
-    Fetches whitelists of the metadata_whitelist repository.
-    
-    Parameters
-    ----------
-    repo_path : str, default "."
-        The path of the Marker Repo.
-    update : bool, default False
-        Whether to update the repo if it already exists.
-    """
-
-    print('Initiating whitelist fetching...')
-    repo_full_path = os.path.join(repo_path, "metadata_whitelists")
-
-    # Check if path exists
-    if os.path.exists(repo_full_path):
-        print(f"Directory {repo_full_path} already exists.")
-        # If update is True, pull the latest changes
-        if update:
-            print("Updating the existing repository...")
-            repo = git.Repo(repo_full_path)
-            o = repo.remotes.origin
-            o.pull()
-            print("Repository updated.")
-        else:
-            print("Update is set to False. Skipping update.")
-    else:
-        # Clone the repository if it doesn't exist
-        print("Directory does not exist. Cloning the repository...")
-        git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git', repo_full_path)
-        print("Repository cloned.")
-
-    print("Whitelist fetching process completed.\n")
 
 
 def update_markers(df, marker_dict, column='Marker'):
