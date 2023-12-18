@@ -4,10 +4,52 @@
 import yaml
 import os
 import copy
+import git
+
+
+def get_whitelists(repo_path=".", update=True, silent_skip=False):
+    """
+    Fetches whitelists of the metadata_whitelist repository.
+    
+    Parameters
+    ----------
+    repo_path : str, default "."
+        The path of the Marker Repo.
+    update : bool, default False
+        Whether to update the repo if it already exists.
+    silent_skip : bool, default False
+        Whether to skip the fetching process silently if the repo already exists.
+    """
+    
+    if not silent_skip:
+        print('Initiating whitelist fetching...')
+
+    repo_full_path = os.path.join(repo_path, "metadata_whitelists")
+
+    # Check if path exists
+    if os.path.exists(repo_full_path):
+        if not silent_skip:
+            print(f"Directory {repo_full_path} already exists.")
+            # If update is True, pull the latest changes
+            if update:
+                print("Updating the existing repository...")
+                repo = git.Repo(repo_full_path)
+                o = repo.remotes.origin
+                o.pull()
+                print("Repository updated.")
+            else:
+                print("Update is set to False. Skipping update.")
+    else:
+        # Clone the repository if it doesn't exist
+        print("Directory does not exist. Cloning the whitelist repository...")
+        git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git', repo_full_path)
+        print("Repository cloned.")
+
+    if not silent_skip:
+        print("Whitelist fetching process completed.\n")
 
 # The following functions were copied from Mampok
 # https://gitlab.gwdg.de/loosolab/software/mampok/-/blob/master/mampok/utils.py
-
 
 def save_as_yaml(dictionary, file_path):
     """
@@ -95,6 +137,9 @@ def read_whitelist(key, marker_list=False, repo_path="."):
     :param key: the key that contains a whitelist
     :return: whitelist: the read in whitelist
     """
+
+    get_whitelists(repo_path=repo_path, update=False, silent_skip=True)
+
     try:
         whitelist = read_in_yaml(
             os.path.join(repo_path, 'metadata_whitelists', 'whitelists', key), marker_list=marker_list)

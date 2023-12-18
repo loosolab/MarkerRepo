@@ -3,9 +3,9 @@ import os
 import urllib.request
 from pybiomart import Server
 from .marker_repo import get_gene_dict
-from .marker_repo import combine_dfs, get_gene_dict, get_whitelists, guided_search, search_df, select, update_markers
+from .marker_repo import combine_dfs, get_gene_dict, guided_search, search_df, select, update_markers
 from .plotting import plot_gene_counts
-from .utils import read_whitelist
+from .utils import read_whitelist, get_whitelists
 from IPython.display import display
 
 
@@ -47,7 +47,7 @@ def check_organisms(biomart_orgs, homologene_orgs, source_orgs, target_org):
     return in_both, in_neither, only_in_biomart, only_in_homologene
 
 
-def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data", check=False):
+def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data", check=False, repo_path="."):
     """
     Download and parse the HomoloGene data.
 
@@ -59,6 +59,8 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
         URL to the HomoloGene data file.
     check : bool, default False
         If True, ask wether you want to overwrite the HomoloGene file.
+    repo_path : str, default "."
+        The path of the Marker Repo.
 
     Returns
     --------
@@ -66,20 +68,26 @@ def download_homologene_data(file_name="homologene.data", url="ftp://ftp.ncbi.ni
         DataFrame with the HomoloGene data.
     """
 
+    if repo_path.endswith('/'):
+        repo_path = repo_path[:-1]
+
+    path = f"{repo_path}/{file_name}"
+
     # Check if file already exists
-    if os.path.exists(file_name):
+    if os.path.exists(path):
         if check:
-            overwrite = input(f"'{file_name}' already exists. Do you want to overwrite it? (yes/no): ").lower()
+            overwrite = input(f"'{path}' already exists. Do you want to overwrite it? (yes/no): ").lower()
 
             if overwrite == 'yes':
                 # Download new data and overwrite existing file
-                urllib.request.urlretrieve(url, file_name)
+                urllib.request.urlretrieve(url, path)
     else:
         # Download data
-        urllib.request.urlretrieve(url, file_name)
+        print("Downloading HomoloGene db...")
+        urllib.request.urlretrieve(url, path)
 
     # Load HomoloGene db
-    homologene_data = pd.read_csv(file_name, sep='\t', header=None, index_col=0)
+    homologene_data = pd.read_csv(path, sep='\t', header=None, index_col=0)
 
     # Rename columns
     homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein GI", "Protein accession"]
@@ -110,7 +118,7 @@ def get_supported_taxonomy_ids(repo_path="."):
         homologene_data.columns = ["Taxonomy ID", "Gene ID", "Gene Symbol", "Protein GI", "Protein accession"]
         homologene_data.index.names = ["HID"]
     else:
-        homologene_data = download_homologene_data()
+        homologene_data = download_homologene_data(repo_path=repo_path)
 
     # Get unique taxonomy IDs from HomoloGene db and convert them to strings
     unique_taxonomy_ids = homologene_data['Taxonomy ID'].unique().astype(str).tolist()
@@ -716,7 +724,7 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
         source df, source tax ID, target tax ID, HomoloGene db, target genes whitelist, source genes whitelist
     """
 
-    get_whitelists()
+    get_whitelists(repo_path=repo_path)
 
     biomart_orgs = get_supported_biomart_organisms(repo_path=repo_path)
     homologene_orgs = get_supported_taxonomy_ids(repo_path=repo_path)
@@ -745,8 +753,7 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
         print("Fetch necessary data from BioMart...")
         biomart_db = fetch_homologs(source_organism_bm, target_organism_bm).dropna()
     else:
-        print("Get HomoloGene db...")
-        hg_db = download_homologene_data()
+        hg_db = download_homologene_data(repo_path=repo_path)
 
     if search_terms:
         print("\nGenerate marker DataFrame based on the given search terms: ")
