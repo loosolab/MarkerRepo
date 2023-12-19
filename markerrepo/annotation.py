@@ -273,8 +273,8 @@ def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1", show_d
         if show_diff:
             # Calculate and add both normal and scaled diffs to the DataFrame if show_diff is True
             normal_diffs, scaled_diffs = calculate_normalized_diffs(df_sorted.rename(columns={ct_column: "Cell type"}))
-            df_sorted['Normalized Diff'] = df_sorted[ct_column].apply(lambda x: normal_diffs.get(x, 0))
-            df_sorted['Scaled Diff'] = df_sorted[ct_column].apply(lambda x: scaled_diffs.get(x, 0))
+            # df_sorted['Normalized Diff'] = df_sorted[ct_column].apply(lambda x: normal_diffs.get(x, 0))
+            df_sorted['Adjacent Disparity'] = df_sorted[ct_column].apply(lambda x: scaled_diffs.get(x, 0))
 
         display(df_sorted.head(n))
 

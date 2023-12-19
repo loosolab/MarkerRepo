@@ -95,7 +95,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
-def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column=None, clustering_column="leiden", reference_obs=None):
+def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column=None, clustering_column="leiden", reference_obs=None, keep_all=False):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. #TODO
 
@@ -120,6 +120,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         The column of the .obs table which contains the clustering information. E.g. "louvain" or "leiden".
     reference_obs : str, default None
         A reference annotation already present in the .obs table that can be compared with the other annotations.
+    keep_all : bool, default False
+        If True, all annotation columns will be kept. If False, only the selected annotation column and the reference_obs will be kept.
     
     Returns
     -------
@@ -196,6 +198,15 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
     # Select cell type annotation
     annotation_column = select(whitelist=annotation_columns, heading="Select cell type annotation column:")
+
+    if not keep_all:
+        # Keep only the selected annotation column and reference_obs if provided
+        columns_to_keep = [annotation_column]
+        if reference_obs is not None and reference_obs in adata.obs.columns:
+            columns_to_keep.append(reference_obs)
+
+        columns_to_remove = [col for col in annotation_columns if col not in columns_to_keep]
+        adata.obs.drop(columns=columns_to_remove, inplace=True)
 
     return annotation_column
 
