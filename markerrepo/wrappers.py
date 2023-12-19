@@ -97,7 +97,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
 
 def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column="rank_genes", clustering_column="leiden", reference_obs=None):
     """
-    Performs annotations on single-cell data and allows the user to choose between different annotation methods.
+    Performs annotations on single cell data and allows the user to choose between different annotation methods. #TODO
 
     Parameters
     ----------
@@ -121,6 +121,25 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
     reference_obs : str, default None
         A reference annotation already present in the .obs table that can be compared with the other annotations.
     """
+
+    if not marker_repo and not SCSA:
+        raise ValueError("At least one of 'marker_repo' or 'SCSA' must be True.")
+
+    if marker_lists is None or not marker_lists:
+        raise ValueError("No marker lists provided. Please provide a list of marker list paths.")
+    
+    for marker_list in marker_lists:
+        if not os.path.exists(marker_list):
+            raise FileNotFoundError(f"Marker list file not found: {marker_list}")
+
+    if clustering_column not in adata.obs:
+        raise ValueError(f"Clustering column '{clustering_column}' not found in adata.obs.")
+
+    if rank_genes_column is not None and rank_genes_column not in adata.uns:
+        raise ValueError(f"Rank genes column '{rank_genes_column}' not found in adata.uns.")
+
+    if reference_obs is not None and reference_obs not in adata.obs:
+        raise ValueError(f"Reference annotation column '{reference_obs}' not found in adata.obs.")
 
     for marker_list in marker_lists:
         columns_to_plot = [] if reference_obs is None else [reference_obs]
