@@ -3,7 +3,7 @@ from .homology import check_organisms, download_homologene_data, fetch_homologs,
 from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename
 from .homology import get_biomart_defaults
 from .utils import read_whitelist
-from .annotation import annot_ct, show_tables, reformat_marker_list
+from .annotation import annot_ct, show_tables, reformat_marker_list, compare_cell_types
 import scanpy as sc
 from sctoolbox.tools import celltype_annotation
 from IPython.display import display
@@ -37,8 +37,8 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
 
     Returns
     -------
-    List of paths to the created marker lists.
-
+    List of str :
+    Paths to the created marker lists.
     """
 
     if not os.path.exists(repo_path):
@@ -95,7 +95,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
-def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column="rank_genes", clustering_column="leiden", reference_obs=None):
+def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column=None, clustering_column="leiden", reference_obs=None):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. #TODO
 
@@ -113,13 +113,18 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         .obs key for Marker Repo annotation.
     scsa_obs : str, default "scsa"
         .obs key for SCSA annotation.
-    rank_genes_column : str, default "rank_genes"
+    rank_genes_column : str, default None
         The column of the .uns table which contains the rank genes scores. E.g. "rank_genes_groups". 
         If None, the ranking will be performed on the clustering_column.
     clustering_column : str, default "leiden"
         The column of the .obs table which contains the clustering information. E.g. "louvain" or "leiden".
     reference_obs : str, default None
         A reference annotation already present in the .obs table that can be compared with the other annotations.
+    
+    Returns
+    -------
+    str :
+    The name of the selected cell type annotation column.
     """
 
     if not marker_repo and not SCSA:
@@ -140,16 +145,23 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
     if reference_obs is not None and reference_obs not in adata.obs:
         raise ValueError(f"Reference annotation column '{reference_obs}' not found in adata.obs.")
+    
+    if not rank_genes_column:
+        if 'log1p' in adata.uns and 'base' in adata.uns['log1p']:
+            adata.uns['log1p']['base'] = None
+        rank_genes_column = f'rank_genes_groups_{clustering_column}'
+        print(f'Ranking genes groups for clusters using obs column {clustering_column}')
+        sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column)
+
+    annotation_columns = [] if reference_obs is None else [reference_obs]        
 
     for marker_list in marker_lists:
-        columns_to_plot = [] if reference_obs is None else [reference_obs]
-        
         name = marker_list.split('/')[-1]
         annotation_dir = f"./annotation/{name}"
 
         if marker_repo:
             ct_column = f"{mr_obs}_{name}"
-            columns_to_plot.append(ct_column)
+            annotation_columns.append(ct_column)
             
             # Execute Marker Repo annotation
             annot_ct(adata, output_path=annotation_dir, db_path=marker_list,
@@ -162,7 +174,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
         if SCSA:
             column_added = f"{scsa_obs}_{name}"
-            columns_to_plot.append(column_added)
+            annotation_columns.append(column_added)
             
             # Execute SCSA annotation
             celltype_annotation.run_scsa(adata, 
@@ -177,7 +189,15 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
                  celltype_column="cell_name")
 
         # Plot annotation
-        sc.pl.umap(adata, color=columns_to_plot, wspace=0.5)
+        sc.pl.umap(adata, color=[ct_column, column_added], wspace=0.5)
+
+    # Compare annotations
+    display(compare_cell_types(adata, clustering_column, annotation_columns))
+
+    # Select cell type annotation
+    annotation_column = select(whitelist=annotation_columns, heading="Select cell type annotation column:")
+
+    return annotation_column
 
 
 def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists", file_name=None, case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):

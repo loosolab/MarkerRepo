@@ -279,7 +279,7 @@ def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1", show_d
         display(df_sorted.head(n))
 
 
-def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column):
+def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column, log=False):
     """
     Writes one file per cluster that contains gene IDs and their corresponding scores, sorted by ranking.
 
@@ -298,6 +298,8 @@ def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata
         The anndata object which contains clustered data, gene ID as index as well as rank genes groups.
     rank_genes_column : string, default None
         The column of the .uns table which contains the rank genes scores. E.g. "rank_genes_groups".
+    log : bool, default False
+        Whether to log the progress.
     """
 
     clusters = adata.obs[f'{cluster_column}'].unique()
@@ -305,7 +307,8 @@ def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata
 
     for index, cluster in enumerate(clusters):
         with open(f'{cluster_path}/{sample}.cluster_{cluster}', 'w') as file:
-            print(f"Writing ranked cluster file {sample}.cluster_{cluster} ({index+1}/{total_clusters})")
+            if log:
+                print(f"Writing ranked cluster file {sample}.cluster_{cluster} ({index+1}/{total_clusters})")
             for i, gene in enumerate(genes_adata.uns[f'{rank_genes_column}']['names'][cluster]):
                 score = genes_adata.uns[f'{rank_genes_column}']['scores'][cluster][i]
                 file.write(f'{gene.split("_")[0]}\t{score}\n')
