@@ -8,7 +8,7 @@ from .marker_repo import read_whitelist, combine_dfs, export_marker_list
 from .utils import get_whitelists
 
 
-def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4):
+def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4, verbose=False, ignore_overwrite=False):
     """
     If the script is called via a package (atactoolbox), please use this function.
     This function calculates potential cell types per cluster and adds them to the obs table of the anndata object.
@@ -48,6 +48,10 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         Skip first line if header is True.
     min_hits : int, default 4
         Minimum number of hits required to consider a cell type for annotation.
+    verbose : bool, default False
+        Whether to print additional information.
+    ignore_overwrite : bool, default False
+        Whether to ignore the overwrite warning.
 
     Returns
     --------
@@ -82,29 +86,31 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         cluster_path = f"{output_path}/ranked/clusters/{cluster_column}"
         ct_path = f"{output_path}/ranked/output/{cluster_column}"
 
-        if os.path.exists(ct_path):
+        if not ignore_overwrite and os.path.exists(ct_path):
             print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overritten.")
             go_on = False
 
-        if not go_on:
-            go_on = input("Do you want to continue? (yes/no): ")
-            go_on = True if go_on == "yes" else False
+            if not go_on:
+                go_on = input("Do you want to continue? (yes/no): ")
+                go_on = True if go_on == "yes" else False
 
             if not go_on:
                 print("Cell type annotation has been aborted.")
 
                 return
-
-        print(f"Output folder: {ct_path}/", "\nDB file: " + db_path, f"\nCluster folder: {cluster_path}/",
-              "\nTissue: " + tissue)
+            
+        if verbose:
+            print(f"Output folder: {ct_path}/", "\nDB file: " + db_path, f"\nCluster folder: {cluster_path}/",
+                "\nTissue: " + tissue)
         if adata and genes_adata and cluster_column:
             # Create folders containing the annotation assignment table as well as the detailed scoring files per cluster
             if not os.path.exists(f'{ct_path}'):
                 os.makedirs(f'{ct_path}')
-                print(f'Created folder: {ct_path}')
+                if verbose:
+                    print(f'Created folder: {ct_path}')
 
             # Check if cluster_path exists
-            if os.path.exists(cluster_path):
+            if not ignore_overwrite and os.path.exists(cluster_path):
                 user_input = input(f"The folder {cluster_path} already exists.\nDo you want to skip creating new ranked cluster files and keep the old ones? (yes/no): ")
                 if user_input.lower() == 'yes':
                     print("Skipping the creation of new ranked cluster files.")
@@ -113,17 +119,23 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                     write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column)
             else:
                 # Create folder if it doesn't exist and write files
-                os.makedirs(cluster_path)
+                if not os.path.exists(cluster_path):
+                    os.makedirs(cluster_path)
+                    if verbose:
+                        print(f'Created folder: {cluster_path}')
+
                 write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column)
 
             # Perform the actual cell type annotation per clustering resolution
-            print("Starting cell type annotation.")
-            print(output_path, ct_path, cluster_column)
+            if verbose:
+                print("Starting cell type annotation.")
+                print(output_path, ct_path, cluster_column)
             perform_cell_type_annotation(
                 f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header, min_hits=min_hits)
 
             # Add information to the adata object
-            print("Adding information to the adata object.")
+            if verbose:
+                print("Adding information to the adata object.")
             cta_dict = {}
             with open(f'{ct_path}/annotation.txt') as file:
                 for line in file:
@@ -131,17 +143,20 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                     cta_dict[cluster] = ct.rstrip()
             adata.obs[f'{ct_column}'] = adata.obs[f'{cluster_column}'].map(cta_dict)
 
-            print(f"Finished cell type annotation! The results are found in the .obs table {ct_column}.")
+            if verbose:
+                print(f"Finished cell type annotation! The results are found in the .obs table {ct_column}.")
 
             if not inplace:
                 return adata
 
         elif cluster_path:
-            print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
-                  "\nTissue: " + tissue)
+            if verbose:
+                print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
+                      "\nTissue: " + tissue)
             perform_cell_type_annotation(
                 f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header)
-            print(f"Cell type annotation of output path {ct_path}/ finished.")
+            if verbose:
+                print(f"Cell type annotation of output path {ct_path}/ finished.")
 
         else:
             pass

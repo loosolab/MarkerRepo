@@ -123,7 +123,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
-def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column=None, clustering_column="leiden", reference_obs=None, keep_all=False, verbose=False, show_tables=False, show_plots=False, show_comparison=False):
+def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column=None, clustering_column="leiden", reference_obs=None, keep_all=False, verbose=False, show_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. 
 
@@ -158,6 +158,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         If True, the function will show the plots of the annotation.
     show_comparison : bool, default False
         If True, the function will show the comparison of the annotations.
+    ignore_overwrite : bool, default False
+        If True, the function will not ask for confirmation before overwriting existing files.
 
     Returns
     -------
@@ -208,7 +210,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
             # Execute Marker Repo annotation
             annot_ct(adata, output_path=annotation_dir, db_path=marker_list,
                            cluster_column=clustering_column, rank_genes_column=rank_genes_column, 
-                           ct_column=ct_column)
+                           ct_column=ct_column, verbose=verbose, ignore_overwrite=ignore_overwrite)
 
             # Show tables and alternative cell types of each cluster
             if show_tables:
