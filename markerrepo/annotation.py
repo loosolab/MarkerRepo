@@ -215,6 +215,10 @@ def calculate_normalized_diffs(df):
         contains the scaled normalized differences, both keyed by cell type.
     """
 
+    # Check if df has at least two rows
+    if len(df) < 2:
+        return {}, {}  
+
     # Calculate normal normalized diffs
     normal_diffs = {}
     for i in range(len(df) - 1):

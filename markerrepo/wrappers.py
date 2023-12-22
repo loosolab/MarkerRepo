@@ -8,6 +8,34 @@ import scanpy as sc
 from sctoolbox.tools import celltype_annotation
 from IPython.display import display
 import os
+import sys
+import contextlib
+import io
+import logging
+
+
+@contextlib.contextmanager
+def suppress_logging(logger_name, level=logging.CRITICAL):
+    """ Ein Kontextmanager, der alle Log-Ausgaben eines spezifischen Loggers unterhalb eines bestimmten Levels unterdrückt. """
+    logger = logging.getLogger(logger_name)
+    old_level = logger.getEffectiveLevel()
+    logger.setLevel(level)
+    try:
+        yield
+    finally:
+        logger.setLevel(old_level)
+
+
+@contextlib.contextmanager
+def suppress_output():
+    """ Ein Kontextmanager, der stdout und stderr unterdrückt """
+    new_stdout, new_stderr = io.StringIO(), io.StringIO()
+    old_stdout, old_stderr = sys.stdout, sys.stderr
+    try:
+        sys.stdout, sys.stderr = new_stdout, new_stderr
+        yield
+    finally:
+        sys.stdout, sys.stderr = old_stdout, old_stderr
 
 
 def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None, force_homology=False):
@@ -95,9 +123,9 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
-def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column=None, clustering_column="leiden", reference_obs=None, keep_all=False):
+def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column=None, clustering_column="leiden", reference_obs=None, keep_all=False, verbose=False, show_tables=False, show_plots=False, show_comparison=False):
     """
-    Performs annotations on single cell data and allows the user to choose between different annotation methods. #TODO
+    Performs annotations on single cell data and allows the user to choose between different annotation methods. 
 
     Parameters
     ----------
@@ -122,7 +150,15 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         A reference annotation already present in the .obs table that can be compared with the other annotations.
     keep_all : bool, default False
         If True, all annotation columns will be kept. If False, only the selected annotation column and the reference_obs will be kept.
-    
+    verbose : bool, default False
+        If True, the function will print additional information.
+    show_tables : bool, default False
+        If True, the function will show the tables of the annotation.
+    show_plots : bool, default False
+        If True, the function will show the plots of the annotation.
+    show_comparison : bool, default False
+        If True, the function will show the comparison of the annotations.
+
     Returns
     -------
     str :
@@ -152,8 +188,12 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         if 'log1p' in adata.uns and 'base' in adata.uns['log1p']:
             adata.uns['log1p']['base'] = None
         rank_genes_column = f'rank_genes_groups_{clustering_column}'
-        print(f'Ranking genes groups for clusters using obs column {clustering_column}')
-        sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column)
+        if verbose:
+            print(f'Ranking genes groups for clusters using obs column {clustering_column}')
+            sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, verbose=verbose)
+        else:
+            with suppress_output():
+                sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, verbose=verbose)
 
     annotation_columns = [] if reference_obs is None else [reference_obs]        
 
@@ -171,30 +211,47 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
                            ct_column=ct_column)
 
             # Show tables and alternative cell types of each cluster
-            print(f"Tables of cell type annotation with clustering {clustering_column}")
-            show_tables(annotation_dir=annotation_dir, n=5, clustering_column=clustering_column, show_diff=True)
+            if show_tables:
+                print(f"Tables of cell type annotation with clustering {clustering_column}")
+                show_tables(annotation_dir=annotation_dir, n=5, clustering_column=clustering_column, show_diff=True)
 
         if SCSA:
             column_added = f"{scsa_obs}_{name}"
             annotation_columns.append(column_added)
             
             # Execute SCSA annotation
-            celltype_annotation.run_scsa(adata, 
-                 gene_column=None, 
-                 key=rank_genes_column, 
-                 column_added=column_added,
-                 inplace=True, 
-                 species=None, 
-                 fc=1.5, 
-                 pvalue=0.05, 
-                 user_db=reformat_marker_list(marker_list), 
-                 celltype_column="cell_name")
+            if verbose:
+                celltype_annotation.run_scsa(adata, 
+                    gene_column=None, 
+                    key=rank_genes_column, 
+                    column_added=column_added,
+                    inplace=True, 
+                    species=None, 
+                    fc=1.5, 
+                    pvalue=0.05, 
+                    user_db=reformat_marker_list(marker_list), 
+                    celltype_column="cell_name")
+            else:
+                with suppress_logging(logger_name='sctoolbox'):
+                    celltype_annotation.run_scsa(adata, 
+                        gene_column=None, 
+                        key=rank_genes_column, 
+                        column_added=column_added,
+                        inplace=True, 
+                        species=None, 
+                        fc=1.5, 
+                        pvalue=0.05, 
+                        user_db=reformat_marker_list(marker_list), 
+                        celltype_column="cell_name")
 
-        # Plot annotation
-        sc.pl.umap(adata, color=[ct_column, column_added], wspace=0.5)
+        # Show plots
+        if show_plots:
+            sc.pl.umap(adata, color=annotation_columns, wspace=0.5)
 
     # Compare annotations
-    display(compare_cell_types(adata, clustering_column, annotation_columns))
+    if show_comparison:
+        print("Comparison of cell type annotations:")
+        display(compare_cell_types(adata, clustering_column, annotation_columns))
 
     # Select cell type annotation
     annotation_column = select(whitelist=annotation_columns, heading="Select cell type annotation column:")
