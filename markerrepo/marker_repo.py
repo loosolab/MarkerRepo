@@ -15,7 +15,7 @@ import time
 import random
 
 
-def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path="."):
+def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path=".", column_specific_terms=None):
     """
     This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
     the function either returns the filtered DataFrame or a combined list of markers.
@@ -39,6 +39,8 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
         'marker_list', the function returns a combined list of markers.
     repo_path : str, default "."
         The path of the Marker Repo. Required if out = 'marker_list'.
+    column_specific_terms : dict, default None
+        A dictionary with column names as keys and lists of search terms as values. If provided, 'col_to_search' and 'search_terms' are ignored.
 
     Returns
     -------
@@ -52,42 +54,38 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
     if out not in ["metadata", "marker_list"]:
         raise ValueError("The parameter 'out' must be either 'metadata' or 'marker_list'.")
     
-    if col_to_search is not None:
-        if col_to_search not in df.columns:
-            raise ValueError(f"The specified column '{col_to_search}' does not exist in the DataFrame. Available columns are: {', '.join(df.columns)}.")
+    # Convert col_to_search and search_terms to column_specific_terms if None
+    if column_specific_terms is None:
+        column_specific_terms = {col_to_search: search_terms} if col_to_search is not None else {col: search_terms for col in df.columns}
 
     flags = 0 if case_sensitive else re.IGNORECASE
     
-    must_include_terms = [term.lstrip('+') for term in search_terms if term.startswith('+')]
-    positive_terms = [term for term in search_terms if not term.startswith('-') and not term.startswith('+')]
-    negative_terms = [term.lstrip('-') for term in search_terms if term.startswith('-')]
+    for col, terms in column_specific_terms.items():
+        if col not in df.columns:
+            raise ValueError(f"The specified column '{col}' does not exist in the DataFrame. Available columns are: {', '.join(df.columns)}.")
 
-    if exact:
-        must_include_terms = [f"^{term}$" for term in must_include_terms]
-        positive_terms = [f"^{term}$" for term in positive_terms]
-        negative_terms = [f"^{term}$" for term in negative_terms]
+        if isinstance(terms, str):
+            terms = [terms]
 
-    if col_to_search:
+        must_include_terms = [term.lstrip('+') for term in terms if term.startswith('+')]
+        positive_terms = [term for term in terms if not term.startswith('-') and not term.startswith('+')]
+        negative_terms = [term.lstrip('-') for term in terms if term.startswith('-')]
+
+        if exact:
+            must_include_terms = [f"^{term}$" for term in must_include_terms]
+            positive_terms = [f"^{term}$" for term in positive_terms]
+            negative_terms = [f"^{term}$" for term in negative_terms]
+
+        # Apply filtering logic for each column
         for term in must_include_terms:
-            df = df[df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
-        
+            df = df[df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
+
         if positive_terms:
-            positive_mask = pd.concat([df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags))) for term in positive_terms], axis=1).any(axis=1)
+            positive_mask = pd.concat([df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags))) for term in positive_terms], axis=1).any(axis=1)
             df = df[positive_mask]
-            
+
         for term in negative_terms:
-            df = df[~df[col_to_search].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
-            
-    else:
-        for term in must_include_terms:
-            df = df[df.apply(lambda x: x.astype(str).str.contains(term, flags=flags, regex=True).any(), axis=1)]
-        
-        if positive_terms:
-            positive_mask = pd.concat([df.apply(lambda x: x.astype(str).str.contains(term, flags=flags, regex=True).any(), axis=1) for term in positive_terms], axis=1).any(axis=1)
-            df = df[positive_mask]
-            
-        for term in negative_terms:
-            df = df[~df.apply(lambda x: x.astype(str).str.contains(term, flags=flags, regex=True).any(), axis=1)]
+            df = df[~df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
 
     if out == "marker_list":
         if repo_path is None:

@@ -5,18 +5,22 @@ from .homology import get_biomart_defaults
 from .utils import read_whitelist
 from .annotation import annot_ct, show_tables, reformat_marker_list, compare_cell_types
 import scanpy as sc
-from sctoolbox.tools import celltype_annotation
 from IPython.display import display
 import os
 import sys
 import contextlib
 import io
 import logging
+import warnings
+
+try:
+    from sctoolbox.tools import celltype_annotation
+except ModuleNotFoundError:
+    warnings.warn("Please install the latest MarkerRepo version. Some functionality may not be available.", RuntimeWarning)
 
 
 @contextlib.contextmanager
 def suppress_logging(logger_name, level=logging.CRITICAL):
-    """ Ein Kontextmanager, der alle Log-Ausgaben eines spezifischen Loggers unterhalb eines bestimmten Levels unterdrückt. """
     logger = logging.getLogger(logger_name)
     old_level = logger.getEffectiveLevel()
     logger.setLevel(level)
@@ -28,7 +32,6 @@ def suppress_logging(logger_name, level=logging.CRITICAL):
 
 @contextlib.contextmanager
 def suppress_output():
-    """ Ein Kontextmanager, der stdout und stderr unterdrückt """
     new_stdout, new_stderr = io.StringIO(), io.StringIO()
     old_stdout, old_stderr = sys.stdout, sys.stderr
     try:
@@ -38,7 +41,8 @@ def suppress_output():
         sys.stdout, sys.stderr = old_stdout, old_stderr
 
 
-def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None, force_homology=False):
+def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, 
+                        col_to_search=None, search_terms=None, force_homology=False, column_specific_terms=None):
     """
     Creates marker lists for a given organism.
 
@@ -62,7 +66,9 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
         The search terms to search for in the DataFrame.
     force_homology : bool, default False
         If True, the function will try to create marker lists via homology even if marker lists for the given organism already exist.
-
+    column_specific_terms : dict, default None
+        A dictionary with column names as keys and lists of search terms as values. If provided, 'col_to_search' and 'search_terms' are ignored.
+        
     Returns
     -------
     List of str :
@@ -101,8 +107,8 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
             if organism:
                 print(f"Found {len(df)} marker lists for the given organism {organism.split(' ')[0]}.")
                 display(df)
-            if search_terms:
-                df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms)
+            if search_terms or column_specific_terms:
+                df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms)
                 print(f"Found {len(df)} marker lists for the given search terms.")
                 display(df)
                 df = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
