@@ -42,7 +42,8 @@ def suppress_output():
 
 
 def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, 
-                        col_to_search=None, search_terms=None, force_homology=False, column_specific_terms=None):
+                        col_to_search=None, search_terms=None, force_homology=False, show_lists=True,
+                        column_specific_terms=None):
     """
     Creates marker lists for a given organism.
 
@@ -66,6 +67,8 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
         The search terms to search for in the DataFrame.
     force_homology : bool, default False
         If True, the function will try to create marker lists via homology even if marker lists for the given organism already exist.
+    show_lists : bool, default True
+        If True, the function will show the marker lists of the query.
     column_specific_terms : dict, default None
         A dictionary with column names as keys and lists of search terms as values. If provided, 'col_to_search' and 'search_terms' are ignored.
         
@@ -106,11 +109,15 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
         else:
             if organism:
                 print(f"Found {len(df)} marker lists for the given organism {organism.split(' ')[0]}.")
-                display(df)
+                
+                if show_lists:
+                    display(df)
             if search_terms or column_specific_terms:
                 df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms)
                 print(f"Found {len(df)} marker lists for the given search terms.")
-                display(df)
+                
+                if show_lists:
+                    display(df)
                 df = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
                 paths.append(convert_markers(style=style, repo_path=repo_path, df=df, path=path, file_name=file_name, ensembl=ensembl))
             else:
@@ -129,7 +136,10 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
-def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column=None, clustering_column="leiden", reference_obs=None, keep_all=False, verbose=False, show_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False):
+def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", 
+                   rank_genes_column=None, clustering_column=None, reference_obs=None, keep_all=False, 
+                   verbose=False, show_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False,
+                   celltype_column_name = None):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. 
 
@@ -150,7 +160,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
     rank_genes_column : str, default None
         The column of the .uns table which contains the rank genes scores. E.g. "rank_genes_groups". 
         If None, the ranking will be performed on the clustering_column.
-    clustering_column : str, default "leiden"
+    clustering_column : str, default None
         The column of the .obs table which contains the clustering information. E.g. "louvain" or "leiden".
     reference_obs : str, default None
         A reference annotation already present in the .obs table that can be compared with the other annotations.
@@ -166,7 +176,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         If True, the function will show the comparison of the annotations.
     ignore_overwrite : bool, default False
         If True, the function will not ask for confirmation before overwriting existing files.
-
+    celltype_column_name : str, default None
+        The name of the selected cell type annotation column. If None, all annotation columns will be kept.
     Returns
     -------
     str :
@@ -182,6 +193,9 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
     for marker_list in marker_lists:
         if not os.path.exists(marker_list):
             raise FileNotFoundError(f"Marker list file not found: {marker_list}")
+        
+    if not clustering_column:
+        clustering_column = select(whitelist=list(adata.obs.columns), heading="clustering column")
 
     if clustering_column not in adata.obs:
         raise ValueError(f"Clustering column '{clustering_column}' not found in adata.obs.")
@@ -262,7 +276,11 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         display(compare_cell_types(adata, clustering_column, annotation_columns))
 
     # Select cell type annotation
-    annotation_column = select(whitelist=annotation_columns, heading="Select cell type annotation column:")
+    if celltype_column_name:
+        annotation_column = select(whitelist=annotation_columns, heading="Select cell type annotation column:")
+        adata.obs.rename(columns={annotation_column: celltype_column_name}, inplace=True)
+    else:
+        keep_all = True
 
     if not keep_all:
         # Keep only the selected annotation column and reference_obs if provided
@@ -272,8 +290,6 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
         columns_to_remove = [col for col in annotation_columns if col not in columns_to_keep]
         adata.obs.drop(columns=columns_to_remove, inplace=True)
-
-    return annotation_column
 
 
 def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists", file_name=None, case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
