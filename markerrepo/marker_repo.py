@@ -54,6 +54,8 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
     if out not in ["metadata", "marker_list"]:
         raise ValueError("The parameter 'out' must be either 'metadata' or 'marker_list'.")
     
+    df  = df.reset_index()
+    
     # Convert col_to_search and search_terms to column_specific_terms if None
     if column_specific_terms is None:
         column_specific_terms = {col_to_search: search_terms} if col_to_search is not None else {col: search_terms for col in df.columns}
@@ -92,6 +94,8 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
             raise ValueError("repo_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in df.index]
         return combine_lists(uids, repo_path=repo_path)
+    
+    df.set_index("ID", inplace=True)
 
     return df
 
