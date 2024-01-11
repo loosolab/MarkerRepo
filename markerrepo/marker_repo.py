@@ -195,8 +195,6 @@ def guided_search(repo_path=".", df=None, out="metadata"):
         continue_search = input("Do you want to continue searching? (yes/no): ")
         if continue_search.lower() != 'yes':
             break
-
-    df_copy.set_index("ID", inplace=True)
     
     if out == "marker_list":
         if repo_path is None:
