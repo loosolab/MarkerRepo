@@ -131,7 +131,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
         if adata:
             if "MarkerRepo" not in adata.uns:
                 adata.uns["MarkerRepo"] = {}
-            adata.uns["MarkerRepo"]["marker_lists"] = df.index.tolist()
+            adata.uns["MarkerRepo"]["marker_lists"] = df.index.astype(str).tolist()
 
 
         if search_terms or column_specific_terms:
