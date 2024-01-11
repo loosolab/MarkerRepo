@@ -43,7 +43,7 @@ def suppress_output():
 
 def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, 
                         col_to_search=None, search_terms=None, force_homology=False, show_lists=True,
-                        column_specific_terms=None):
+                        column_specific_terms=None, adata=None):
     """
     Creates marker lists for a given organism.
 
@@ -71,6 +71,8 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
         If True, the function will show the marker lists of the query.
     column_specific_terms : dict, default None
         A dictionary with column names as keys and lists of search terms as values. If provided, 'col_to_search' and 'search_terms' are ignored.
+    adata : AnnData, default None
+        If provided, the function will add the marker list IDs to the .uns table of the AnnData object.
         
     Returns
     -------
@@ -102,8 +104,8 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
             print("Trying to create marker lists via homology...")
 
             source_df = None
-            if search_terms:
-                source_df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search=col_to_search, search_terms=search_terms)
+            if search_terms or column_specific_terms:
+                source_df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms)
             paths.extend(transfer_markers(target_org=organism, source_df=source_df, repo_path=repo_path, target_counts=1, 
                           weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name, ensemble=ensembl))
         else:
@@ -118,13 +120,19 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
                 
                 if show_lists:
                     display(df)
-                df = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
-                paths.append(convert_markers(style=style, repo_path=repo_path, df=df, path=path, file_name=file_name, ensembl=ensembl))
+                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
+                paths.append(convert_markers(style=style, repo_path=repo_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl))
             else:
                 print(f"Please specify the marker lists you want to use for the annotation.")
                 df = guided_search(repo_path=repo_path, df=df, out="metadata")
-                df = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
-                paths.append(convert_markers(style=style, repo_path=repo_path, df=df, path=path, file_name=file_name, ensembl=ensembl))
+                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
+                paths.append(convert_markers(style=style, repo_path=repo_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl))
+
+        if adata:
+            if "MarkerRepo" not in adata.uns:
+                adata.uns["MarkerRepo"] = {}
+            adata.uns["MarkerRepo"]["marker_lists"] = df.index.tolist()
+
 
         if search_terms or column_specific_terms:
             return paths
@@ -139,7 +147,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
 def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", 
                    rank_genes_column=None, clustering_column=None, reference_obs=None, keep_all=False, 
                    verbose=False, show_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False,
-                   celltype_column_name = None):
+                   celltype_column_name=None):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. 
 
