@@ -3,11 +3,46 @@ from .homology import check_organisms, download_homologene_data, fetch_homologs,
 from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename
 from .homology import get_biomart_defaults
 from .utils import read_whitelist
+from .annotation import annot_ct, show_tables, reformat_marker_list, compare_cell_types
+import scanpy as sc
 from IPython.display import display
 import os
+import sys
+import contextlib
+import io
+import logging
+import warnings
+
+try:
+    from sctoolbox.tools import celltype_annotation
+except ModuleNotFoundError:
+    warnings.warn("Please install the latest MarkerRepo version. Some functionality may not be available.", RuntimeWarning)
 
 
-def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, col_to_search=None, search_terms=None, force_homology=False):
+@contextlib.contextmanager
+def suppress_logging(logger_name, level=logging.CRITICAL):
+    logger = logging.getLogger(logger_name)
+    old_level = logger.getEffectiveLevel()
+    logger.setLevel(level)
+    try:
+        yield
+    finally:
+        logger.setLevel(old_level)
+
+
+@contextlib.contextmanager
+def suppress_output():
+    new_stdout, new_stderr = io.StringIO(), io.StringIO()
+    old_stdout, old_stderr = sys.stdout, sys.stderr
+    try:
+        sys.stdout, sys.stderr = new_stdout, new_stderr
+        yield
+    finally:
+        sys.stdout, sys.stderr = old_stdout, old_stderr
+
+
+def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, 
+                        col_to_search=None, search_terms=None, force_homology=False, column_specific_terms=None):
     """
     Creates marker lists for a given organism.
 
@@ -31,11 +66,13 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
         The search terms to search for in the DataFrame.
     force_homology : bool, default False
         If True, the function will try to create marker lists via homology even if marker lists for the given organism already exist.
-
+    column_specific_terms : dict, default None
+        A dictionary with column names as keys and lists of search terms as values. If provided, 'col_to_search' and 'search_terms' are ignored.
+        
     Returns
     -------
-    List of paths to the created marker lists.
-
+    List of str :
+    Paths to the created marker lists.
     """
 
     if not os.path.exists(repo_path):
@@ -70,8 +107,8 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
             if organism:
                 print(f"Found {len(df)} marker lists for the given organism {organism.split(' ')[0]}.")
                 display(df)
-            if search_terms:
-                df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms)
+            if search_terms or column_specific_terms:
+                df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms)
                 print(f"Found {len(df)} marker lists for the given search terms.")
                 display(df)
                 df = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
@@ -90,6 +127,153 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
             break 
 
     return paths
+
+
+def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", rank_genes_column=None, clustering_column="leiden", reference_obs=None, keep_all=False, verbose=False, show_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False):
+    """
+    Performs annotations on single cell data and allows the user to choose between different annotation methods. 
+
+    Parameters
+    ----------
+    adata : AnnData
+        The anndata object to annotate.
+    marker_repo : bool, default True
+        Whether to use Marker Repo annotation.
+    SCSA : bool, default True
+        Whether to use SCSA annotation.
+    marker_lists : list of str, default []
+        Paths to marker list files.
+    mr_obs : str, default "mr"
+        .obs key for Marker Repo annotation.
+    scsa_obs : str, default "scsa"
+        .obs key for SCSA annotation.
+    rank_genes_column : str, default None
+        The column of the .uns table which contains the rank genes scores. E.g. "rank_genes_groups". 
+        If None, the ranking will be performed on the clustering_column.
+    clustering_column : str, default "leiden"
+        The column of the .obs table which contains the clustering information. E.g. "louvain" or "leiden".
+    reference_obs : str, default None
+        A reference annotation already present in the .obs table that can be compared with the other annotations.
+    keep_all : bool, default False
+        If True, all annotation columns will be kept. If False, only the selected annotation column and the reference_obs will be kept.
+    verbose : bool, default False
+        If True, the function will print additional information.
+    show_tables : bool, default False
+        If True, the function will show the tables of the annotation.
+    show_plots : bool, default False
+        If True, the function will show the plots of the annotation.
+    show_comparison : bool, default False
+        If True, the function will show the comparison of the annotations.
+    ignore_overwrite : bool, default False
+        If True, the function will not ask for confirmation before overwriting existing files.
+
+    Returns
+    -------
+    str :
+    The name of the selected cell type annotation column.
+    """
+
+    if not marker_repo and not SCSA:
+        raise ValueError("At least one of 'marker_repo' or 'SCSA' must be True.")
+
+    if marker_lists is None or not marker_lists:
+        raise ValueError("No marker lists provided. Please provide a list of marker list paths.")
+    
+    for marker_list in marker_lists:
+        if not os.path.exists(marker_list):
+            raise FileNotFoundError(f"Marker list file not found: {marker_list}")
+
+    if clustering_column not in adata.obs:
+        raise ValueError(f"Clustering column '{clustering_column}' not found in adata.obs.")
+
+    if rank_genes_column is not None and rank_genes_column not in adata.uns:
+        raise ValueError(f"Rank genes column '{rank_genes_column}' not found in adata.uns.")
+
+    if reference_obs is not None and reference_obs not in adata.obs:
+        raise ValueError(f"Reference annotation column '{reference_obs}' not found in adata.obs.")
+    
+    if not rank_genes_column:
+        if 'log1p' in adata.uns and 'base' in adata.uns['log1p']:
+            adata.uns['log1p']['base'] = None
+        rank_genes_column = f'rank_genes_groups_{clustering_column}'
+        if verbose:
+            print(f'Ranking genes groups for clusters using obs column {clustering_column}')
+            sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, verbose=verbose)
+        else:
+            with suppress_output():
+                sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, verbose=verbose)
+
+    annotation_columns = [] if reference_obs is None else [reference_obs]        
+
+    for marker_list in marker_lists:
+        name = marker_list.split('/')[-1]
+        annotation_dir = f"./annotation/{name}"
+
+        if marker_repo:
+            ct_column = f"{mr_obs}_{name}"
+            annotation_columns.append(ct_column)
+            
+            # Execute Marker Repo annotation
+            annot_ct(adata, output_path=annotation_dir, db_path=marker_list,
+                           cluster_column=clustering_column, rank_genes_column=rank_genes_column, 
+                           ct_column=ct_column, verbose=verbose, ignore_overwrite=ignore_overwrite)
+
+            # Show tables and alternative cell types of each cluster
+            if show_tables:
+                print(f"Tables of cell type annotation with clustering {clustering_column}")
+                show_tables(annotation_dir=annotation_dir, n=5, clustering_column=clustering_column, show_diff=True)
+
+        if SCSA:
+            column_added = f"{scsa_obs}_{name}"
+            annotation_columns.append(column_added)
+            
+            # Execute SCSA annotation
+            if verbose:
+                celltype_annotation.run_scsa(adata, 
+                    gene_column=None, 
+                    key=rank_genes_column, 
+                    column_added=column_added,
+                    inplace=True, 
+                    species=None, 
+                    fc=1.5, 
+                    pvalue=0.05, 
+                    user_db=reformat_marker_list(marker_list), 
+                    celltype_column="cell_name")
+            else:
+                with suppress_logging(logger_name='sctoolbox'):
+                    celltype_annotation.run_scsa(adata, 
+                        gene_column=None, 
+                        key=rank_genes_column, 
+                        column_added=column_added,
+                        inplace=True, 
+                        species=None, 
+                        fc=1.5, 
+                        pvalue=0.05, 
+                        user_db=reformat_marker_list(marker_list), 
+                        celltype_column="cell_name")
+
+        # Show plots
+        if show_plots:
+            sc.pl.umap(adata, color=annotation_columns, wspace=0.5)
+
+    # Compare annotations
+    if show_comparison:
+        print("Comparison of cell type annotations:")
+        display(compare_cell_types(adata, clustering_column, annotation_columns))
+
+    # Select cell type annotation
+    annotation_column = select(whitelist=annotation_columns, heading="Select cell type annotation column:")
+
+    if not keep_all:
+        # Keep only the selected annotation column and reference_obs if provided
+        columns_to_keep = [annotation_column]
+        if reference_obs is not None and reference_obs in adata.obs.columns:
+            columns_to_keep.append(reference_obs)
+
+        columns_to_remove = [col for col in annotation_columns if col not in columns_to_keep]
+        adata.obs.drop(columns=columns_to_remove, inplace=True)
+
+    return annotation_column
 
 
 def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists", file_name=None, case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):

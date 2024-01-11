@@ -8,7 +8,7 @@ from .marker_repo import read_whitelist, combine_dfs, export_marker_list
 from .utils import get_whitelists
 
 
-def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4):
+def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4, verbose=False, ignore_overwrite=False):
     """
     If the script is called via a package (atactoolbox), please use this function.
     This function calculates potential cell types per cluster and adds them to the obs table of the anndata object.
@@ -48,6 +48,10 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         Skip first line if header is True.
     min_hits : int, default 4
         Minimum number of hits required to consider a cell type for annotation.
+    verbose : bool, default False
+        Whether to print additional information.
+    ignore_overwrite : bool, default False
+        Whether to ignore the overwrite warning.
 
     Returns
     --------
@@ -82,29 +86,31 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         cluster_path = f"{output_path}/ranked/clusters/{cluster_column}"
         ct_path = f"{output_path}/ranked/output/{cluster_column}"
 
-        if os.path.exists(ct_path):
+        if not ignore_overwrite and os.path.exists(ct_path):
             print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overritten.")
             go_on = False
 
-        if not go_on:
-            go_on = input("Do you want to continue? (yes/no): ")
-            go_on = True if go_on == "yes" else False
+            if not go_on:
+                go_on = input("Do you want to continue? (yes/no): ")
+                go_on = True if go_on == "yes" else False
 
             if not go_on:
                 print("Cell type annotation has been aborted.")
 
                 return
-
-        print(f"Output folder: {ct_path}/", "\nDB file: " + db_path, f"\nCluster folder: {cluster_path}/",
-              "\nTissue: " + tissue)
+            
+        if verbose:
+            print(f"Output folder: {ct_path}/", "\nDB file: " + db_path, f"\nCluster folder: {cluster_path}/",
+                "\nTissue: " + tissue)
         if adata and genes_adata and cluster_column:
             # Create folders containing the annotation assignment table as well as the detailed scoring files per cluster
             if not os.path.exists(f'{ct_path}'):
                 os.makedirs(f'{ct_path}')
-                print(f'Created folder: {ct_path}')
+                if verbose:
+                    print(f'Created folder: {ct_path}')
 
             # Check if cluster_path exists
-            if os.path.exists(cluster_path):
+            if not ignore_overwrite and os.path.exists(cluster_path):
                 user_input = input(f"The folder {cluster_path} already exists.\nDo you want to skip creating new ranked cluster files and keep the old ones? (yes/no): ")
                 if user_input.lower() == 'yes':
                     print("Skipping the creation of new ranked cluster files.")
@@ -113,17 +119,23 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                     write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column)
             else:
                 # Create folder if it doesn't exist and write files
-                os.makedirs(cluster_path)
+                if not os.path.exists(cluster_path):
+                    os.makedirs(cluster_path)
+                    if verbose:
+                        print(f'Created folder: {cluster_path}')
+
                 write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column)
 
             # Perform the actual cell type annotation per clustering resolution
-            print("Starting cell type annotation.")
-            print(output_path, ct_path, cluster_column)
+            if verbose:
+                print("Starting cell type annotation.")
+                print(output_path, ct_path, cluster_column)
             perform_cell_type_annotation(
                 f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header, min_hits=min_hits)
 
             # Add information to the adata object
-            print("Adding information to the adata object.")
+            if verbose:
+                print("Adding information to the adata object.")
             cta_dict = {}
             with open(f'{ct_path}/annotation.txt') as file:
                 for line in file:
@@ -131,17 +143,20 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                     cta_dict[cluster] = ct.rstrip()
             adata.obs[f'{ct_column}'] = adata.obs[f'{cluster_column}'].map(cta_dict)
 
-            print(f"Finished cell type annotation! The results are found in the .obs table {ct_column}.")
+            if verbose:
+                print(f"Finished cell type annotation! The results are found in the .obs table {ct_column}.")
 
             if not inplace:
                 return adata
 
         elif cluster_path:
-            print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
-                  "\nTissue: " + tissue)
+            if verbose:
+                print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
+                      "\nTissue: " + tissue)
             perform_cell_type_annotation(
                 f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header)
-            print(f"Cell type annotation of output path {ct_path}/ finished.")
+            if verbose:
+                print(f"Cell type annotation of output path {ct_path}/ finished.")
 
         else:
             pass
@@ -215,6 +230,10 @@ def calculate_normalized_diffs(df):
         contains the scaled normalized differences, both keyed by cell type.
     """
 
+    # Check if df has at least two rows
+    if len(df) < 2:
+        return {}, {}  
+
     # Calculate normal normalized diffs
     normal_diffs = {}
     for i in range(len(df) - 1):
@@ -273,13 +292,13 @@ def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1", show_d
         if show_diff:
             # Calculate and add both normal and scaled diffs to the DataFrame if show_diff is True
             normal_diffs, scaled_diffs = calculate_normalized_diffs(df_sorted.rename(columns={ct_column: "Cell type"}))
-            df_sorted['Normalized Diff'] = df_sorted[ct_column].apply(lambda x: normal_diffs.get(x, 0))
-            df_sorted['Scaled Diff'] = df_sorted[ct_column].apply(lambda x: scaled_diffs.get(x, 0))
+            # df_sorted['Normalized Diff'] = df_sorted[ct_column].apply(lambda x: normal_diffs.get(x, 0))
+            df_sorted['Adjacent Disparity'] = df_sorted[ct_column].apply(lambda x: scaled_diffs.get(x, 0))
 
         display(df_sorted.head(n))
 
 
-def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column):
+def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column, log=False):
     """
     Writes one file per cluster that contains gene IDs and their corresponding scores, sorted by ranking.
 
@@ -298,6 +317,8 @@ def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata
         The anndata object which contains clustered data, gene ID as index as well as rank genes groups.
     rank_genes_column : string, default None
         The column of the .uns table which contains the rank genes scores. E.g. "rank_genes_groups".
+    log : bool, default False
+        Whether to log the progress.
     """
 
     clusters = adata.obs[f'{cluster_column}'].unique()
@@ -305,7 +326,8 @@ def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata
 
     for index, cluster in enumerate(clusters):
         with open(f'{cluster_path}/{sample}.cluster_{cluster}', 'w') as file:
-            print(f"Writing ranked cluster file {sample}.cluster_{cluster} ({index+1}/{total_clusters})")
+            if log:
+                print(f"Writing ranked cluster file {sample}.cluster_{cluster} ({index+1}/{total_clusters})")
             for i, gene in enumerate(genes_adata.uns[f'{rank_genes_column}']['names'][cluster]):
                 score = genes_adata.uns[f'{rank_genes_column}']['scores'][cluster][i]
                 file.write(f'{gene.split("_")[0]}\t{score}\n')
@@ -814,9 +836,9 @@ def export_markers_from_anndata(adata, n=50, rank_genes_column='rank_genes_group
     return path
 
 
-def compare_cell_types(adata, column, marker_lists):
+def compare_cell_types(adata, column, obs_columns):
     """
-    Group the observation DataFrame of an anndata object by a specific column and include relevant cell types from given marker lists.
+    Group the observation DataFrame of an anndata object by a specific column and include relevant cell types from given obs columns.
 
     Parameters
     ----------
@@ -824,23 +846,48 @@ def compare_cell_types(adata, column, marker_lists):
         The anndata object containing the .obs DataFrame.
     column : str
         The column by which to group the .obs DataFrame.
-    marker_lists : list of str
-        List of paths to marker list files.
+    obs_columns : list of str
+        List of column names in the .obs DataFrame to keep for the comparison.
 
     Returns
     -------
     DataFrame :
-        A grouped DataFrame based on the specified column, incorporating relevant cell types from the marker lists.
+        A grouped DataFrame based on the specified column, incorporating relevant cell types from the obs columns.
     """
     
+    if column in obs_columns:
+        obs_columns.remove(column)
+
     obs_df = adata.obs
-    columns_to_keep = [column]
+    columns_to_keep = [column] + obs_columns  # Include the grouping column and additional columns from obs_columns
     
-    for marker_list in marker_lists:
-        name = marker_list.split("/")[-1]
-        columns_to_keep.append(f"cell_types_{name}")
-        
     filtered_obs_df = obs_df[columns_to_keep]
     grouped_obs_df = filtered_obs_df.groupby(column).agg('first')
     
     return grouped_obs_df
+
+
+def reformat_marker_list(input_path, suffix="_SCSA"):
+    """
+    Reformat a TSV marker list for compatibility with SCSA.
+
+    Parameters
+    ----------
+    input_path : str
+        Path to the input TSV marker list.
+    suffix : str, optional
+        Suffix to append to output file name. Default is '_SCSA'.
+
+    Returns
+    -------
+    str
+        Path where the reformatted marker list is saved.
+    """
+
+    df = pd.read_csv(input_path, header=None, sep='\t')
+    df = df.iloc[:, :2]
+    df.columns = ["marker", "cell_name"]
+    output_path = f"{input_path}{suffix}"
+    df.to_csv(output_path, index=False, sep='\t')
+
+    return output_path
