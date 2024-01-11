@@ -16,7 +16,7 @@ import warnings
 try:
     from sctoolbox.tools import celltype_annotation
 except ModuleNotFoundError:
-    warnings.warn("Please install the latest MarkerRepo version. Some functionality may not be available.", RuntimeWarning)
+    warnings.warn("Please install the latest sctoolbox version. Some functionality may not be available.", RuntimeWarning)
 
 
 @contextlib.contextmanager
@@ -119,7 +119,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
                 df = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
                 paths.append(convert_markers(style=style, repo_path=repo_path, df=df, path=path, file_name=file_name, ensembl=ensembl))
 
-        if search_terms:
+        if search_terms or column_specific_terms:
             return paths
         
         user_input = input("Do you want to add another marker list? (yes/no): ")

@@ -875,3 +875,42 @@ def update_organism(organism, repo_path):
             return entry
             
     return None
+
+
+def check_ensembl(adata, verbose=False):
+    """
+    Checks if the majority of gene identifiers in the .var index of an Anndata object are Ensembl IDs.
+    Returns True if Ensembl IDs are the majority.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        An Anndata object containing the gene expression data.
+    verbose : bool, default False
+        If True, prints the number of Ensembl IDs and other IDs.
+
+    Returns
+    -------
+    bool :
+        True if Ensembl IDs are the majority in the .var index of the Anndata object. 
+    """
+
+    ensembl_pattern = re.compile(r'ENS[A-Z]{0,1}G\d+')
+
+    ensembl_count = 0
+    other_count = 0
+
+    for gene_id in adata.var.index:
+        if ensembl_pattern.match(gene_id):
+            ensembl_count += 1
+        else:
+            other_count += 1
+
+    if verbose:
+        print(f"Ensembl IDs: {ensembl_count}")
+        print(f"Other IDs: {other_count}")
+
+    if ensembl_count > other_count:
+        return True
+    else:
+        return False
