@@ -144,13 +144,15 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
-def create_multiple_marker_lists(settings, repo_path="."):
+def create_multiple_marker_lists(settings, repo_path=".", organism=None, style='score', path='.', file_name=None, ensembl=False, 
+                                 col_to_search=None, search_terms=None, force_homology=False, show_lists=True, 
+                                 column_specific_terms=None, adata=None):
     """
     Executes the 'create_marker_lists' function for multiple sets of parameters.
 
     Each set of parameters is provided as a dictionary within a list. This function
     iterates over each dictionary, using its contents to call 'create_marker_lists'.
-    Default values are used for any missing parameters.
+    Default values are used for any missing parameters, which can be overridden by individual dictionaries.
 
     Parameters
     ----------
@@ -160,6 +162,28 @@ def create_multiple_marker_lists(settings, repo_path="."):
         names of 'create_marker_lists', and values should be the desired values for those parameters.
     repo_path : str, default "."
         The path of the Marker Repo. This value is passed directly to 'create_marker_lists'.
+    organism : str, default None
+        Default organism to use for all 'create_marker_lists' calls.
+    style : str, default 'score'
+        Default style for all 'create_marker_lists' calls.
+    path : str, default '.'
+        Default path for all 'create_marker_lists' calls.
+    file_name : str, default None
+        Default file name for all 'create_marker_lists' calls.
+    ensembl : bool, default False
+        Default ensembl flag for all 'create_marker_lists' calls.
+    col_to_search : str, default None
+        Default column to search for all 'create_marker_lists' calls.
+    search_terms : list of str, default None
+        Default search terms for all 'create_marker_lists' calls.
+    force_homology : bool, default False
+        Default force homology flag for all 'create_marker_lists' calls.
+    show_lists : bool, default True
+        Default show lists flag for all 'create_marker_lists' calls.
+    column_specific_terms : dict, default None
+        Default column specific terms for all 'create_marker_lists' calls.
+    adata : AnnData, default None
+        Default AnnData object for all 'create_marker_lists' calls.
 
     Returns
     -------
@@ -172,17 +196,17 @@ def create_multiple_marker_lists(settings, repo_path="."):
     for setting in settings:
         # Set default values for parameters of 'create_marker_lists'
         params = {
-            'organism': None,
-            'style': 'score',
-            'path': '.',
-            'file_name': None,
-            'ensembl': False,
-            'col_to_search': None,
-            'search_terms': None,
-            'force_homology': False,
-            'show_lists': True,
-            'column_specific_terms': None,
-            'adata': None,
+            'organism': organism,
+            'style': style,
+            'path': path,
+            'file_name': file_name,
+            'ensembl': ensembl,
+            'col_to_search': col_to_search,
+            'search_terms': search_terms,
+            'force_homology': force_homology,
+            'show_lists': show_lists,
+            'column_specific_terms': column_specific_terms,
+            'adata': adata,
             'repo_path': repo_path
         }
 
