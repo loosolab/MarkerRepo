@@ -144,7 +144,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
-def create_multiple_marker_lists(settings, repo_path=".", organism=None, style='score', path='.', file_name=None, ensembl=False, 
+def create_multiple_marker_lists(settings=[{}], repo_path=".", organism=None, style='score', path='.', file_name=None, ensembl=False, 
                                  col_to_search=None, search_terms=None, force_homology=False, show_lists=True, 
                                  column_specific_terms=None, adata=None):
     """
@@ -156,7 +156,7 @@ def create_multiple_marker_lists(settings, repo_path=".", organism=None, style='
 
     Parameters
     ----------
-    settings : list of dict
+    settings : list of dict, default [{}]
         A list of dictionaries, where each dictionary contains parameters for a single
         call to 'create_marker_lists'. Keys in the dictionaries should match the parameter
         names of 'create_marker_lists', and values should be the desired values for those parameters.

@@ -130,7 +130,7 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                 print("Starting cell type annotation.")
                 print(output_path, ct_path, cluster_column)
             perform_cell_type_annotation(
-                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header, min_hits=min_hits)
+                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header, min_hits=min_hits, verbose=verbose)
 
             # Add information to the adata object
             if verbose:
@@ -153,7 +153,7 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                 print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
                       "\nTissue: " + tissue)
             perform_cell_type_annotation(
-                f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header)
+                f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header, verbose=verbose)
             if verbose:
                 print(f"Cell type annotation of output path {ct_path}/ finished.")
 
@@ -434,7 +434,7 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
     return panglao_rank_dict
 
 
-def calc_ranks(cm_dict, annotated_clusters, min_hits=4):
+def calc_ranks(cm_dict, annotated_clusters, min_hits=4, verbose=True):
     """
     Calculate cell type annotation scores for each cluster.
     The annotation score for each cell type in a cluster is calculated based on the 
@@ -450,6 +450,8 @@ def calc_ranks(cm_dict, annotated_clusters, min_hits=4):
         Dictionary containing the ranked scores for each gene in each cluster.
     min_hits : int, default 4
         Minimum number of hits required to consider a cell type for annotation.
+    verbose : bool, default True
+        Whether to print additional information.
 
     Returns
     -------
@@ -495,14 +497,15 @@ def calc_ranks(cm_dict, annotated_clusters, min_hits=4):
     data_hits = list(set(data_hits))
     db_genes = list(set(db_genes))
 
-    print(f"The database contains {len(db_genes)} different genes. \
-          \nThe input data contains {len(data_genes)} different genes. \
-          \nThe genes of the input data overlap with {len(data_hits)} genes in total, {round(len(data_hits) / len(db_genes) * 100)} percent.")
+    if verbose:
+        print(f"The database contains {len(db_genes)} different genes. \
+            \nThe input data contains {len(data_genes)} different genes. \
+            \nThe genes of the input data overlap with {len(data_hits)} genes in total, {round(len(data_hits) / len(db_genes) * 100)} percent.")
 
     return ct_dict
 
 
-def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=False, min_hits=4):
+def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=False, min_hits=4, verbose=True):
     """
     Prepare database and clusters for upcoming ranking calculations.
 
@@ -521,6 +524,8 @@ def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=Fal
         Skip first line if header is True.
     min_hits : int, default 4
         Minimum number of hits required to consider a cell type for annotation.
+    verbose : bool, default True
+        Whether to print additional information.
 
     Returns
     -------
@@ -532,7 +537,7 @@ def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=Fal
     db_dict = parse_marker_database(db_path, tissue=tissue, species=species, header=header)
     annotated_clusters = get_annotated_clusters(cluster_path=cluster_path)
 
-    return calc_ranks(db_dict, annotated_clusters, min_hits=min_hits)
+    return calc_ranks(db_dict, annotated_clusters, min_hits=min_hits, verbose=verbose)
 
 
 def get_annotated_clusters(cluster_path, show_duplicates=False):
@@ -597,7 +602,7 @@ def get_annotated_clusters(cluster_path, show_duplicates=False):
     return annotated_clusters
 
 
-def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False, min_hits=4):
+def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False, min_hits=4, verbose=True):
     """
     Performs cell type identification, generate cell type assignment table
     and create ranks folder with files for further investigation (one per cluster).
@@ -619,13 +624,15 @@ def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", sp
         Skip first line if header is True.
     min_hits : int, default 4
         Minimum number of hits required to consider a cell type for annotation.
+    verbose : bool, default True
+        Whether to print additional information.
     """
 
     opath = output + "/ranks/"
     if not os.path.exists(opath):
         os.makedirs(opath)
 
-    ct_dict = get_cell_types(cluster_path, db_path, tissue, species=species, header=header, min_hits=min_hits)
+    ct_dict = get_cell_types(cluster_path, db_path, tissue, species=species, header=header, min_hits=min_hits, verbose=verbose)
     write_annotation(ct_dict, output)
 
 
