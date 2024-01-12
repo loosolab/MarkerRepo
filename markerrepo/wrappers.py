@@ -144,6 +144,58 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
+def create_multiple_marker_lists(settings, repo_path="."):
+    """
+    Executes the 'create_marker_lists' function for multiple sets of parameters.
+
+    Each set of parameters is provided as a dictionary within a list. This function
+    iterates over each dictionary, using its contents to call 'create_marker_lists'.
+    Default values are used for any missing parameters.
+
+    Parameters
+    ----------
+    settings : list of dict
+        A list of dictionaries, where each dictionary contains parameters for a single
+        call to 'create_marker_lists'. Keys in the dictionaries should match the parameter
+        names of 'create_marker_lists', and values should be the desired values for those parameters.
+    repo_path : str, default "."
+        The path of the Marker Repo. This value is passed directly to 'create_marker_lists'.
+
+    Returns
+    -------
+    list of str :
+        A combined list of all paths to the created marker lists from each call to 'create_marker_lists'.
+    """
+
+    all_paths = []
+
+    for setting in settings:
+        # Set default values for parameters of 'create_marker_lists'
+        params = {
+            'organism': None,
+            'style': 'score',
+            'path': '.',
+            'file_name': None,
+            'ensembl': False,
+            'col_to_search': None,
+            'search_terms': None,
+            'force_homology': False,
+            'show_lists': True,
+            'column_specific_terms': None,
+            'adata': None,
+            'repo_path': repo_path
+        }
+
+        # Update these defaults with values from the current dictionary
+        params.update(setting)
+
+        # Call 'create_marker_lists' with updated parameters
+        paths = create_marker_lists(**params)
+        all_paths.extend(paths)
+
+    return all_paths
+
+
 def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", 
                    rank_genes_column=None, clustering_column=None, reference_obs=None, keep_all=False, 
                    verbose=False, show_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False,
