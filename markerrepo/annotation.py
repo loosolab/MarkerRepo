@@ -763,7 +763,7 @@ def validate_settings(repo_path, adata, organism, rank_genes_column, genes_colum
         return True
     
 
-def list_possible_settings(repo_path, adata):
+def list_possible_settings(repo_path, adata=None):
     """
     Lists all possible settings based on the repo and AnnData object.
 
@@ -771,7 +771,7 @@ def list_possible_settings(repo_path, adata):
     ----------
     repo_path : str
         Path to the marker repository.
-    adata : anndata.AnnData
+    adata : anndata.AnnData, default None
         The loaded AnnData object.
     """
 
@@ -781,24 +781,25 @@ def list_possible_settings(repo_path, adata):
 
     print("Possible Settings:")
     print("-" * 40)
+
+    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
+    print("1. Available columns to search in MarkerRepo:")
+    for col in combined_df_columns:
+        print(f"  - {col}")
     
     valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
-    print("1. Possible Organisms or Taxon IDs:")
+    print("\n2. Possible organisms or taxon IDs:")
     for org in valid_organisms:
         print(f"  - {org}")
 
-    print("\n2. Available Columns in adata.obs:")
-    for col in adata.obs.columns:
-        print(f"  - {col}")
+    if adata:
+        print("\n3. Available columns in adata.obs:")
+        for col in adata.obs.columns:
+            print(f"  - {col}")
 
-    print("\n3. Available Columns in adata.var:")
-    for col in adata.var.columns:
-        print(f"  - {col}")
-
-    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
-    print("\n4. Available Columns to Search in Marker Repository:")
-    for col in combined_df_columns:
-        print(f"  - {col}")
+        print("\n4. Available columns in adata.var:")
+        for col in adata.var.columns:
+            print(f"  - {col}")
     
     print("-" * 40)
 

@@ -1,6 +1,6 @@
 from .scoring import compare_marker_lists, update_scores
 from .homology import check_organisms, download_homologene_data, fetch_homologs, get_dataset_names, get_supported_biomart_organisms, get_supported_taxonomy_ids, transfer_markers_biomart, transfer_markers_homologene
-from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename
+from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename, update_organism
 from .homology import get_biomart_defaults
 from .utils import read_whitelist
 from .annotation import annot_ct, show_tables, reformat_marker_list, compare_cell_types
@@ -544,6 +544,9 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
 
     if not target_org:
         target_org = select(whitelist=supported_organisms, heading="target organism:")
+    else:
+        target_org = update_organism(target_org, repo_path)
+        
     target_organism, target_tax = target_org.split(" ")
 
     if target_org not in biomart_organisms:
