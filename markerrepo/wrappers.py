@@ -222,7 +222,7 @@ def create_multiple_marker_lists(settings=[{}], repo_path=".", organism=None, st
 
 def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", 
                    rank_genes_column=None, clustering_column=None, reference_obs=None, keep_all=False, 
-                   verbose=False, show_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False,
+                   verbose=False, show_ct_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False,
                    celltype_column_name=None):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. 
@@ -252,7 +252,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         If True, all annotation columns will be kept. If False, only the selected annotation column and the reference_obs will be kept.
     verbose : bool, default False
         If True, the function will print additional information.
-    show_tables : bool, default False
+    show_ct_tables : bool, default False
         If True, the function will show the tables of the annotation.
     show_plots : bool, default False
         If True, the function will show the plots of the annotation.
@@ -306,10 +306,12 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
     for marker_list in marker_lists:
         name = marker_list.split('/')[-1]
         annotation_dir = f"./annotation/{name}"
+        plot_columns = [] if reference_obs is None else [reference_obs]
 
         if marker_repo:
             ct_column = f"{mr_obs}_{name}"
             annotation_columns.append(ct_column)
+            plot_columns.append(ct_column)
             
             # Execute Marker Repo annotation
             annot_ct(adata, output_path=annotation_dir, db_path=marker_list,
@@ -317,14 +319,15 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
                            ct_column=ct_column, verbose=verbose, ignore_overwrite=ignore_overwrite)
 
             # Show tables and alternative cell types of each cluster
-            if show_tables:
-                print(f"Tables of cell type annotation with clustering {clustering_column}")
+            if show_ct_tables:
+                print(f"Tables of cell type annotation with clustering {clustering_column} and marker list {name}:")
                 show_tables(annotation_dir=annotation_dir, n=5, clustering_column=clustering_column, show_diff=True)
 
         if SCSA:
             column_added = f"{scsa_obs}_{name}"
             annotation_columns.append(column_added)
-            
+            plot_columns.append(column_added)
+
             # Execute SCSA annotation
             if verbose:
                 celltype_annotation.run_scsa(adata, 
@@ -352,7 +355,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
         # Show plots
         if show_plots:
-            sc.pl.umap(adata, color=annotation_columns, wspace=0.5)
+            sc.pl.umap(adata, color=plot_columns, wspace=0.5)
 
     # Compare annotations
     if show_comparison:
@@ -546,7 +549,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         target_org = select(whitelist=supported_organisms, heading="target organism:")
     else:
         target_org = update_organism(target_org, repo_path)
-        
+
     target_organism, target_tax = target_org.split(" ")
 
     if target_org not in biomart_organisms:

@@ -4,3 +4,4 @@ build/
 markerrepo.egg-info/
 metadata_whitelists/
 lists/genes/
+notebooks/*
