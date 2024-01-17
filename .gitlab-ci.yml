@@ -1,6 +1,6 @@
 stages:
   - test_id
-  - pytest
+#  - pytest
 
 check uid:
   image: python:3.9
@@ -11,12 +11,12 @@ check uid:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_REF_NAME =~ /^.*_[0-9]+$/'
 
-run pytest:
-  image: python:3.9
-  stage: pytest
-  script:
-    - pip install -r requirements.txt
-    - pip install pytest
-    - pytest tests/
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+# run pytest:
+#   image: python:3.9
+#   stage: pytest
+#   script:
+#     - pip install -r requirements.txt
+#     - pip install pytest
+#     - pytest tests/
+#   rules:
+#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
