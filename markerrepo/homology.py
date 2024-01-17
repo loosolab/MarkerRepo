@@ -168,7 +168,7 @@ def process_and_filter_genes(transfer_counts_df, source_df, source_whitelist, ta
         DataFrame containing the source genes data.
     source_whitelist : list
         List of source genes to be whitelisted.
-    target_counts : int, optional
+    target_counts : int, default None
         Maximum count of target genes allowed. If not specified, all genes are included.
     plots : bool, default False
         Whether to generate plots or not.
