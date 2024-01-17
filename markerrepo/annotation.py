@@ -549,8 +549,8 @@ def get_annotated_clusters(cluster_path, show_duplicates=False):
     ----------
     cluster_path : str
         The path to the folder containing the cluster files.
-    show_duplicates : bool, optional
-        Whether to show duplicate genes with positive scores. Default is False.
+    show_duplicates : bool, default False
+        Whether to show duplicate genes with positive scores.
 
     Returns
     -------
@@ -666,30 +666,33 @@ def write_annotation(ct_dict, output):
                 c_file.write(dic + "\t" + str(next(iter(sorted_dict))) + "\n")
 
 
-def validate_settings(repo_path, adata, organism, rank_genes_column, genes_column, column, ensembl, col_to_search, search_terms):
+def validate_settings(repo_path=None, adata=None, organism=None, rank_genes_column=None, genes_column=None, 
+                      column=None, ensembl=None, col_to_search=None, search_terms=None, column_specific_terms=None):
     """
     Validates user settings including file paths, anndata object columns, and specified organism.
 
     Parameters
     ----------
-    repo_path : str
+    repo_path : str, default None
         Path to the marker repository.
-    adata : anndata.AnnData
+    adata : anndata.AnnData, default None
         The loaded AnnData object.
-    organism : str or int
+    organism : str or int, default None
         Organism name, taxon ID, or both. E.g., "mouse", 10090, or "mouse 10090".
     rank_genes_column : str, default None
-        Column in .obs table where ranked genes are stored. None if no ranking performed yet.
+        Column in .obs table where ranked genes are stored.
     genes_column : str, default None
-        Column in .var table where gene symbols or IDs are stored. None if index column already suits the need.
-    column : str
-        The column in .obs table of the clustering you want to annotate. E.g., "leiden" or "louvain".
-    ensembl : bool
-        True if the index of .var tables are Ensembl IDs, False otherwise.
-    col_to_search : str
-        Column to search in for marker list selection. None to search all columns.
-    search_terms : list of str
-        Search terms for marker list selection. "-" to exclude, "+" must contain.
+        Column in .var table where gene symbols or IDs are stored.
+    column : str, default None
+        The column in .obs table of the clustering you want to annotate.
+    ensembl : bool, default None
+        Whether the genes in the genes_column are Ensembl IDs.
+    col_to_search : str, default None
+        Column to search in for marker list selection.
+    search_terms : list of str, default None
+        List of search terms to use for marker list selection.
+    column_specific_terms : list of dicts, default None
+        List of dictionaries with specific 'col_to_search' and 'search_terms' for each.
 
     Returns
     -------
@@ -700,7 +703,7 @@ def validate_settings(repo_path, adata, organism, rank_genes_column, genes_colum
     errors = []
 
     # Validate if repo_path exists
-    if not os.path.exists(repo_path):
+    if repo_path and not os.path.exists(repo_path):
         errors.append(f"Repo path {repo_path} does not exist.")
 
     if adata is None:
@@ -711,12 +714,12 @@ def validate_settings(repo_path, adata, organism, rank_genes_column, genes_colum
     valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
 
     # Validate the organism
-    organism_str = str(organism).strip()
-    is_valid_organism = any(organism_str == valid_entry.split(" ")[0] or organism_str == valid_entry.split(" ")[1] or organism_str == valid_entry for valid_entry in valid_organisms)
-    
-    if not is_valid_organism:
-        formatted_valid_organisms = "\n  - " + "\n  - ".join(valid_organisms)
-        errors.append(f"Invalid organism or taxon ID {organism}.\nAvailable options:{formatted_valid_organisms}\n")
+    if organism:
+        organism_str = str(organism).strip()
+        is_valid_organism = any(organism_str == valid_entry.split(" ")[0] or organism_str == valid_entry.split(" ")[1] or organism_str == valid_entry for valid_entry in valid_organisms)
+        if not is_valid_organism:
+            formatted_valid_organisms = "\n  - " + "\n  - ".join(valid_organisms)
+            errors.append(f"Invalid organism or taxon ID {organism}.\nAvailable options:{formatted_valid_organisms}\n")
 
     # Validate obs and var columns
     if rank_genes_column and rank_genes_column not in adata.obs.columns:
@@ -731,18 +734,27 @@ def validate_settings(repo_path, adata, organism, rank_genes_column, genes_colum
         formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
         errors.append(f"Invalid column {column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
 
-    # Validate col_to_search using the columns from the combined DataFrames in the repo
-    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
-    if col_to_search and col_to_search not in combined_df_columns:
-        formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
-        errors.append(f"Invalid col_to_search {col_to_search}.\nAvailable columns:{formatted_combined_df_columns}\n")
+    # Validate col_to_search and search_terms based on column_specific_terms if provided
+    if column_specific_terms:
+        combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
+        for specific_column in column_specific_terms:
+            if specific_column not in combined_df_columns:
+                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
+                errors.append(f"Invalid col_to_search {specific_column}.\nAvailable columns:{formatted_combined_df_columns}\n")
+    else:
+        # Validate col_to_search using the columns from the combined DataFrames in the repo
+        if col_to_search:
+            combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
+            if col_to_search not in combined_df_columns:
+                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
+                errors.append(f"Invalid col_to_search {col_to_search}.\nAvailable columns:{formatted_combined_df_columns}\n")
 
-
+    # Print errors or confirm validation
     if errors:
         print("Validation failed due to the following errors:")
         print("-" * 40)
-        for i, error in enumerate(errors, 1):
-            print(f"{i}. {error}")
+        for error in errors:
+            print(error)
         print("-" * 40)
 
         return False
@@ -750,14 +762,22 @@ def validate_settings(repo_path, adata, organism, rank_genes_column, genes_colum
         print("All settings are valid.")
         print(f"Summary of settings:")
         print("-" * 40)
+        # Display settings summary
         print(f"  Repo path: {repo_path}")
         print(f"  Organism: {organism}")
         print(f"  Rank genes column: {rank_genes_column}")
         print(f"  Genes column: {genes_column}")
         print(f"  Clustering column: {column}")
         print(f"  Ensembl IDs: {ensembl}")
-        print(f"  Column to search: {col_to_search}")
-        print(f"  Search terms: {search_terms}")
+
+        if column_specific_terms:
+            print(f"  Column specific terms:")
+            for i, specific_column in enumerate(column_specific_terms.keys()):
+                print(f"    {i+1}. Column to search: {specific_column}, Search terms: {column_specific_terms[specific_column]}")
+        else:
+            print(f"  Column to search: {col_to_search}")
+            print(f"  Search terms: {search_terms}")
+
         print("-" * 40)
 
         return True
@@ -882,8 +902,8 @@ def reformat_marker_list(input_path, suffix="_SCSA"):
     ----------
     input_path : str
         Path to the input TSV marker list.
-    suffix : str, optional
-        Suffix to append to output file name. Default is '_SCSA'.
+    suffix : str, "_SCSA"
+        Suffix to append to output file name.
 
     Returns
     -------
