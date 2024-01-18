@@ -4,10 +4,7 @@ import statistics
 import pandas as pd
 import scanpy as sc
 from IPython.display import display
-import inspect
 from .marker_repo import read_whitelist, combine_dfs, export_marker_list
-from .wrappers import create_marker_lists
-from .utils import get_whitelists
 
 
 def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4, verbose=False, ignore_overwrite=False):
@@ -436,75 +433,74 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
     return panglao_rank_dict
 
 
-def calc_ranks(cm_dict, annotated_clusters, min_hits=4, verbose=True):
+def calc_ranks(cell_marker_dict, cluster_gene_ranks, min_hits=4, verbose=True):
     """
-    Calculate cell type annotation scores for each cluster.
-    The annotation score for each cell type in a cluster is calculated based on the 
-    sum of the product of the ranked scores and ubiquitousness scores, 
-    divided by the square root of the total number of marker genes for that cell type.
-    
+    Calculate cell type annotation scores for each cluster based on differential gene scores and cell type marker genes.
+
     Parameters
     ----------
-    cm_dict : dict
-        Dictionary containing the cell marker database. The keys are cell types,
-        and the values are dictionaries containing gene names as keys and ubiquitousness scores as values.
-    annotated_clusters : dict
-        Dictionary containing the ranked scores for each gene in each cluster.
+    cell_marker_dict : dict
+        A dictionary representing the cell marker database. Keys are cell types, and values are dictionaries
+        with gene names as keys and ubiquitousness scores as values.
+    cluster_gene_ranks : dict
+        A dictionary containing ranked gene scores for each gene in each cluster.
     min_hits : int, default 4
-        Minimum number of hits required to consider a cell type for annotation.
+        The minimum number of marker genes required to consider a cell type for annotation in a cluster.
     verbose : bool, default True
-        Whether to print additional information.
+        If True, prints additional information about the gene overlap between the database and input data.
 
     Returns
     -------
     dict :
-        Dictionary containing annotation scores, number of hits, total marker genes, 
-        and the mean ubiquitousness index for each cell type in each cluster.
+        A dictionary with annotation scores, number of hits, total marker genes, and the average ubiquitousness
+        score for each cell type in each cluster.
     """
 
-    ct_dict = {}
-    data_genes = []
-    data_hits = []
-    db_genes = []
+    annotation_scores = {}
+    input_genes = set()
+    matched_genes = set()
+    database_genes = set(cell_marker_dict.keys())
 
-    for key in annotated_clusters.keys():
-        ct_dict[key] = {}
+    # Initialize cluster keys in annotation scores dictionary
+    for cluster in cluster_gene_ranks:
+        annotation_scores[cluster] = {}
 
-    for celltype in cm_dict.keys():
-        gene_count = len(cm_dict[celltype])
-        for c in annotated_clusters.keys():
-            count = 0
-            ranks = []
-            ub_scores = []
+    # Calculate scores for each cell type and cluster
+    for cell_type, markers in cell_marker_dict.items():
+        num_markers = len(markers)
 
-            for mgene in annotated_clusters[c].keys():
-                data_genes.append(mgene)
-                if mgene in cm_dict[celltype].keys():
-                    data_hits.append(mgene)
-                    gene_score, ub_score = annotated_clusters[c][mgene], cm_dict[celltype][mgene]
-                    gene_score = gene_score * ub_score
-                    ranks.append(gene_score)
-                    ub_scores.append(ub_score)
-                    count += 1
+        for cluster, genes in cluster_gene_ranks.items():
+            match_count = 0
+            rank_scores = []
+            ubiquity_scores = []
 
-            if count >= min_hits:
-                ub_mean = round(statistics.mean(ub_scores))
-                ct_dict[c][celltype.rstrip()] = [round(sum(ranks) / math.sqrt(gene_count)), count, gene_count, ub_mean]
+            for gene, rank_score in genes.items():
+                input_genes.add(gene)
 
-    for ct in cm_dict.keys():
-        for gene in cm_dict[ct].keys():
-            db_genes.append(gene)
+                if gene in markers:
+                    matched_genes.add(gene)
+                    ubiquity_score = markers[gene]
+                    weighted_score = rank_score * ubiquity_score
+                    rank_scores.append(weighted_score)
+                    ubiquity_scores.append(ubiquity_score)
+                    match_count += 1
 
-    data_genes = list(set(data_genes))
-    data_hits = list(set(data_hits))
-    db_genes = list(set(db_genes))
+            if match_count >= min_hits:
+                avg_ubiquity_score = round(statistics.mean(ubiquity_scores))
+                total_score = round(sum(rank_scores) / math.sqrt(num_markers))
+                annotation_scores[cluster][cell_type.rstrip()] = [total_score, match_count, num_markers, avg_ubiquity_score]
 
+    # Print summary if verbose is True
     if verbose:
-        print(f"The database contains {len(db_genes)} different genes. \
-            \nThe input data contains {len(data_genes)} different genes. \
-            \nThe genes of the input data overlap with {len(data_hits)} genes in total, {round(len(data_hits) / len(db_genes) * 100)} percent.")
+        db_gene_count = len(database_genes)
+        input_gene_count = len(input_genes)
+        matched_gene_count = len(matched_genes)
+        overlap_percentage = round(matched_gene_count / db_gene_count * 100)
+        print(f"The database contains {db_gene_count} different genes. "
+              f"The input data contains {input_gene_count} different genes. "
+              f"The genes of the input data overlap with {matched_gene_count} genes in total, {overlap_percentage}%.")
 
-    return ct_dict
+    return annotation_scores
 
 
 def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=False, min_hits=4, verbose=True):
@@ -666,183 +662,6 @@ def write_annotation(ct_dict, output):
                     d_file.write("\n")
             if len(sorted_dict.keys()) > 0:
                 c_file.write(dic + "\t" + str(next(iter(sorted_dict))) + "\n")
-
-
-def validate_settings(settings=None, repo_path=None, adata=None, organism=None, rank_genes_column=None, genes_column=None, 
-                      column=None, ensembl=None, col_to_search=None, search_terms=None, column_specific_terms=None):
-    """
-    Validates user settings including file paths, anndata object columns, and specified organism.
-
-    Parameters
-    ----------
-    settings : list of dict, default None
-        A list of dictionaries, each containing parameters for 'create_marker_lists' function.
-    repo_path : str, default None
-        Path to the marker repository.
-    adata : anndata.AnnData, default None
-        The loaded AnnData object.
-    organism : str or int, default None
-        Organism name, taxon ID, or both. E.g., "mouse", 10090, or "mouse 10090".
-    rank_genes_column : str, default None
-        Column in .obs table where ranked genes are stored.
-    genes_column : str, default None
-        Column in .var table where gene symbols or IDs are stored.
-    column : str, default None
-        The column in .obs table of the clustering you want to annotate.
-    ensembl : bool, default None
-        Whether the genes in the genes_column are Ensembl IDs.
-    col_to_search : str, default None
-        Column to search in for marker list selection.
-    search_terms : list of str, default None
-        List of search terms to use for marker list selection.
-    column_specific_terms : list of dicts, default None
-        List of dictionaries with specific 'col_to_search' and 'search_terms' for each.
-
-    Returns
-    -------
-    bool :
-        Returns True if all settings are valid, otherwise prints the errors and returns False.
-    """ 
-
-    errors = []
-    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
-
-    # Validate settings dictionaries
-    if settings:
-        # Validate keys of dictionaries
-        valid_params = set(param.name for param in inspect.signature(create_marker_lists).parameters.values())
-        for setting in settings:
-            invalid_params = set(setting) - valid_params
-            if invalid_params:
-                errors.append(f"Invalid parameters in settings: {', '.join(invalid_params)}")
-        # Validate values of dictionaries
-        if not invalid_params:
-            for i, setting in enumerate(settings, 1):
-                if "repo_path" in setting:
-                    if not setting["repo_path"]:
-                        errors.append(f"Settings for marker list {i}: No repo_path provided.")
-                    else:
-                        if not os.path.exists(setting["repo_path"]):
-                            errors.append(f"Settings for marker list {i}: Repo path {setting['repo_path']} does not exist.")
-                if "organism" in setting:
-                    if not setting["organism"]:
-                        errors.append(f"Settings for marker list {i}: No organism provided.")
-                    else:
-                        organism_str = str(setting["organism"]).strip()
-                        is_valid_organism = any(organism_str == valid_entry.split(" ")[0] or organism_str == valid_entry.split(" ")[1] or organism_str == valid_entry for valid_entry in valid_organisms)
-                        if not is_valid_organism:
-                            formatted_valid_organisms = "\n  - " + "\n  - ".join(valid_organisms)
-                            errors.append(f"Settings for marker list {i}: Invalid organism or taxon ID {setting['organism']}.\nAvailable options:{formatted_valid_organisms}\n")
-                if "column_specific_terms" in setting:
-                    if not setting["column_specific_terms"]:
-                        errors.append(f"Settings for marker list {i}: No column specific terms provided.")
-                    else:
-                        for specific_column in setting["column_specific_terms"]:
-                            if specific_column not in combined_df_columns:
-                                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
-                                errors.append(f"Settings for marker list {i}: Invalid col_to_search {specific_column}.\nAvailable columns:{formatted_combined_df_columns}\n") 
-                else:
-                    if "col_to_search" in setting:
-                        if not setting["col_to_search"]:
-                            errors.append(f"Settings for marker list {i}: No col_to_search provided.")
-                        else:
-                            if setting["col_to_search"] not in combined_df_columns:
-                                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
-                                errors.append(f"Settings for marker list {i}: Invalid col_to_search {setting['col_to_search']}.\nAvailable columns:{formatted_combined_df_columns}\n")
-                    if "search_terms" in setting:
-                        if not setting["search_terms"]:
-                            errors.append(f"Settings for marker list {i}: No search_terms provided.")
-                if "style" in setting:
-                    if not setting["style"]:
-                        errors.append(f"Settings for marker list {i}: No style provided.")
-                    else:
-                        if setting["style"] not in ["two_column", "score", "ui", "panglao"]:
-                            errors.append(f"Settings for marker list {i}: Invalid style {setting['style']}. Available styles: two_column, score, ui, panglao")
-                    
-    # Validate individual parameters
-    if repo_path and not os.path.exists(repo_path):
-        errors.append(f"Repo path {repo_path} does not exist.")
-
-    if adata is None:
-        errors.append("No AnnData object provided.")
-        
-    # List of valid organisms and their tax IDs
-    get_whitelists(repo_path=repo_path, silent_skip=True, update=False)
-    valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
-
-    # Validate the organism
-    if organism:
-        organism_str = str(organism).strip()
-        is_valid_organism = any(organism_str == valid_entry.split(" ")[0] or organism_str == valid_entry.split(" ")[1] or organism_str == valid_entry for valid_entry in valid_organisms)
-        if not is_valid_organism:
-            formatted_valid_organisms = "\n  - " + "\n  - ".join(valid_organisms)
-            errors.append(f"Invalid organism or taxon ID {organism}.\nAvailable options:{formatted_valid_organisms}\n")
-
-    # Validate obs and var columns
-    if rank_genes_column and rank_genes_column not in adata.obs.columns:
-        formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
-        errors.append(f"Invalid rank_genes_column {rank_genes_column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
-
-    if genes_column and genes_column not in adata.var.columns:
-        formatted_var_columns = "\n  - " + "\n  - ".join(adata.var.columns)
-        errors.append(f"Invalid genes_column {genes_column}.\nAvailable columns in adata.var:{formatted_var_columns}\n")
-
-    if column and column not in adata.obs.columns:
-        formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
-        errors.append(f"Invalid column {column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
-
-    # Validate col_to_search and search_terms based on column_specific_terms if provided
-    if column_specific_terms:
-        for specific_column in column_specific_terms:
-            if specific_column not in combined_df_columns:
-                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
-                errors.append(f"Invalid col_to_search {specific_column}.\nAvailable columns:{formatted_combined_df_columns}\n")
-    else:
-        # Validate col_to_search using the columns from the combined DataFrames in the repo
-        if col_to_search:
-            if col_to_search not in combined_df_columns:
-                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
-                errors.append(f"Invalid col_to_search {col_to_search}.\nAvailable columns:{formatted_combined_df_columns}\n")
-
-    # Print errors or confirm validation
-    if errors:
-        print("Validation failed due to the following errors:")
-        print("-" * 40)
-        for error in errors:
-            print(error)
-        print("-" * 40)
-
-        return False
-    else:
-        print("All settings are valid.")
-        print(f"Summary of settings:")
-        print("-" * 40)
-        print("General parameters:")
-        print(f"  Repo path: {repo_path}")
-        print(f"  Organism: {organism}")
-        print(f"  Rank genes column: {rank_genes_column}")
-        print(f"  Genes column: {genes_column}")
-        print(f"  Clustering column: {column}")
-        print(f"  Ensembl IDs: {ensembl}")
-
-        if column_specific_terms:
-            print(f"  Column specific terms:")
-            for i, specific_column in enumerate(column_specific_terms.keys()):
-                print(f"    {i+1}. Column to search: {specific_column}, Search terms: {column_specific_terms[specific_column]}")
-        else:
-            print(f"  Column to search: {col_to_search}")
-            print(f"  Search terms: {search_terms}")
-
-        if settings:
-            print("\nParameters from dictionary:")
-            for i, setting in enumerate(settings, 1):
-                print(f"  {i}. Marker list:")
-                for key, value in setting.items():
-                    print(f"    {key}: {value}")
-
-        print("-" * 40)
-
-    return True
     
 
 def list_possible_settings(repo_path, adata=None):

@@ -2,7 +2,7 @@ from .scoring import compare_marker_lists, update_scores
 from .homology import check_organisms, download_homologene_data, fetch_homologs, get_dataset_names, get_supported_biomart_organisms, get_supported_taxonomy_ids, transfer_markers_biomart, transfer_markers_homologene
 from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename, update_organism
 from .homology import get_biomart_defaults
-from .utils import read_whitelist
+from .utils import read_whitelist, get_whitelists
 from .annotation import annot_ct, show_tables, reformat_marker_list, compare_cell_types
 import scanpy as sc
 from IPython.display import display
@@ -12,6 +12,7 @@ import contextlib
 import io
 import logging
 import warnings
+import inspect
 
 try:
     from sctoolbox.tools import celltype_annotation
@@ -707,3 +708,180 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
     print("\nFinished!")
 
     return paths
+
+
+def validate_settings(settings=None, repo_path=None, adata=None, organism=None, rank_genes_column=None, genes_column=None, 
+                      column=None, ensembl=None, col_to_search=None, search_terms=None, column_specific_terms=None):
+    """
+    Validates user settings including file paths, anndata object columns, and specified organism.
+
+    Parameters
+    ----------
+    settings : list of dict, default None
+        A list of dictionaries, each containing parameters for 'create_marker_lists' function.
+    repo_path : str, default None
+        Path to the marker repository.
+    adata : anndata.AnnData, default None
+        The loaded AnnData object.
+    organism : str or int, default None
+        Organism name, taxon ID, or both. E.g., "mouse", 10090, or "mouse 10090".
+    rank_genes_column : str, default None
+        Column in .obs table where ranked genes are stored.
+    genes_column : str, default None
+        Column in .var table where gene symbols or IDs are stored.
+    column : str, default None
+        The column in .obs table of the clustering you want to annotate.
+    ensembl : bool, default None
+        Whether the genes in the genes_column are Ensembl IDs.
+    col_to_search : str, default None
+        Column to search in for marker list selection.
+    search_terms : list of str, default None
+        List of search terms to use for marker list selection.
+    column_specific_terms : list of dicts, default None
+        List of dictionaries with specific 'col_to_search' and 'search_terms' for each.
+
+    Returns
+    -------
+    bool :
+        Returns True if all settings are valid, otherwise prints the errors and returns False.
+    """ 
+
+    errors = []
+    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
+    get_whitelists(repo_path=repo_path, silent_skip=True, update=False)
+
+    # Validate settings dictionaries
+    if settings:
+        # Validate keys of dictionaries
+        valid_params = set(param.name for param in inspect.signature(create_marker_lists).parameters.values())
+        for setting in settings:
+            invalid_params = set(setting) - valid_params
+            if invalid_params:
+                errors.append(f"Invalid parameters in settings: {', '.join(invalid_params)}")
+        # Validate values of dictionaries
+        if not invalid_params:
+            for i, setting in enumerate(settings, 1):
+                if "repo_path" in setting:
+                    if not setting["repo_path"]:
+                        errors.append(f"Settings for marker list {i}: No repo_path provided.")
+                    else:
+                        if not os.path.exists(setting["repo_path"]):
+                            errors.append(f"Settings for marker list {i}: Repo path {setting['repo_path']} does not exist.")
+                if "organism" in setting:
+                    if not setting["organism"]:
+                        errors.append(f"Settings for marker list {i}: No organism provided.")
+                    else:
+                        organism_str = str(setting["organism"]).strip()
+                        is_valid_organism = any(organism_str == valid_entry.split(" ")[0] or organism_str == valid_entry.split(" ")[1] or organism_str == valid_entry for valid_entry in valid_organisms)
+                        if not is_valid_organism:
+                            formatted_valid_organisms = "\n  - " + "\n  - ".join(valid_organisms)
+                            errors.append(f"Settings for marker list {i}: Invalid organism or taxon ID {setting['organism']}.\nAvailable options:{formatted_valid_organisms}\n")
+                if "column_specific_terms" in setting:
+                    if not setting["column_specific_terms"]:
+                        errors.append(f"Settings for marker list {i}: No column specific terms provided.")
+                    else:
+                        for specific_column in setting["column_specific_terms"]:
+                            if specific_column not in combined_df_columns:
+                                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
+                                errors.append(f"Settings for marker list {i}: Invalid col_to_search {specific_column}.\nAvailable columns:{formatted_combined_df_columns}\n") 
+                else:
+                    if "col_to_search" in setting:
+                        if not setting["col_to_search"]:
+                            errors.append(f"Settings for marker list {i}: No col_to_search provided.")
+                        else:
+                            if setting["col_to_search"] not in combined_df_columns:
+                                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
+                                errors.append(f"Settings for marker list {i}: Invalid col_to_search {setting['col_to_search']}.\nAvailable columns:{formatted_combined_df_columns}\n")
+                    if "search_terms" in setting:
+                        if not setting["search_terms"]:
+                            errors.append(f"Settings for marker list {i}: No search_terms provided.")
+                if "style" in setting:
+                    if not setting["style"]:
+                        errors.append(f"Settings for marker list {i}: No style provided.")
+                    else:
+                        if setting["style"] not in ["two_column", "score", "ui", "panglao"]:
+                            errors.append(f"Settings for marker list {i}: Invalid style {setting['style']}. Available styles: two_column, score, ui, panglao")
+                    
+    # Validate individual parameters
+    if repo_path and not os.path.exists(repo_path):
+        errors.append(f"Repo path {repo_path} does not exist.")
+
+    if adata is None:
+        errors.append("No AnnData object provided.")
+        
+    # List of valid organisms and their tax IDs
+    valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
+
+    # Validate the organism
+    if organism:
+        organism_str = str(organism).strip()
+        is_valid_organism = any(organism_str == valid_entry.split(" ")[0] or organism_str == valid_entry.split(" ")[1] or organism_str == valid_entry for valid_entry in valid_organisms)
+        if not is_valid_organism:
+            formatted_valid_organisms = "\n  - " + "\n  - ".join(valid_organisms)
+            errors.append(f"Invalid organism or taxon ID {organism}.\nAvailable options:{formatted_valid_organisms}\n")
+
+    # Validate obs and var columns
+    if rank_genes_column and rank_genes_column not in adata.obs.columns:
+        formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
+        errors.append(f"Invalid rank_genes_column {rank_genes_column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
+
+    if genes_column and genes_column not in adata.var.columns:
+        formatted_var_columns = "\n  - " + "\n  - ".join(adata.var.columns)
+        errors.append(f"Invalid genes_column {genes_column}.\nAvailable columns in adata.var:{formatted_var_columns}\n")
+
+    if column and column not in adata.obs.columns:
+        formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
+        errors.append(f"Invalid column {column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
+
+    # Validate col_to_search and search_terms based on column_specific_terms if provided
+    if column_specific_terms:
+        for specific_column in column_specific_terms:
+            if specific_column not in combined_df_columns:
+                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
+                errors.append(f"Invalid col_to_search {specific_column}.\nAvailable columns:{formatted_combined_df_columns}\n")
+    else:
+        # Validate col_to_search using the columns from the combined DataFrames in the repo
+        if col_to_search:
+            if col_to_search not in combined_df_columns:
+                formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
+                errors.append(f"Invalid col_to_search {col_to_search}.\nAvailable columns:{formatted_combined_df_columns}\n")
+
+    # Print errors or confirm validation
+    if errors:
+        print("Validation failed due to the following errors:")
+        print("-" * 40)
+        for error in errors:
+            print(error)
+        print("-" * 40)
+
+        return False
+    else:
+        print("All settings are valid.")
+        print(f"Summary of settings:")
+        print("-" * 40)
+        print("General parameters:")
+        print(f"  Repo path: {repo_path}")
+        print(f"  Organism: {organism}")
+        print(f"  Rank genes column: {rank_genes_column}")
+        print(f"  Genes column: {genes_column}")
+        print(f"  Clustering column: {column}")
+        print(f"  Ensembl IDs: {ensembl}")
+
+        if column_specific_terms:
+            print(f"  Column specific terms:")
+            for i, specific_column in enumerate(column_specific_terms.keys()):
+                print(f"    {i+1}. Column to search: {specific_column}, Search terms: {column_specific_terms[specific_column]}")
+        else:
+            print(f"  Column to search: {col_to_search}")
+            print(f"  Search terms: {search_terms}")
+
+        if settings:
+            print("\nParameters from dictionary:")
+            for i, setting in enumerate(settings, 1):
+                print(f"  {i}. Marker list:")
+                for key, value in setting.items():
+                    print(f"    {key}: {value}")
+
+        print("-" * 40)
+
+    return True

@@ -916,3 +916,23 @@ def check_ensembl(adata, verbose=False):
         return True
     else:
         return False
+
+
+def delete_files(file_paths):
+    """
+    Delete files from a list of file paths.
+
+    Parameters
+    ----------
+    file_paths : list of str
+        A list containing the file paths of the files to be deleted.
+    """
+
+    for file_path in file_paths:
+        try:
+            os.remove(file_path)
+            print(f"File deleted: {file_path}")
+        except FileNotFoundError:
+            print(f"File not found: {file_path}")
+        except Exception as e:
+            print(f"Error deleting {file_path}: {e}")
