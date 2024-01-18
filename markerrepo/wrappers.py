@@ -85,6 +85,8 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
 
     if style not in ["two_column", "score", "ui", "panglao"]:
         raise ValueError("The parameter 'style' must be one of 'two_column', 'score', 'ui', or 'panglao'.")
+    
+    # TODO: check also whether organism, col_to_search and keys (columns) of column_specific_terms are valid
 
     paths = []
 
