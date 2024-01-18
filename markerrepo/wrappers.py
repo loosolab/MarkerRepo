@@ -265,10 +265,6 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         If True, the function will not ask for confirmation before overwriting existing files.
     celltype_column_name : str, default None
         The name of the selected cell type annotation column. If None, all annotation columns will be kept.
-    Returns
-    -------
-    str :
-    The name of the selected cell type annotation column.
     """
 
     if not marker_repo and not SCSA:
