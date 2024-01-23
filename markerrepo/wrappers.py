@@ -3,7 +3,7 @@ from .homology import check_organisms, download_homologene_data, fetch_homologs,
 from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename, update_organism
 from .homology import get_biomart_defaults
 from .utils import read_whitelist, get_whitelists
-from .annotation import annot_ct, show_tables, reformat_marker_list, compare_cell_types
+from .annotation import annot_ct, show_tables, reformat_marker_list, compare_cell_types, update_adata_with_markers
 import scanpy as sc
 from IPython.display import display
 import os
@@ -131,11 +131,8 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
                 df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
                 paths.append(convert_markers(style=style, repo_path=repo_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl))
 
-        if adata:
-            if "MarkerRepo" not in adata.uns:
-                adata.uns["MarkerRepo"] = {}
-            adata.uns["MarkerRepo"]["marker_lists"] = df.index.astype(str).tolist()
-
+        if adata and file_name:
+            update_adata_with_markers(adata, file_name, df)
 
         if search_terms or column_specific_terms:
             return paths
