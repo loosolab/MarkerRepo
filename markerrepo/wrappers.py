@@ -495,7 +495,7 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False, filter_transferred=True):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False, filter_transferred=True, verbose=False):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
@@ -524,12 +524,16 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         If True, the Ensembl IDs will be used instead of the gene symbols.
     filter_transferred : bool, default True
         If True, filter all marker lists which have already been transferred.
+    verbose : bool, default False
+        If True, the function will print additional information.
 
     Returns
     -------
     list of str : 
         The paths of the exported transferred marker lists.
     """
+
+    #TODO: implement verbose
 
     if not os.path.exists(repo_path):
         raise FileNotFoundError(f"The specified repository path '{repo_path}' does not exist.")
