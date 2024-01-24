@@ -232,3 +232,29 @@ def dataframe_to_dict(df):
             result[key] = [value]
 
     return result
+
+
+def filter_strings_by_prefix(strings, valid_prefixes = ["leiden", "louvain", "lovain", "kmeans"]):
+    """
+    Filters a list of strings by a list of prefixes.
+
+    Parameters
+    ----------
+    strings : list of str
+        The list of strings that should be filtered.
+    valid_prefixes : list of str, default ["leiden", "louvain", "lovain", "kmeans"]
+        The list of prefixes that should be used for filtering.
+
+    Returns
+    -------
+    list of str :
+        The list of strings that start with one of the valid prefixes.
+    """
+
+    filtered_strings = []
+
+    for string in strings:
+        if any(string.lower().startswith(prefix) for prefix in valid_prefixes):
+            filtered_strings.append(string)
+
+    return filtered_strings
