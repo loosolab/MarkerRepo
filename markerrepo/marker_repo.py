@@ -221,6 +221,18 @@ def get_db(repo_path=".", parallel=True):
     pandas.DataFrame :
         DataFrame containing metadata information of all lists.
     """
+
+    lists_path = f"{repo_path}/lists"
+    # Check if the provided repository path exists
+    if not os.path.exists(lists_path):
+        raise FileNotFoundError(f"The specified path '{lists_path}' does not exist.")
+
+    # Get all YAML file paths in the directory
+    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(lists_path) for file in files if file.endswith(".yaml")]
+
+    # Check if there are any YAML files in the path
+    if not file_paths:
+        raise FileNotFoundError(f"No YAML files found in the path '{lists_path}'.")
     
     file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(f"{repo_path}/lists") for file in files if file.endswith(".yaml")]
 

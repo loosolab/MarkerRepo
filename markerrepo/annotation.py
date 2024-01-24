@@ -799,3 +799,29 @@ def reformat_marker_list(input_path, suffix="_SCSA"):
     df.to_csv(output_path, index=False, sep='\t')
 
     return output_path
+
+
+def update_adata_with_markers(adata, list_name, df):
+    """
+    Updates the provided AnnData object (adata) with marker lists associated with a given file name.
+
+    This function adds a new entry to the 'MarkerRepo' key in the .uns attribute of the AnnData object. 
+    It creates a dictionary under 'MarkerRepo' if it does not exist and adds the marker lists from the 
+    DataFrame 'df' under the specified 'list_name'. If 'list_name' already exists in 'MarkerRepo', 
+    it will be overwritten with the new marker list from 'df'.
+
+    Parameters
+    ----------
+    adata : AnnData
+        The AnnData object to be updated. 
+    list_name : str
+        The name under which the marker lists will be stored in the AnnData object.
+    df : DataFrame
+        The DataFrame containing the marker lists. The index of this DataFrame should be the list of markers 
+        that will be stored in the AnnData object.
+    """
+
+    if "MarkerRepo" not in adata.uns:
+        adata.uns["MarkerRepo"] = {"marker_lists": {}}
+        
+    adata.uns["MarkerRepo"]["marker_lists"][list_name] = df.index.astype(str).tolist()
