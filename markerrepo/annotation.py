@@ -285,15 +285,13 @@ def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1", show_d
         ct_column = f"Cluster {cluster}"
         df = pd.read_csv(f'{path}/{file}', sep='\t', names=[ct_column, "Score", "Hits", "Number of marker genes", "Mean of UI"])
 
-        df_sorted = df.sort_values(by='Score', ascending=False).reset_index(drop=True)
-
         if show_diff:
             # Calculate and add both normal and scaled diffs to the DataFrame if show_diff is True
-            normal_diffs, scaled_diffs = calculate_normalized_diffs(df_sorted.rename(columns={ct_column: "Cell type"}))
+            normal_diffs, scaled_diffs = calculate_normalized_diffs(df.rename(columns={ct_column: "Cell type"}))
             # df_sorted['Normalized Diff'] = df_sorted[ct_column].apply(lambda x: normal_diffs.get(x, 0))
-            df_sorted['Adjacent Disparity'] = df_sorted[ct_column].apply(lambda x: scaled_diffs.get(x, 0))
+            df['Adjacent Disparity'] = df[ct_column].apply(lambda x: scaled_diffs.get(x, 0))
 
-        display(df_sorted.head(n))
+        display(df.head(n))
 
 
 def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column, log=False):
@@ -500,6 +498,12 @@ def calc_ranks(cell_marker_dict, cluster_gene_ranks, min_hits=4, verbose=True):
               f"The input data contains {input_gene_count} different genes. "
               f"The genes of the input data overlap with {matched_gene_count} genes in total, {overlap_percentage}%.")
 
+    # Sort cell types by score and match count/total marker genes
+    for cluster in annotation_scores:
+        annotation_scores[cluster] = dict(sorted(annotation_scores[cluster].items(), 
+                                                 key=lambda item: (-item[1][0], -item[1][1]/item[1][2])))
+
+
     return annotation_scores
 
 
@@ -647,21 +651,17 @@ def write_annotation(ct_dict, output):
         by the calc_ranks() method.
     output : string
         The path to the folder where the annotation file will be written.
-
     """
 
     with open(output + "/annotation.txt", "w") as c_file:
-        for dic in ct_dict.keys():
-            sorted_dict = dict(
-                sorted(ct_dict[dic].items(), key=lambda r: (r[1][0], r[1][1]), reverse=True))
-            with open(output + "/ranks/" + "cluster_" + dic, "w") as d_file:
-                for key in sorted_dict.keys():
-                    d_file.write(key)
-                    for value in sorted_dict[key]:
-                        d_file.write("\t" + str(value))
-                    d_file.write("\n")
-            if len(sorted_dict.keys()) > 0:
-                c_file.write(dic + "\t" + str(next(iter(sorted_dict))) + "\n")
+        for cluster in ct_dict.keys():
+            if len(ct_dict[cluster]) > 0:
+                highest_scored_cell_type = next(iter(ct_dict[cluster]))
+                c_file.write(f"{cluster}\t{highest_scored_cell_type}\n")
+
+            with open(f"{output}/ranks/cluster_{cluster}", "w") as d_file:
+                for cell_type, values in ct_dict[cluster].items():
+                    d_file.write(f"{cell_type}\t" + "\t".join(map(str, values)) + "\n")
     
 
 def list_possible_settings(repo_path, adata=None):
@@ -801,27 +801,47 @@ def reformat_marker_list(input_path, suffix="_SCSA"):
     return output_path
 
 
-def update_adata_with_markers(adata, list_name, df):
+def update_adata_with_markers(adata, list_name, df, ignore_overwrite=False):
     """
     Updates the provided AnnData object (adata) with marker lists associated with a given file name.
 
     This function adds a new entry to the 'MarkerRepo' key in the .uns attribute of the AnnData object. 
     It creates a dictionary under 'MarkerRepo' if it does not exist and adds the marker lists from the 
     DataFrame 'df' under the specified 'list_name'. If 'list_name' already exists in 'MarkerRepo', 
-    it will be overwritten with the new marker list from 'df'.
+    and ignore_overwrite is False, the user is repeatedly prompted to decide whether to overwrite, update, or leave unchanged 
+    until a valid response is given. If ignore_overwrite is True, the existing entry is overwritten without prompt.
 
     Parameters
     ----------
     adata : AnnData
-        The AnnData object to be updated. 
+        The AnnData object to be updated.
     list_name : str
         The name under which the marker lists will be stored in the AnnData object.
     df : DataFrame
         The DataFrame containing the marker lists. The index of this DataFrame should be the list of markers 
         that will be stored in the AnnData object.
+    ignore_overwrite : bool
+        If set to True, any existing entry with the same list_name is overwritten without prompt.
     """
 
     if "MarkerRepo" not in adata.uns:
         adata.uns["MarkerRepo"] = {"marker_lists": {}}
-        
-    adata.uns["MarkerRepo"]["marker_lists"][list_name] = df.index.astype(str).tolist()
+    
+    while list_name in adata.uns["MarkerRepo"]["marker_lists"] and not ignore_overwrite:
+        response = input(f"'{list_name}' already exists. Overwrite (O), Update (U), or Leave unchanged (L)? [O/U/L]: ").strip().upper()
+        if response == 'O':
+            adata.uns["MarkerRepo"]["marker_lists"][list_name] = df.index.astype(str).tolist()
+            break
+        elif response == 'U':
+            existing_list = set(adata.uns["MarkerRepo"]["marker_lists"][list_name])
+            new_list = set(df.index.astype(str).tolist())
+            combined_list = list(existing_list.union(new_list))
+            adata.uns["MarkerRepo"]["marker_lists"][list_name] = combined_list
+        elif response == 'L':
+            print("No changes made.")
+            break
+        else:
+            print("Invalid response. Please enter O, U, or L.")
+
+    if ignore_overwrite or list_name not in adata.uns["MarkerRepo"]["marker_lists"]:
+        adata.uns["MarkerRepo"]["marker_lists"][list_name] = df.index.astype(str).tolist()

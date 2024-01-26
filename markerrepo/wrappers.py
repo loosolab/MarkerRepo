@@ -287,15 +287,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         raise ValueError(f"Reference annotation column '{reference_obs}' not found in adata.obs.")
     
     if not rank_genes_column:
-        if 'log1p' in adata.uns and 'base' in adata.uns['log1p']:
-            adata.uns['log1p']['base'] = None
-        rank_genes_column = f'rank_genes_groups_{clustering_column}'
-        if verbose:
-            print(f'Ranking genes groups for clusters using obs column {clustering_column}')
-            sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, verbose=verbose)
-        else:
-            with suppress_output():
-                sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, verbose=verbose)
+        rank_genes_column = rank_genes(adata, clustering_column, show_plots=show_plots, verbose=verbose)
 
     annotation_columns = [] if reference_obs is None else [reference_obs]        
 
@@ -351,7 +343,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
         # Show plots
         if show_plots:
-            sc.pl.umap(adata, color=plot_columns, wspace=0.5)
+            sc.pl.umap(adata, color=plot_columns, wspace=0.5, cmap=None)
 
     # Compare annotations
     if show_comparison:
@@ -373,6 +365,49 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
         columns_to_remove = [col for col in annotation_columns if col not in columns_to_keep]
         adata.obs.drop(columns=columns_to_remove, inplace=True)
+
+
+def rank_genes(adata, clustering_column=None, show_plots=False, verbose=False):
+    """
+    Rank genes for each cluster in the given AnnData object.
+
+    Parameters
+    ----------
+    adata : AnnData
+        The anndata object to rank.
+    clustering_column : str, default None
+        The column of the .obs table which contains the clustering information. E.g. "louvain" or "leiden".
+    show_plots : bool, default False
+        If True, the function will show the plots of the ranking.
+    verbose : bool, default False
+        If True, the function will print additional information.
+
+    Returns
+    -------
+    str :
+        The name of the column in the .uns table which contains the rank genes scores.
+    """
+
+    if not clustering_column:
+        clustering_column = select(whitelist=list(adata.obs.columns), heading="clustering column")
+    
+    sc.tl.dendrogram(adata, groupby=clustering_column)
+
+    if 'log1p' in adata.uns and 'base' in adata.uns['log1p']:
+        adata.uns['log1p']['base'] = None
+    rank_genes_column = f'rank_genes_groups_{clustering_column}'
+    if verbose:
+        print(f'Ranking genes groups for clusters using obs column {clustering_column}')
+        sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test')
+        if show_plots:
+            sc.pl.rank_genes_groups_matrixplot(adata, standard_scale='var', n_genes=10, key=rank_genes_column, show=True)
+    else:
+        with suppress_output():
+            sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test')
+            if show_plots:
+                sc.pl.rank_genes_groups_matrixplot(adata, standard_scale='var', n_genes=10, key=rank_genes_column, show=True)
+
+    return rank_genes_column
 
 
 def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists", file_name=None, case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
@@ -708,7 +743,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
 
 
 def validate_settings(settings=None, repo_path=None, adata=None, organism=None, rank_genes_column=None, genes_column=None, 
-                      column=None, ensembl=None, col_to_search=None, search_terms=None, column_specific_terms=None):
+                      clustering_column=None, ensembl=None, col_to_search=None, search_terms=None, column_specific_terms=None):
     """
     Validates user settings including file paths, anndata object columns, and specified organism.
 
@@ -726,7 +761,7 @@ def validate_settings(settings=None, repo_path=None, adata=None, organism=None, 
         Column in .obs table where ranked genes are stored.
     genes_column : str, default None
         Column in .var table where gene symbols or IDs are stored.
-    column : str, default None
+    clustering_column : str, default None
         The column in .obs table of the clustering you want to annotate.
     ensembl : bool, default None
         Whether the genes in the genes_column are Ensembl IDs.
@@ -826,9 +861,9 @@ def validate_settings(settings=None, repo_path=None, adata=None, organism=None, 
         formatted_var_columns = "\n  - " + "\n  - ".join(adata.var.columns)
         errors.append(f"Invalid genes_column {genes_column}.\nAvailable columns in adata.var:{formatted_var_columns}\n")
 
-    if column and column not in adata.obs.columns:
+    if clustering_column and clustering_column not in adata.obs.columns:
         formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
-        errors.append(f"Invalid column {column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
+        errors.append(f"Invalid column {clustering_column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
 
     # Validate col_to_search and search_terms based on column_specific_terms if provided
     if column_specific_terms:
@@ -861,7 +896,7 @@ def validate_settings(settings=None, repo_path=None, adata=None, organism=None, 
         print(f"  Organism: {organism}")
         print(f"  Rank genes column: {rank_genes_column}")
         print(f"  Genes column: {genes_column}")
-        print(f"  Clustering column: {column}")
+        print(f"  Clustering column: {clustering_column}")
         print(f"  Ensembl IDs: {ensembl}")
 
         if column_specific_terms:
