@@ -144,7 +144,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
-def create_multiple_marker_lists(settings=[{}], repo_path=".", organism=None, style='score', path='.', file_name=None, ensembl=False, 
+def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", organism=None, style='score', path='.', file_name=None, ensembl=False, 
                                  col_to_search=None, search_terms=None, force_homology=False, show_lists=True, 
                                  column_specific_terms=None, adata=None):
     """
@@ -156,7 +156,7 @@ def create_multiple_marker_lists(settings=[{}], repo_path=".", organism=None, st
 
     Parameters
     ----------
-    settings : list of dict, default [{}]
+    cml_parameters : list of dict, default [{}]
         A list of dictionaries, where each dictionary contains parameters for a single
         call to 'create_marker_lists'. Keys in the dictionaries should match the parameter
         names of 'create_marker_lists', and values should be the desired values for those parameters.
@@ -193,7 +193,7 @@ def create_multiple_marker_lists(settings=[{}], repo_path=".", organism=None, st
 
     all_paths = []
 
-    for setting in settings:
+    for setting in cml_parameters:
         # Set default values for parameters of 'create_marker_lists'
         params = {
             'organism': organism,
@@ -742,14 +742,14 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
     return paths
 
 
-def validate_settings(settings=None, repo_path=None, adata=None, organism=None, rank_genes_column=None, genes_column=None, 
+def validate_settings(cml_parameters=None, repo_path=None, adata=None, organism=None, rank_genes_column=None, genes_column=None, 
                       clustering_column=None, ensembl=None, col_to_search=None, search_terms=None, column_specific_terms=None):
     """
     Validates user settings including file paths, anndata object columns, and specified organism.
 
     Parameters
     ----------
-    settings : list of dict, default None
+    cml_parameters : list of dict, default None
         A list of dictionaries, each containing parameters for 'create_marker_lists' function.
     repo_path : str, default None
         Path to the marker repository.
@@ -783,16 +783,16 @@ def validate_settings(settings=None, repo_path=None, adata=None, organism=None, 
     get_whitelists(repo_path=repo_path, silent_skip=True, update=False)
 
     # Validate settings dictionaries
-    if settings:
+    if cml_parameters:
         # Validate keys of dictionaries
         valid_params = set(param.name for param in inspect.signature(create_marker_lists).parameters.values())
-        for setting in settings:
+        for setting in cml_parameters:
             invalid_params = set(setting) - valid_params
             if invalid_params:
                 errors.append(f"Invalid parameters in settings: {', '.join(invalid_params)}")
         # Validate values of dictionaries
         if not invalid_params:
-            for i, setting in enumerate(settings, 1):
+            for i, setting in enumerate(cml_parameters, 1):
                 if "repo_path" in setting:
                     if not setting["repo_path"]:
                         errors.append(f"Settings for marker list {i}: No repo_path provided.")
@@ -907,9 +907,9 @@ def validate_settings(settings=None, repo_path=None, adata=None, organism=None, 
             print(f"  Column to search: {col_to_search}")
             print(f"  Search terms: {search_terms}")
 
-        if settings:
+        if cml_parameters:
             print("\nParameters from dictionary:")
-            for i, setting in enumerate(settings, 1):
+            for i, setting in enumerate(cml_parameters, 1):
                 print(f"  {i}. Marker list:")
                 for key, value in setting.items():
                     print(f"    {key}: {value}")
