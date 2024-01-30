@@ -74,6 +74,11 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
         A dictionary with column names as keys and lists of search terms as values. If provided, 'col_to_search' and 'search_terms' are ignored.
     adata : AnnData, default None
         If provided, the function will add the marker list IDs to the .uns table of the AnnData object.
+
+    Note:
+    ----
+    It is recommended to use 'column_specific_terms' instead of 'col_to_search' and 'search_terms'.
+    The parameters 'col_to_search' and 'search_terms' are planned to be deprecated in future releases.
         
     Returns
     -------
@@ -86,6 +91,10 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
 
     if style not in ["two_column", "score", "ui", "panglao"]:
         raise ValueError("The parameter 'style' must be one of 'two_column', 'score', 'ui', or 'panglao'.")
+
+    if col_to_search is not None or search_terms is not None:
+        print("Warning: 'col_to_search' and 'search_terms' are deprecated and will be removed in future versions.")
+        print("It is recommended to use 'column_specific_terms' for more robust functionality.")
     
     # TODO: check also whether organism, col_to_search and keys (columns) of column_specific_terms are valid
 
@@ -185,11 +194,23 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", organism=No
     adata : AnnData, default None
         Default AnnData object for all 'create_marker_lists' calls.
 
+    Note:
+    ----
+    It is recommended to use 'column_specific_terms' instead of 'col_to_search' and 'search_terms'.
+    The parameters 'col_to_search' and 'search_terms' are planned to be deprecated in future releases.
+
     Returns
     -------
     list of str :
         A combined list of all paths to the created marker lists from each call to 'create_marker_lists'.
     """
+
+    if not cml_parameters:
+        cml_parameters = [{}]
+
+    if col_to_search is not None or search_terms is not None:
+        print("Warning: 'col_to_search' and 'search_terms' are deprecated and will be removed in future versions.")
+        print("It is recommended to use 'column_specific_terms' for more robust functionality.")
 
     all_paths = []
 
@@ -343,7 +364,11 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
         # Show plots
         if show_plots:
-            sc.pl.umap(adata, color=plot_columns, wspace=0.5, cmap=None)
+            if 'X_umap' in adata.obsm:
+                sc.pl.umap(adata, color=plot_columns, wspace=0.5, cmap=None)
+            else:
+                print("UMAP embedding not found in the AnnData object.")
+
 
     # Compare annotations
     if show_comparison:

@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from .parsing import get_marker_lists, process_file, split_marker_elements
+from .parsing import get_marker_lists, process_file, split_marker_elements, get_list, dataframe_to_dict
 from .utils import read_whitelist
 import yaml
 from git import Repo, GitCommandError
@@ -948,3 +948,53 @@ def delete_files(file_paths):
             print(f"File not found: {file_path}")
         except Exception as e:
             print(f"Error deleting {file_path}: {e}")
+
+
+def transform_marker_list(LIST_PATH, info_col, marker_col, MARKER_TYPE, ORGANISM):
+    """
+    Transforms a marker list by filtering and extending markers based on their type and gene dictionary.
+
+    Parameters
+    ----------
+    LIST_PATH : str
+        The path to the marker list.
+    info_col : int
+        The column number in the list that contains additional information.
+    marker_col : int
+        The column number in the list that contains markers.
+    MARKER_TYPE : str
+        The type of markers, e.g., "Genes".
+    ORGANISM : str
+        The organism name to be used for fetching the gene dictionary.
+
+    Returns
+    -------
+    list of dict :
+        A list of dictionaries, each containing a marker name and its corresponding markers.
+    """
+
+    markers = get_list(LIST_PATH, info_col=info_col, marker_col=marker_col).drop_duplicates()
+    markers['Marker'] = markers['Marker'].str.upper()
+    print("All markers of provided list:")
+    display(markers)
+
+    if MARKER_TYPE == "Genes":
+        gene_dict = get_gene_dict(ORGANISM)
+        markers_removed = markers[~markers['Marker'].isin(gene_dict.keys())]
+        print("Removed markers:")
+        display(markers_removed)
+
+        markers_filtered = markers[markers['Marker'].isin(gene_dict.keys())]
+        markers_extended = update_markers(markers_filtered, gene_dict)
+        print("Filtered and extended markers:")
+        display(markers_extended)
+
+        marker_dict = dataframe_to_dict(markers_extended)
+    else:
+        marker_dict = dataframe_to_dict(markers)
+    
+    marker_list = []
+    for name in marker_dict.keys():
+        marker_list.append({'name': name, 'markers': marker_dict[name]})
+
+    return marker_list
