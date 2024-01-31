@@ -664,7 +664,7 @@ def write_annotation(ct_dict, output):
                     d_file.write(f"{cell_type}\t" + "\t".join(map(str, values)) + "\n")
     
 
-def list_possible_settings(repo_path, adata=None):
+def list_possible_settings(repo_path, lists_path=None, adata=None):
     """
     Lists all possible settings based on the repo and AnnData object.
 
@@ -672,6 +672,9 @@ def list_possible_settings(repo_path, adata=None):
     ----------
     repo_path : str
         Path to the marker repository.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.        
     adata : anndata.AnnData, default None
         The loaded AnnData object.
     """
@@ -683,7 +686,7 @@ def list_possible_settings(repo_path, adata=None):
     print("Possible Settings:")
     print("-" * 40)
 
-    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
+    combined_df_columns = list(combine_dfs(repo_path=repo_path, lists_path=lists_path).columns)
     print("1. Available columns to search in MarkerRepo:")
     for col in combined_df_columns:
         print(f"  - {col}")

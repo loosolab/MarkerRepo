@@ -42,7 +42,7 @@ def suppress_output():
         sys.stdout, sys.stderr = old_stdout, old_stderr
 
 
-def create_marker_lists(organism=None, repo_path=".", style="score", path=".", file_name=None, ensembl=False, 
+def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="two_column", path=".", file_name=None, ensembl=False, 
                         col_to_search=None, search_terms=None, force_homology=False, show_lists=True,
                         column_specific_terms=None, adata=None):
     """
@@ -54,7 +54,10 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
         The organism of the marker lists.
     repo_path : str, default "."
         The path of the Marker Repo.
-    style : str, default "score"
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
+    style : str, default "two_column"
         The style of the marker lists. Currently there are four options available: "two_column", "score", "ui" and "panglao"
     path : str, default "."
         The path of the exported marker lists.
@@ -106,9 +109,9 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
 
     while True:
         if organism:  
-            df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="Organism name", search_terms=[f"+{organism.split(' ')[0]}"])
+            df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), col_to_search="Organism name", search_terms=[f"+{organism.split(' ')[0]}"])
         else:
-            df = combine_dfs(repo_path=repo_path)
+            df = combine_dfs(repo_path=repo_path, lists_path=lists_path)
 
         if df.empty or force_homology:
             if not force_homology:
@@ -117,8 +120,8 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
 
             source_df = None
             if search_terms or column_specific_terms:
-                source_df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms)
-            paths.extend(transfer_markers(target_org=organism, source_df=source_df, repo_path=repo_path, target_counts=1, 
+                source_df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms)
+            paths.extend(transfer_markers(target_org=organism, source_df=source_df, repo_path=repo_path, lists_path=lists_path, target_counts=1, 
                           weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name, ensemble=ensembl))
         else:
             if organism:
@@ -132,13 +135,13 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
                 
                 if show_lists:
                     display(df)
-                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
-                paths.append(convert_markers(style=style, repo_path=repo_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl))
+                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, lists_path=lists_path, order=["Marker", "Info"])
+                paths.append(convert_markers(style=style, repo_path=repo_path, lists_path=lists_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl))
             else:
                 print(f"Please specify the marker lists you want to use for the annotation.")
-                df = guided_search(repo_path=repo_path, df=df, out="metadata")
-                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, order=["Marker", "Info"])
-                paths.append(convert_markers(style=style, repo_path=repo_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl))
+                df = guided_search(repo_path=repo_path, lists_path=lists_path, df=df, out="metadata")
+                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, lists_path=lists_path, order=["Marker", "Info"])
+                paths.append(convert_markers(style=style, repo_path=repo_path, lists_path=lists_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl))
 
         if adata and file_name:
             update_adata_with_markers(adata, file_name, df)
@@ -153,7 +156,7 @@ def create_marker_lists(organism=None, repo_path=".", style="score", path=".", f
     return paths
 
 
-def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", organism=None, style='score', path='.', file_name=None, ensembl=False, 
+def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=None, organism=None, style='two_column', path='.', file_name=None, ensembl=False, 
                                  col_to_search=None, search_terms=None, force_homology=False, show_lists=True, 
                                  column_specific_terms=None, adata=None):
     """
@@ -171,9 +174,12 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", organism=No
         names of 'create_marker_lists', and values should be the desired values for those parameters.
     repo_path : str, default "."
         The path of the Marker Repo. This value is passed directly to 'create_marker_lists'.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
     organism : str, default None
         Default organism to use for all 'create_marker_lists' calls.
-    style : str, default 'score'
+    style : str, default 'two_column'
         Default style for all 'create_marker_lists' calls.
     path : str, default '.'
         Default path for all 'create_marker_lists' calls.
@@ -228,7 +234,8 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", organism=No
             'show_lists': show_lists,
             'column_specific_terms': column_specific_terms,
             'adata': adata,
-            'repo_path': repo_path
+            'repo_path': repo_path,
+            'lists_path': lists_path
         }
 
         # Update these defaults with values from the current dictionary
@@ -290,6 +297,9 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
     if marker_lists is None or not marker_lists:
         raise ValueError("No marker lists provided. Please provide a list of marker list paths.")
+
+    if isinstance(marker_lists, str):
+        marker_lists = [marker_lists]
     
     for marker_list in marker_lists:
         if not os.path.exists(marker_list):
@@ -318,7 +328,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         plot_columns = [] if reference_obs is None else [reference_obs]
 
         if marker_repo:
-            ct_column = f"{mr_obs}_{name}"
+            ct_column = f"{mr_obs}_{name}_{clustering_column}"
             annotation_columns.append(ct_column)
             plot_columns.append(ct_column)
             
@@ -333,7 +343,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
                 show_tables(annotation_dir=annotation_dir, n=5, clustering_column=clustering_column, show_diff=True)
 
         if SCSA:
-            column_added = f"{scsa_obs}_{name}"
+            column_added = f"{scsa_obs}_{name}_{clustering_column}"
             annotation_columns.append(column_added)
             plot_columns.append(column_added)
 
@@ -435,7 +445,7 @@ def rank_genes(adata, clustering_column=None, show_plots=False, verbose=False):
     return rank_genes_column
 
 
-def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists", file_name=None, case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
+def convert_markers(repo_path=".", lists_path=None, keywords=None, df=None, path="exported_lists", file_name=None, case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
     Optionally, it can export the DataFrame to a file.
@@ -444,6 +454,9 @@ def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists"
     ----------
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
     keywords : dict or str, default None
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
@@ -480,9 +493,9 @@ def convert_markers(repo_path=".", keywords=None, df=None, path="exported_lists"
         raise FileNotFoundError(f"The specified repository path '{repo_path}' does not exist.")
 
     if gs:
-        marker_list = guided_search(repo_path=repo_path, out="marker_list")
+        marker_list = guided_search(repo_path=repo_path, lists_path=lists_path, out="marker_list")
     elif repo_path and keywords:
-        marker_list = get_selected_lists(keywords, repo_path=repo_path, case_sensitive=case_sensitive, exact=exact)
+        marker_list = get_selected_lists(keywords, repo_path=repo_path, lists_path=lists_path, case_sensitive=case_sensitive, exact=exact)
     elif df is not None:
         marker_list = df
     else:
@@ -555,7 +568,7 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_org=None, source_df=None, repo_path=".", target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False, filter_transferred=True, verbose=False):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", lists_path=None, target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False, filter_transferred=True, verbose=False):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
@@ -570,6 +583,9 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         Metadata DataFrame of source information.
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
     target_counts : int, default 1
         If not None, filter those target genes whose number of target genes per source gene is <= target_counts.
     weight_markers : bool, default False
@@ -625,8 +641,8 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
         print("Select lists of source markers.")
         if filter_transferred:
             # Select only lists which were not transferred before
-            df = search_df(df=combine_dfs(repo_path=repo_path), col_to_search="tags_transferred", search_terms=[f"nan"])
-            source_df = guided_search(df=df, out="metadata", repo_path=repo_path)
+            df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), col_to_search="tags_transferred", search_terms=[f"nan"])
+            source_df = guided_search(df=df, out="metadata", repo_path=repo_path, lists_path=lists_path)
     
     unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
     source_organisms = [' '.join(map(str, tup)) for tup in unique_organisms.values]
@@ -656,7 +672,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             hg_db = download_homologene_data(repo_path=repo_path)
 
             uids = source_df.loc[source_df['Organism name'] == source_organism].index.tolist()
-            source_marker_list = combine_lists(uids, repo_path=repo_path)
+            source_marker_list = combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
             print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
             display(source_marker_list)
 
@@ -722,7 +738,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
             biomart_db = fetch_homologs(source_organism_bm, target_organism_bm).dropna()
 
             uids = source_df.loc[source_df['Organism name'] == source_organism].index.tolist()
-            source_marker_list = combine_lists(uids, repo_path=repo_path)
+            source_marker_list = combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
             print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
             display(source_marker_list)
 
@@ -767,7 +783,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", target_coun
     return paths
 
 
-def validate_settings(cml_parameters=None, repo_path=None, adata=None, organism=None, rank_genes_column=None, genes_column=None, 
+def validate_settings(cml_parameters=None, repo_path=None, lists_path=None, adata=None, organism=None, rank_genes_column=None, genes_column=None, 
                       clustering_column=None, ensembl=None, col_to_search=None, search_terms=None, column_specific_terms=None):
     """
     Validates user settings including file paths, anndata object columns, and specified organism.
@@ -778,6 +794,9 @@ def validate_settings(cml_parameters=None, repo_path=None, adata=None, organism=
         A list of dictionaries, each containing parameters for 'create_marker_lists' function.
     repo_path : str, default None
         Path to the marker repository.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
     adata : anndata.AnnData, default None
         The loaded AnnData object.
     organism : str or int, default None
@@ -804,7 +823,7 @@ def validate_settings(cml_parameters=None, repo_path=None, adata=None, organism=
     """ 
 
     errors = []
-    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
+    combined_df_columns = list(combine_dfs(repo_path=repo_path, lists_path=lists_path).columns)
     get_whitelists(repo_path=repo_path, silent_skip=True, update=False)
 
     # Validate settings dictionaries

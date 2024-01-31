@@ -15,7 +15,7 @@ import time
 import random
 
 
-def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path=".", column_specific_terms=None):
+def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path=".", lists_path=None, column_specific_terms=None):
     """
     This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
     the function either returns the filtered DataFrame or a combined list of markers.
@@ -39,6 +39,9 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
         'marker_list', the function returns a combined list of markers.
     repo_path : str, default "."
         The path of the Marker Repo. Required if out = 'marker_list'.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If none, the lists folder of the repo_path is used.
     column_specific_terms : dict, default None
         A dictionary with column names as keys and lists of search terms as values. If provided, 'col_to_search' and 'search_terms' are ignored.
 
@@ -63,44 +66,50 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
     flags = 0 if case_sensitive else re.IGNORECASE
     
     for col, terms in column_specific_terms.items():
-        if col not in df.columns:
-            raise ValueError(f"The specified column '{col}' does not exist in the DataFrame. Available columns are: {', '.join(df.columns)}.")
+        try:
+            if col not in df.columns:
+                # Warnung ausgeben und Spalte überspringen
+                print(f"Warning: The specified column '{col}' does not exist in the DataFrame. Skipping this column.")
+                continue
 
-        if isinstance(terms, str):
-            terms = [terms]
+            if isinstance(terms, str):
+                terms = [terms]
 
-        must_include_terms = [term.lstrip('+') for term in terms if term.startswith('+')]
-        positive_terms = [term for term in terms if not term.startswith('-') and not term.startswith('+')]
-        negative_terms = [term.lstrip('-') for term in terms if term.startswith('-')]
+            must_include_terms = [term.lstrip('+') for term in terms if term.startswith('+')]
+            positive_terms = [term for term in terms if not term.startswith('-') and not term.startswith('+')]
+            negative_terms = [term.lstrip('-') for term in terms if term.startswith('-')]
 
-        if exact:
-            must_include_terms = [f"^{term}$" for term in must_include_terms]
-            positive_terms = [f"^{term}$" for term in positive_terms]
-            negative_terms = [f"^{term}$" for term in negative_terms]
+            if exact:
+                must_include_terms = [f"^{term}$" for term in must_include_terms]
+                positive_terms = [f"^{term}$" for term in positive_terms]
+                negative_terms = [f"^{term}$" for term in negative_terms]
 
-        # Apply filtering logic for each column
-        for term in must_include_terms:
-            df = df[df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
+            # Apply filtering logic for each column
+            for term in must_include_terms:
+                df = df[df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
 
-        if positive_terms:
-            positive_mask = pd.concat([df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags))) for term in positive_terms], axis=1).any(axis=1)
-            df = df[positive_mask]
+            if positive_terms:
+                positive_mask = pd.concat([df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags))) for term in positive_terms], axis=1).any(axis=1)
+                df = df[positive_mask]
 
-        for term in negative_terms:
-            df = df[~df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
+            for term in negative_terms:
+                df = df[~df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
+
+        except Exception as e:
+            print(f"An error occurred for column '{col}': {str(e)}")
 
     if out == "marker_list":
         if repo_path is None:
             raise ValueError("repo_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in df.index]
-        return combine_lists(uids, repo_path=repo_path)
+        return combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
     
     df.set_index("ID", inplace=True)
 
     return df
 
 
-def guided_search(repo_path=".", df=None, out="metadata"):
+def guided_search(repo_path=".", lists_path=None, df=None, out="metadata"):
     """
     An interactive function that guides the user through the process of searching the DataFrame.
 
@@ -108,6 +117,9 @@ def guided_search(repo_path=".", df=None, out="metadata"):
     ----------
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
     df : pd.DataFrame, default None
         The DataFrame to search in. If not provided, the function will create one from the repo_path.
     out : str, default "metadata"
@@ -128,7 +140,7 @@ def guided_search(repo_path=".", df=None, out="metadata"):
 
     # Get the DataFrame if not provided
     if df is None:
-        df = combine_dfs(repo_path=repo_path)
+        df = combine_dfs(repo_path=repo_path, lists_path=lists_path)
 
     df_copy = df.copy()
     df_copy = df_copy.reset_index()
@@ -200,12 +212,12 @@ def guided_search(repo_path=".", df=None, out="metadata"):
         if repo_path is None:
             raise ValueError("repo_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in df_copy.index]
-        return combine_lists(uids, repo_path=repo_path)
+        return combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
 
     return df_copy
 
 
-def get_db(repo_path=".", parallel=True):
+def get_db(repo_path=".", lists_path=None, parallel=True):
     """
     Get the database of the Marker Repo as DataFrame, containing metadata information.
 
@@ -213,6 +225,9 @@ def get_db(repo_path=".", parallel=True):
     ----------
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
     parallel : bool, default True
         If True, uses parallel processing to improve performance.
 
@@ -222,7 +237,9 @@ def get_db(repo_path=".", parallel=True):
         DataFrame containing metadata information of all lists.
     """
 
-    lists_path = f"{repo_path}/lists"
+    if not lists_path:
+        lists_path = f"{repo_path}/lists"
+
     # Check if the provided repository path exists
     if not os.path.exists(lists_path):
         raise FileNotFoundError(f"The specified path '{lists_path}' does not exist.")
@@ -234,8 +251,6 @@ def get_db(repo_path=".", parallel=True):
     if not file_paths:
         raise FileNotFoundError(f"No YAML files found in the path '{lists_path}'.")
     
-    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(f"{repo_path}/lists") for file in files if file.endswith(".yaml")]
-
     if parallel:
         # Use a ProcessPoolExecutor to read and parse files in parallel
         with ProcessPoolExecutor() as executor:
@@ -258,7 +273,7 @@ def get_db(repo_path=".", parallel=True):
     return df
 
 
-def combine_dfs(repo_path=".", parallel=True, preprocessed=False, meta_lists="meta_lists", marker_lists="marker_lists"):
+def combine_dfs(repo_path=".", lists_path=None, parallel=True, preprocessed=False, meta_lists="meta_lists", marker_lists="marker_lists"):
     """
     Combine the outputs of 'get_db' and 'get_marker_lists' based on the given columns.
 
@@ -266,6 +281,8 @@ def combine_dfs(repo_path=".", parallel=True, preprocessed=False, meta_lists="me
     ----------
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
     parallel : bool, default True
         If True, uses parallel processing to improve performance.
     preprocessed : bool, default True
@@ -287,8 +304,8 @@ def combine_dfs(repo_path=".", parallel=True, preprocessed=False, meta_lists="me
         df_meta = pd.read_csv(meta_lists, sep='\t')
         df_marker = pd.read_csv(marker_lists, sep='\t')
     else:
-        df_meta = get_db(repo_path=repo_path, parallel=parallel)
-        df_marker = get_marker_lists(repo_path=repo_path, parallel=parallel)
+        df_meta = get_db(repo_path=repo_path, lists_path=lists_path, parallel=parallel)
+        df_marker = get_marker_lists(repo_path=repo_path, lists_path=lists_path, parallel=parallel)
     
     df_marker = df_marker.groupby('ID').agg({
         'Marker': lambda x: list(set(x)),
@@ -395,7 +412,7 @@ def export_marker_list(df, path="./exported_lists", file_name=None, header=False
     return os.path.abspath(export_path)
 
 
-def get_uid_paths(uids, repo_path="."):
+def get_uid_paths(uids, repo_path=".", lists_path=None):
     """
     Searches for files in the specified folder and its subfolders with names in the format "name_UID.yaml",
     where UID is an integer. Returns the paths of the files that contain the UIDs from the given list.
@@ -406,6 +423,9 @@ def get_uid_paths(uids, repo_path="."):
         A list of integers representing the UIDs to search for.
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If none, the lists folder of the repo_path is used.
 
     Returns
     -------
@@ -415,7 +435,10 @@ def get_uid_paths(uids, repo_path="."):
 
     matching_files = []
 
-    for root, _, files in os.walk(f"{repo_path}/lists"):
+    if not lists_path:
+        lists_path = f"{repo_path}/lists"
+
+    for root, _, files in os.walk(f"{lists_path}"):
         for file in files:
             if file.endswith('.yaml'):
                 uid = int(file.split('_')[-1].split('.')[0])
@@ -425,7 +448,7 @@ def get_uid_paths(uids, repo_path="."):
     return matching_files
 
 
-def combine_lists(uids, repo_path="."):
+def combine_lists(uids, repo_path=".", lists_path=None):
     """
     Combine multiple lists to one custom list.
 
@@ -435,6 +458,9 @@ def combine_lists(uids, repo_path="."):
         The uids of the lists which will be combined.
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
 
     Returns
     --------
@@ -444,7 +470,7 @@ def combine_lists(uids, repo_path="."):
 
     # Read lists which are going to be combined
     dfs = []
-    for file in get_uid_paths(uids, repo_path=repo_path):
+    for file in get_uid_paths(uids, repo_path=repo_path, lists_path=lists_path):
         dfs.append(get_marker_list(file))
 
     if not dfs:
@@ -456,43 +482,6 @@ def combine_lists(uids, repo_path="."):
     combined_df.drop_duplicates(inplace=True)
 
     return combined_df
-
-
-def show_statistics(metadata, repo_path=".", dpi=120):
-    """
-    Shows content of whole Marker Repo.
-
-    Parameters
-    ----------
-    metadata : dict
-        The dictionary containing the metadata information.
-    repo_path : str, default "."
-        The path of the Marker Repo.
-    dpi : int, default 120
-    """
-
-    # TODO tissue plot - show count only
-
-    sns.set_style("darkgrid")
-    sns.set(rc={"figure.dpi": dpi, "savefig.dpi": dpi})
-    fig, axes = plt.subplots(2, 3)
-    axes_arr = [(0,0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2)]
-
-    # Load all lists
-    df = combine_dfs(repo_path=repo_path)
-
-    # Keep values which are not None
-    filters = {}
-    for key in metadata:
-        if metadata[key]:
-            filters[key] = metadata[key]
-
-    # Plot statistics
-    for count, key in enumerate(filters):
-        stat_df = df[key].value_counts()
-        stat_df.plot(kind='bar', title=key, ax=axes[axes_arr[count]])
-    
-    plt.show()
 
 
 def update_markers(df, marker_dict, column='Marker'):
@@ -813,7 +802,7 @@ def get_valid_filename(prompt="Enter file name or path: "):
         return file_name
 
 
-def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sensitive=False, exact=False, order=["Info", "Marker"]):
+def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", lists_path=None, case_sensitive=False, exact=False, order=["Info", "Marker"]):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
 
@@ -822,10 +811,13 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sens
     keywords : dict or str, default None
         The keywords to filter the DataFrame. Can be either a dictionary with column names as keys and
         keywords as values, or a single string to search for in the entire DataFrame.
-    repo_path : str, default "."
-        The path of the Marker Repo.
     metadata_df : pd.DataFrame, default None
         A DataFrame containing the metadata of a selection of marker lists.
+    repo_path : str, default "."
+        The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
     case_sensitive : bool, default False
         If True, the function will consider the case of the keywords. If False, the function will ignore the case.
     exact : bool, default False
@@ -840,7 +832,7 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sens
     """
 
     if keywords:
-        db = combine_dfs(repo_path=repo_path)
+        db = combine_dfs(repo_path=repo_path, lists_path=lists_path)
         df = search_df(db, keywords, case_sensitive=case_sensitive, exact=exact)
         if df.empty:
             raise Exception(
@@ -854,7 +846,7 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", case_sens
 
     # Get UIDs and combine lists
     uids = [int(idx) for idx in df.index]
-    combined_df = combine_lists(uids, repo_path=repo_path)
+    combined_df = combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
 
     # Drop duplicates, keep one marker only, rearrange column order
     markers_filtered = combined_df.drop_duplicates()

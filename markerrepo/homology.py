@@ -696,7 +696,7 @@ def get_transfer_counts(df, source_column='Marker', target_column='Transferred M
     return gene_counts_df
 
 
-def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, repo_path="."):
+def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, repo_path=".", lists_path=None):
     """
     Prepares the transfer of marker genes from a source organism to a target organism 
     by querying and fetching all necessary data.
@@ -713,6 +713,9 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
         If True, the search will look for exact matches. If False, the search will look for substrings.
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If none, the lists folder of the repo_path is used.
 
     Returns
     -------
@@ -759,10 +762,10 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
         print("\nGenerate marker DataFrame based on the given search terms: ")
         for search_term in search_terms:
             print(search_term)
-        source_df = search_df(combine_dfs(repo_path=repo_path), search_terms, case_sensitive=case_sensitive, exact=exact, out="marker_list", repo_path=repo_path)
+        source_df = search_df(combine_dfs(repo_path=repo_path, lists_path=lists_path), search_terms, case_sensitive=case_sensitive, exact=exact, out="marker_list", repo_path=repo_path)
     else:
         print("\nSelect the marker lists to be transferred to the target organism:")
-        source_df = guided_search(repo_path=repo_path, out="marker_list")
+        source_df = guided_search(repo_path=repo_path, lists_path=lists_path, out="marker_list")
 
     print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
     display(source_df)

@@ -5,7 +5,7 @@ from .marker_repo import combine_dfs, combine_lists, search_df
 from sklearn.preprocessing import MinMaxScaler
 
 
-def compare_marker_lists(repo_path=".", keywords=None, marker_df=None, case_sensitive=False, exact=False):
+def compare_marker_lists(repo_path=".", lists_path=None, keywords=None, marker_df=None, case_sensitive=False, exact=False):
     """
     This function compares and scores markers from selected marker lists using Ubiquitousness Index.
     A score of '0' signifies that the marker is the most specific within this selection, 
@@ -15,6 +15,9 @@ def compare_marker_lists(repo_path=".", keywords=None, marker_df=None, case_sens
     ----------
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
     keywords : str, dict
         Keywords for selecting marker lists. If a string, the function will check if the string is contained anywhere in the marker lists. 
         If a dictionary, the keys are the column names and the values are the keywords to search for in those columns.
@@ -34,9 +37,9 @@ def compare_marker_lists(repo_path=".", keywords=None, marker_df=None, case_sens
     if marker_df is not None:
         df = marker_df
     else:
-        df = search_df(combine_dfs(repo_path=repo_path), keywords, case_sensitive=case_sensitive, exact=exact)
+        df = search_df(combine_dfs(repo_path=repo_path, lists_path=lists_path), keywords, case_sensitive=case_sensitive, exact=exact)
         uids = [int(idx) for idx in df.index]
-        df = combine_lists(uids, repo_path=repo_path)
+        df = combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
 
     df = df.drop_duplicates()
 
