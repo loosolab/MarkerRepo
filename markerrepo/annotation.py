@@ -5,12 +5,10 @@ import pandas as pd
 import scanpy as sc
 from IPython.display import display
 from .marker_repo import read_whitelist, combine_dfs, export_marker_list
-from .utils import get_whitelists
 
 
-def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4):
+def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4, verbose=False, ignore_overwrite=False):
     """
-    If the script is called via a package (atactoolbox), please use this function.
     This function calculates potential cell types per cluster and adds them to the obs table of the anndata object.
 
     Parameters
@@ -48,6 +46,10 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         Skip first line if header is True.
     min_hits : int, default 4
         Minimum number of hits required to consider a cell type for annotation.
+    verbose : bool, default False
+        Whether to print additional information.
+    ignore_overwrite : bool, default False
+        Whether to ignore the overwrite warning.
 
     Returns
     --------
@@ -82,29 +84,31 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         cluster_path = f"{output_path}/ranked/clusters/{cluster_column}"
         ct_path = f"{output_path}/ranked/output/{cluster_column}"
 
-        if os.path.exists(ct_path):
+        if not ignore_overwrite and os.path.exists(ct_path):
             print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overritten.")
             go_on = False
 
-        if not go_on:
-            go_on = input("Do you want to continue? (yes/no): ")
-            go_on = True if go_on == "yes" else False
+            if not go_on:
+                go_on = input("Do you want to continue? (yes/no): ")
+                go_on = True if go_on == "yes" else False
 
             if not go_on:
                 print("Cell type annotation has been aborted.")
 
                 return
-
-        print(f"Output folder: {ct_path}/", "\nDB file: " + db_path, f"\nCluster folder: {cluster_path}/",
-              "\nTissue: " + tissue)
+            
+        if verbose:
+            print(f"Output folder: {ct_path}/", "\nDB file: " + db_path, f"\nCluster folder: {cluster_path}/",
+                "\nTissue: " + tissue)
         if adata and genes_adata and cluster_column:
             # Create folders containing the annotation assignment table as well as the detailed scoring files per cluster
             if not os.path.exists(f'{ct_path}'):
                 os.makedirs(f'{ct_path}')
-                print(f'Created folder: {ct_path}')
+                if verbose:
+                    print(f'Created folder: {ct_path}')
 
             # Check if cluster_path exists
-            if os.path.exists(cluster_path):
+            if not ignore_overwrite and os.path.exists(cluster_path):
                 user_input = input(f"The folder {cluster_path} already exists.\nDo you want to skip creating new ranked cluster files and keep the old ones? (yes/no): ")
                 if user_input.lower() == 'yes':
                     print("Skipping the creation of new ranked cluster files.")
@@ -113,17 +117,23 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                     write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column)
             else:
                 # Create folder if it doesn't exist and write files
-                os.makedirs(cluster_path)
+                if not os.path.exists(cluster_path):
+                    os.makedirs(cluster_path)
+                    if verbose:
+                        print(f'Created folder: {cluster_path}')
+
                 write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column)
 
             # Perform the actual cell type annotation per clustering resolution
-            print("Starting cell type annotation.")
-            print(output_path, ct_path, cluster_column)
+            if verbose:
+                print("Starting cell type annotation.")
+                print(output_path, ct_path, cluster_column)
             perform_cell_type_annotation(
-                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header, min_hits=min_hits)
+                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header, min_hits=min_hits, verbose=verbose)
 
             # Add information to the adata object
-            print("Adding information to the adata object.")
+            if verbose:
+                print("Adding information to the adata object.")
             cta_dict = {}
             with open(f'{ct_path}/annotation.txt') as file:
                 for line in file:
@@ -131,17 +141,20 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                     cta_dict[cluster] = ct.rstrip()
             adata.obs[f'{ct_column}'] = adata.obs[f'{cluster_column}'].map(cta_dict)
 
-            print(f"Finished cell type annotation! The results are found in the .obs table {ct_column}.")
+            if verbose:
+                print(f"Finished cell type annotation! The results are found in the .obs table {ct_column}.")
 
             if not inplace:
                 return adata
 
         elif cluster_path:
-            print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
-                  "\nTissue: " + tissue)
+            if verbose:
+                print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
+                      "\nTissue: " + tissue)
             perform_cell_type_annotation(
-                f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header)
-            print(f"Cell type annotation of output path {ct_path}/ finished.")
+                f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header, verbose=verbose)
+            if verbose:
+                print(f"Cell type annotation of output path {ct_path}/ finished.")
 
         else:
             pass
@@ -215,6 +228,10 @@ def calculate_normalized_diffs(df):
         contains the scaled normalized differences, both keyed by cell type.
     """
 
+    # Check if df has at least two rows
+    if len(df) < 2:
+        return {}, {}  
+
     # Calculate normal normalized diffs
     normal_diffs = {}
     for i in range(len(df) - 1):
@@ -268,18 +285,16 @@ def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1", show_d
         ct_column = f"Cluster {cluster}"
         df = pd.read_csv(f'{path}/{file}', sep='\t', names=[ct_column, "Score", "Hits", "Number of marker genes", "Mean of UI"])
 
-        df_sorted = df.sort_values(by='Score', ascending=False).reset_index(drop=True)
-
         if show_diff:
             # Calculate and add both normal and scaled diffs to the DataFrame if show_diff is True
-            normal_diffs, scaled_diffs = calculate_normalized_diffs(df_sorted.rename(columns={ct_column: "Cell type"}))
-            df_sorted['Normalized Diff'] = df_sorted[ct_column].apply(lambda x: normal_diffs.get(x, 0))
-            df_sorted['Scaled Diff'] = df_sorted[ct_column].apply(lambda x: scaled_diffs.get(x, 0))
+            normal_diffs, scaled_diffs = calculate_normalized_diffs(df.rename(columns={ct_column: "Cell type"}))
+            # df_sorted['Normalized Diff'] = df_sorted[ct_column].apply(lambda x: normal_diffs.get(x, 0))
+            df['Adjacent Disparity'] = df[ct_column].apply(lambda x: scaled_diffs.get(x, 0))
 
-        display(df_sorted.head(n))
+        display(df.head(n))
 
 
-def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column):
+def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata, rank_genes_column, log=False):
     """
     Writes one file per cluster that contains gene IDs and their corresponding scores, sorted by ranking.
 
@@ -298,6 +313,8 @@ def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata
         The anndata object which contains clustered data, gene ID as index as well as rank genes groups.
     rank_genes_column : string, default None
         The column of the .uns table which contains the rank genes scores. E.g. "rank_genes_groups".
+    log : bool, default False
+        Whether to log the progress.
     """
 
     clusters = adata.obs[f'{cluster_column}'].unique()
@@ -305,7 +322,8 @@ def write_cluster_files(cluster_path, sample, adata, cluster_column, genes_adata
 
     for index, cluster in enumerate(clusters):
         with open(f'{cluster_path}/{sample}.cluster_{cluster}', 'w') as file:
-            print(f"Writing ranked cluster file {sample}.cluster_{cluster} ({index+1}/{total_clusters})")
+            if log:
+                print(f"Writing ranked cluster file {sample}.cluster_{cluster} ({index+1}/{total_clusters})")
             for i, gene in enumerate(genes_adata.uns[f'{rank_genes_column}']['names'][cluster]):
                 score = genes_adata.uns[f'{rank_genes_column}']['scores'][cluster][i]
                 file.write(f'{gene.split("_")[0]}\t{score}\n')
@@ -413,75 +431,83 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
     return panglao_rank_dict
 
 
-def calc_ranks(cm_dict, annotated_clusters, min_hits=4):
+def calc_ranks(cell_marker_dict, cluster_gene_ranks, min_hits=4, verbose=True):
     """
-    Calculate cell type annotation scores for each cluster.
-    The annotation score for each cell type in a cluster is calculated based on the 
-    sum of the product of the ranked scores and ubiquitousness scores, 
-    divided by the square root of the total number of marker genes for that cell type.
-    
+    Calculate cell type annotation scores for each cluster based on differential gene scores and cell type marker genes.
+
     Parameters
     ----------
-    cm_dict : dict
-        Dictionary containing the cell marker database. The keys are cell types,
-        and the values are dictionaries containing gene names as keys and ubiquitousness scores as values.
-    annotated_clusters : dict
-        Dictionary containing the ranked scores for each gene in each cluster.
+    cell_marker_dict : dict
+        A dictionary representing the cell marker database. Keys are cell types, and values are dictionaries
+        with gene names as keys and ubiquitousness scores as values.
+    cluster_gene_ranks : dict
+        A dictionary containing ranked gene scores for each gene in each cluster.
     min_hits : int, default 4
-        Minimum number of hits required to consider a cell type for annotation.
+        The minimum number of marker genes required to consider a cell type for annotation in a cluster.
+    verbose : bool, default True
+        If True, prints additional information about the gene overlap between the database and input data.
 
     Returns
     -------
     dict :
-        Dictionary containing annotation scores, number of hits, total marker genes, 
-        and the mean ubiquitousness index for each cell type in each cluster.
+        A dictionary with annotation scores, number of hits, total marker genes, and the average ubiquitousness
+        score for each cell type in each cluster.
     """
 
-    ct_dict = {}
-    data_genes = []
-    data_hits = []
-    db_genes = []
+    annotation_scores = {}
+    input_genes = set()
+    matched_genes = set()
+    database_genes = set(cell_marker_dict.keys())
 
-    for key in annotated_clusters.keys():
-        ct_dict[key] = {}
+    # Initialize cluster keys in annotation scores dictionary
+    for cluster in cluster_gene_ranks:
+        annotation_scores[cluster] = {}
 
-    for celltype in cm_dict.keys():
-        gene_count = len(cm_dict[celltype])
-        for c in annotated_clusters.keys():
-            count = 0
-            ranks = []
-            ub_scores = []
+    # Calculate scores for each cell type and cluster
+    for cell_type, markers in cell_marker_dict.items():
+        num_markers = len(markers)
 
-            for mgene in annotated_clusters[c].keys():
-                data_genes.append(mgene)
-                if mgene in cm_dict[celltype].keys():
-                    data_hits.append(mgene)
-                    gene_score, ub_score = annotated_clusters[c][mgene], cm_dict[celltype][mgene]
-                    gene_score = gene_score * ub_score
-                    ranks.append(gene_score)
-                    ub_scores.append(ub_score)
-                    count += 1
+        for cluster, genes in cluster_gene_ranks.items():
+            match_count = 0
+            rank_scores = []
+            ubiquity_scores = []
 
-            if count >= min_hits:
-                ub_mean = round(statistics.mean(ub_scores))
-                ct_dict[c][celltype.rstrip()] = [round(sum(ranks) / math.sqrt(gene_count)), count, gene_count, ub_mean]
+            for gene, rank_score in genes.items():
+                input_genes.add(gene)
 
-    for ct in cm_dict.keys():
-        for gene in cm_dict[ct].keys():
-            db_genes.append(gene)
+                if gene in markers:
+                    matched_genes.add(gene)
+                    ubiquity_score = markers[gene]
+                    weighted_score = rank_score * ubiquity_score
+                    rank_scores.append(weighted_score)
+                    ubiquity_scores.append(ubiquity_score)
+                    match_count += 1
 
-    data_genes = list(set(data_genes))
-    data_hits = list(set(data_hits))
-    db_genes = list(set(db_genes))
+            if match_count >= min_hits:
+                avg_ubiquity_score = round(statistics.mean(ubiquity_scores))
+                total_score = round(sum(rank_scores) / math.sqrt(num_markers))
+                annotation_scores[cluster][cell_type.rstrip()] = [total_score, match_count, num_markers, avg_ubiquity_score]
 
-    print(f"The database contains {len(db_genes)} different genes. \
-          \nThe input data contains {len(data_genes)} different genes. \
-          \nThe genes of the input data overlap with {len(data_hits)} genes in total, {round(len(data_hits) / len(db_genes) * 100)} percent.")
+    # Print summary if verbose is True
+    if verbose:
+        db_gene_count = len(database_genes)
+        input_gene_count = len(input_genes)
+        matched_gene_count = len(matched_genes)
+        overlap_percentage = round(matched_gene_count / db_gene_count * 100)
+        print(f"The database contains {db_gene_count} different genes. "
+              f"The input data contains {input_gene_count} different genes. "
+              f"The genes of the input data overlap with {matched_gene_count} genes in total, {overlap_percentage}%.")
 
-    return ct_dict
+    # Sort cell types by score and match count/total marker genes
+    for cluster in annotation_scores:
+        annotation_scores[cluster] = dict(sorted(annotation_scores[cluster].items(), 
+                                                 key=lambda item: (-item[1][0], -item[1][1]/item[1][2])))
 
 
-def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=False, min_hits=4):
+    return annotation_scores
+
+
+def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=False, min_hits=4, verbose=True):
     """
     Prepare database and clusters for upcoming ranking calculations.
 
@@ -500,6 +526,8 @@ def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=Fal
         Skip first line if header is True.
     min_hits : int, default 4
         Minimum number of hits required to consider a cell type for annotation.
+    verbose : bool, default True
+        Whether to print additional information.
 
     Returns
     -------
@@ -511,7 +539,7 @@ def get_cell_types(cluster_path, db_path, tissue="all", species="Hs", header=Fal
     db_dict = parse_marker_database(db_path, tissue=tissue, species=species, header=header)
     annotated_clusters = get_annotated_clusters(cluster_path=cluster_path)
 
-    return calc_ranks(db_dict, annotated_clusters, min_hits=min_hits)
+    return calc_ranks(db_dict, annotated_clusters, min_hits=min_hits, verbose=verbose)
 
 
 def get_annotated_clusters(cluster_path, show_duplicates=False):
@@ -523,8 +551,8 @@ def get_annotated_clusters(cluster_path, show_duplicates=False):
     ----------
     cluster_path : str
         The path to the folder containing the cluster files.
-    show_duplicates : bool, optional
-        Whether to show duplicate genes with positive scores. Default is False.
+    show_duplicates : bool, default False
+        Whether to show duplicate genes with positive scores.
 
     Returns
     -------
@@ -576,7 +604,7 @@ def get_annotated_clusters(cluster_path, show_duplicates=False):
     return annotated_clusters
 
 
-def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False, min_hits=4):
+def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False, min_hits=4, verbose=True):
     """
     Performs cell type identification, generate cell type assignment table
     and create ranks folder with files for further investigation (one per cluster).
@@ -598,13 +626,15 @@ def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", sp
         Skip first line if header is True.
     min_hits : int, default 4
         Minimum number of hits required to consider a cell type for annotation.
+    verbose : bool, default True
+        Whether to print additional information.
     """
 
     opath = output + "/ranks/"
     if not os.path.exists(opath):
         os.makedirs(opath)
 
-    ct_dict = get_cell_types(cluster_path, db_path, tissue, species=species, header=header, min_hits=min_hits)
+    ct_dict = get_cell_types(cluster_path, db_path, tissue, species=species, header=header, min_hits=min_hits, verbose=verbose)
     write_annotation(ct_dict, output)
 
 
@@ -621,121 +651,20 @@ def write_annotation(ct_dict, output):
         by the calc_ranks() method.
     output : string
         The path to the folder where the annotation file will be written.
-
     """
 
     with open(output + "/annotation.txt", "w") as c_file:
-        for dic in ct_dict.keys():
-            sorted_dict = dict(
-                sorted(ct_dict[dic].items(), key=lambda r: (r[1][0], r[1][1]), reverse=True))
-            with open(output + "/ranks/" + "cluster_" + dic, "w") as d_file:
-                for key in sorted_dict.keys():
-                    d_file.write(key)
-                    for value in sorted_dict[key]:
-                        d_file.write("\t" + str(value))
-                    d_file.write("\n")
-            if len(sorted_dict.keys()) > 0:
-                c_file.write(dic + "\t" + str(next(iter(sorted_dict))) + "\n")
+        for cluster in ct_dict.keys():
+            if len(ct_dict[cluster]) > 0:
+                highest_scored_cell_type = next(iter(ct_dict[cluster]))
+                c_file.write(f"{cluster}\t{highest_scored_cell_type}\n")
 
-
-def validate_settings(repo_path, adata, organism, rank_genes_column, genes_column, column, ensembl, col_to_search, search_terms):
-    """
-    Validates user settings including file paths, anndata object columns, and specified organism.
-
-    Parameters
-    ----------
-    repo_path : str
-        Path to the marker repository.
-    adata : anndata.AnnData
-        The loaded AnnData object.
-    organism : str or int
-        Organism name, taxon ID, or both. E.g., "mouse", 10090, or "mouse 10090".
-    rank_genes_column : str, default None
-        Column in .obs table where ranked genes are stored. None if no ranking performed yet.
-    genes_column : str, default None
-        Column in .var table where gene symbols or IDs are stored. None if index column already suits the need.
-    column : str
-        The column in .obs table of the clustering you want to annotate. E.g., "leiden" or "louvain".
-    ensembl : bool
-        True if the index of .var tables are Ensembl IDs, False otherwise.
-    col_to_search : str
-        Column to search in for marker list selection. None to search all columns.
-    search_terms : list of str
-        Search terms for marker list selection. "-" to exclude, "+" must contain.
-
-    Returns
-    -------
-    bool :
-        Returns True if all settings are valid, otherwise prints the errors and returns False.
-    """ 
-
-    errors = []
-
-    # Validate if repo_path exists
-    if not os.path.exists(repo_path):
-        errors.append(f"Repo path {repo_path} does not exist.")
-
-    if adata is None:
-        errors.append("No AnnData object provided.")
-        
-    # List of valid organisms and their tax IDs
-    get_whitelists(repo_path=repo_path)
-    valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
-
-    # Validate the organism
-    organism_str = str(organism).strip()
-    is_valid_organism = any(organism_str == valid_entry.split(" ")[0] or organism_str == valid_entry.split(" ")[1] or organism_str == valid_entry for valid_entry in valid_organisms)
-    
-    if not is_valid_organism:
-        formatted_valid_organisms = "\n  - " + "\n  - ".join(valid_organisms)
-        errors.append(f"Invalid organism or taxon ID {organism}.\nAvailable options:{formatted_valid_organisms}\n")
-
-    # Validate obs and var columns
-    if rank_genes_column and rank_genes_column not in adata.obs.columns:
-        formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
-        errors.append(f"Invalid rank_genes_column {rank_genes_column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
-
-    if genes_column and genes_column not in adata.var.columns:
-        formatted_var_columns = "\n  - " + "\n  - ".join(adata.var.columns)
-        errors.append(f"Invalid genes_column {genes_column}.\nAvailable columns in adata.var:{formatted_var_columns}\n")
-
-    if column and column not in adata.obs.columns:
-        formatted_obs_columns = "\n  - " + "\n  - ".join(adata.obs.columns)
-        errors.append(f"Invalid column {column}.\nAvailable columns in adata.obs:{formatted_obs_columns}\n")
-
-    # Validate col_to_search using the columns from the combined DataFrames in the repo
-    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
-    if col_to_search and col_to_search not in combined_df_columns:
-        formatted_combined_df_columns = "\n  - " + "\n  - ".join(combined_df_columns)
-        errors.append(f"Invalid col_to_search {col_to_search}.\nAvailable columns:{formatted_combined_df_columns}\n")
-
-
-    if errors:
-        print("Validation failed due to the following errors:")
-        print("-" * 40)
-        for i, error in enumerate(errors, 1):
-            print(f"{i}. {error}")
-        print("-" * 40)
-
-        return False
-    else:
-        print("All settings are valid.")
-        print(f"Summary of settings:")
-        print("-" * 40)
-        print(f"  Repo path: {repo_path}")
-        print(f"  Organism: {organism}")
-        print(f"  Rank genes column: {rank_genes_column}")
-        print(f"  Genes column: {genes_column}")
-        print(f"  Clustering column: {column}")
-        print(f"  Ensembl IDs: {ensembl}")
-        print(f"  Column to search: {col_to_search}")
-        print(f"  Search terms: {search_terms}")
-        print("-" * 40)
-
-        return True
+            with open(f"{output}/ranks/cluster_{cluster}", "w") as d_file:
+                for cell_type, values in ct_dict[cluster].items():
+                    d_file.write(f"{cell_type}\t" + "\t".join(map(str, values)) + "\n")
     
 
-def list_possible_settings(repo_path, adata):
+def list_possible_settings(repo_path, lists_path=None, adata=None):
     """
     Lists all possible settings based on the repo and AnnData object.
 
@@ -743,7 +672,10 @@ def list_possible_settings(repo_path, adata):
     ----------
     repo_path : str
         Path to the marker repository.
-    adata : anndata.AnnData
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.        
+    adata : anndata.AnnData, default None
         The loaded AnnData object.
     """
 
@@ -753,24 +685,25 @@ def list_possible_settings(repo_path, adata):
 
     print("Possible Settings:")
     print("-" * 40)
+
+    combined_df_columns = list(combine_dfs(repo_path=repo_path, lists_path=lists_path).columns)
+    print("1. Available columns to search in MarkerRepo:")
+    for col in combined_df_columns:
+        print(f"  - {col}")
     
     valid_organisms = read_whitelist("organism", repo_path=repo_path)['whitelist']
-    print("1. Possible Organisms or Taxon IDs:")
+    print("\n2. Possible organisms or taxon IDs:")
     for org in valid_organisms:
         print(f"  - {org}")
 
-    print("\n2. Available Columns in adata.obs:")
-    for col in adata.obs.columns:
-        print(f"  - {col}")
+    if adata:
+        print("\n3. Available columns in adata.obs:")
+        for col in adata.obs.columns:
+            print(f"  - {col}")
 
-    print("\n3. Available Columns in adata.var:")
-    for col in adata.var.columns:
-        print(f"  - {col}")
-
-    combined_df_columns = list(combine_dfs(repo_path=repo_path).columns)
-    print("\n4. Available Columns to Search in Marker Repository:")
-    for col in combined_df_columns:
-        print(f"  - {col}")
+        print("\n4. Available columns in adata.var:")
+        for col in adata.var.columns:
+            print(f"  - {col}")
     
     print("-" * 40)
 
@@ -814,9 +747,9 @@ def export_markers_from_anndata(adata, n=50, rank_genes_column='rank_genes_group
     return path
 
 
-def compare_cell_types(adata, column, marker_lists):
+def compare_cell_types(adata, column, obs_columns):
     """
-    Group the observation DataFrame of an anndata object by a specific column and include relevant cell types from given marker lists.
+    Group the observation DataFrame of an anndata object by a specific column and include relevant cell types from given obs columns.
 
     Parameters
     ----------
@@ -824,23 +757,94 @@ def compare_cell_types(adata, column, marker_lists):
         The anndata object containing the .obs DataFrame.
     column : str
         The column by which to group the .obs DataFrame.
-    marker_lists : list of str
-        List of paths to marker list files.
+    obs_columns : list of str
+        List of column names in the .obs DataFrame to keep for the comparison.
 
     Returns
     -------
     DataFrame :
-        A grouped DataFrame based on the specified column, incorporating relevant cell types from the marker lists.
+        A grouped DataFrame based on the specified column, incorporating relevant cell types from the obs columns.
     """
     
+    if column in obs_columns:
+        obs_columns.remove(column)
+
     obs_df = adata.obs
-    columns_to_keep = [column]
+    columns_to_keep = [column] + obs_columns  # Include the grouping column and additional columns from obs_columns
     
-    for marker_list in marker_lists:
-        name = marker_list.split("/")[-1]
-        columns_to_keep.append(f"cell_types_{name}")
-        
     filtered_obs_df = obs_df[columns_to_keep]
     grouped_obs_df = filtered_obs_df.groupby(column).agg('first')
     
     return grouped_obs_df
+
+
+def reformat_marker_list(input_path, suffix="_SCSA"):
+    """
+    Reformat a TSV marker list for compatibility with SCSA.
+
+    Parameters
+    ----------
+    input_path : str
+        Path to the input TSV marker list.
+    suffix : str, "_SCSA"
+        Suffix to append to output file name.
+
+    Returns
+    -------
+    str
+        Path where the reformatted marker list is saved.
+    """
+
+    df = pd.read_csv(input_path, header=None, sep='\t')
+    df = df.iloc[:, :2]
+    df.columns = ["marker", "cell_name"]
+    output_path = f"{input_path}{suffix}"
+    df.to_csv(output_path, index=False, sep='\t')
+
+    return output_path
+
+
+def update_adata_with_markers(adata, list_name, df, ignore_overwrite=False):
+    """
+    Updates the provided AnnData object (adata) with marker lists associated with a given file name.
+
+    This function adds a new entry to the 'MarkerRepo' key in the .uns attribute of the AnnData object. 
+    It creates a dictionary under 'MarkerRepo' if it does not exist and adds the marker lists from the 
+    DataFrame 'df' under the specified 'list_name'. If 'list_name' already exists in 'MarkerRepo', 
+    and ignore_overwrite is False, the user is repeatedly prompted to decide whether to overwrite, update, or leave unchanged 
+    until a valid response is given. If ignore_overwrite is True, the existing entry is overwritten without prompt.
+
+    Parameters
+    ----------
+    adata : AnnData
+        The AnnData object to be updated.
+    list_name : str
+        The name under which the marker lists will be stored in the AnnData object.
+    df : DataFrame
+        The DataFrame containing the marker lists. The index of this DataFrame should be the list of markers 
+        that will be stored in the AnnData object.
+    ignore_overwrite : bool
+        If set to True, any existing entry with the same list_name is overwritten without prompt.
+    """
+
+    if "MarkerRepo" not in adata.uns:
+        adata.uns["MarkerRepo"] = {"marker_lists": {}}
+    
+    while list_name in adata.uns["MarkerRepo"]["marker_lists"] and not ignore_overwrite:
+        response = input(f"'{list_name}' already exists. Overwrite (O), Update (U), or Leave unchanged (L)? [O/U/L]: ").strip().upper()
+        if response == 'O':
+            adata.uns["MarkerRepo"]["marker_lists"][list_name] = df.index.astype(str).tolist()
+            break
+        elif response == 'U':
+            existing_list = set(adata.uns["MarkerRepo"]["marker_lists"][list_name])
+            new_list = set(df.index.astype(str).tolist())
+            combined_list = list(existing_list.union(new_list))
+            adata.uns["MarkerRepo"]["marker_lists"][list_name] = combined_list
+        elif response == 'L':
+            print("No changes made.")
+            break
+        else:
+            print("Invalid response. Please enter O, U, or L.")
+
+    if ignore_overwrite or list_name not in adata.uns["MarkerRepo"]["marker_lists"]:
+        adata.uns["MarkerRepo"]["marker_lists"][list_name] = df.index.astype(str).tolist()

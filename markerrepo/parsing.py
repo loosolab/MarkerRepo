@@ -106,7 +106,7 @@ def process_file_markers(file_path):
         return markers_data
 
 
-def get_marker_lists(repo_path=".", parallel=True):
+def get_marker_lists(repo_path=".", lists_path=None, parallel=True):
     """
     Get the marker list from the Marker Repo as DataFrame.
 
@@ -114,6 +114,9 @@ def get_marker_lists(repo_path=".", parallel=True):
     ----------
     repo_path : str, default "."
         The path of the Marker Repo.
+    lists_path : str, default None
+        The path of the folder which contains the marker lists (YAML files).
+        If None, the lists folder of the repo_path is used.
     parallel : bool, default True
         If True, uses parallel processing to improve performance.
 
@@ -123,7 +126,18 @@ def get_marker_lists(repo_path=".", parallel=True):
         DataFrame containing all markers and their designations.
     """
 
-    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(f"{repo_path}/lists") for file in files if file.endswith(".yaml")]
+    if not lists_path:
+        lists_path = f"{repo_path}/lists"
+
+    # Check if the provided repository path exists
+    if not os.path.exists(lists_path):
+        raise FileNotFoundError(f"The specified path '{lists_path}' does not exist.")
+
+    file_paths = [os.path.join(root, file) for root, dirs, files in os.walk(lists_path) for file in files if file.endswith(".yaml")]
+
+    # Check if there are any YAML files in the path
+    if not file_paths:
+        raise FileNotFoundError(f"No YAML files found in the path '{lists_path}'.")
 
     if parallel:
         # Use a ProcessPoolExecutor to read and parse files in parallel
@@ -232,3 +246,30 @@ def dataframe_to_dict(df):
             result[key] = [value]
 
     return result
+
+
+def filter_strings_by_prefix(strings, valid_prefixes = ["leiden", "louvain", "lovain", "kmeans"]):
+    """
+    Filters a list of strings by a list of prefixes.
+
+    Parameters
+    ----------
+    strings : list of str
+        The list of strings that should be filtered.
+    valid_prefixes : list of str, default ["leiden", "louvain", "lovain", "kmeans"]
+        The list of prefixes that should be used for filtering.
+
+    Returns
+    -------
+    list of str :
+        The list of strings that start with one of the valid prefixes.
+    """
+
+    filtered_strings = []
+
+    for string in strings:
+        if any(string.lower().startswith(prefix) for prefix in valid_prefixes):
+            filtered_strings.append(string)
+
+    return filtered_strings
+
