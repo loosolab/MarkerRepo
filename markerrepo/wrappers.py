@@ -1,9 +1,10 @@
 from .scoring import compare_marker_lists, update_scores
 from .homology import check_organisms, download_homologene_data, fetch_homologs, get_dataset_names, get_supported_biomart_organisms, get_supported_taxonomy_ids, transfer_markers_biomart, transfer_markers_homologene
-from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename, update_organism
+from .marker_repo import combine_lists, export_marker_list, guided_search, select, get_selected_lists, search_df, combine_dfs, get_valid_filename, update_organism, transform_marker_list, get_uid
 from .homology import get_biomart_defaults
 from .utils import read_whitelist, get_whitelists
 from .annotation import annot_ct, show_tables, reformat_marker_list, compare_cell_types, update_adata_with_markers
+from .generate_metafile import generate_file
 import scanpy as sc
 from IPython.display import display
 import os
@@ -321,6 +322,10 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         rank_genes_column = rank_genes(adata, clustering_column, show_plots=show_plots, verbose=verbose)
 
     annotation_columns = [] if reference_obs is None else [reference_obs]        
+
+    if show_plots:
+        if 'X_umap' in adata.obsm:
+            sc.pl.umap(adata, color=clustering_column, wspace=0.5, cmap=None)
 
     for marker_list in marker_lists:
         name = marker_list.split('/')[-1]
@@ -961,3 +966,52 @@ def validate_settings(cml_parameters=None, repo_path=None, lists_path=None, adat
         print("-" * 40)
 
     return True
+
+
+def create_yaml_list(list_path, list_name=None, organism=None, marker_type=None, marker_col=0, info_col=1, output_path=None, repo_path="."):
+    """
+    Creates a YAML file containing the marker list.
+
+    Parameters
+    ----------
+    list_path : str
+        The path of the marker list (one or two tab-separated columns).
+    list_name : str
+        The name of the marker list.
+    organism : str, default None
+        The organism of the marker list.
+    marker_type : str, default None
+        The type of the marker list (Genes or Genomic regions).
+    marker_col : str, default 0
+        The column number where the markers are stored.
+    info_col : str, default 1
+        The column number where the additional information is stored (e.g. cell type).
+    repo_path : str, default "."
+        The path of the Marker Repo.
+
+    Returns
+    -------
+    str :
+        The absolute path of the created YAML file.
+    """
+
+    if not os.path.exists(list_path):
+        raise FileNotFoundError(f"The specified marker list path '{list_path}' does not exist.")
+
+    if not list_name:
+        list_name = list_path.split('/')[-1].split('.')[0]
+
+    if not organism:
+        organism = select(key="organism")
+
+    if not marker_type:
+        marker_type = select(key="marker_type")
+
+    if not output_path:
+        output_path = "."
+
+    marker_list = transform_marker_list(list_path, info_col, marker_col, marker_type, organism)
+    UID = get_uid()
+    yaml_path = generate_file(UID, list_name, False, marker_list, organism, marker_type, repo_path=repo_path, output_path=output_path)
+
+    return yaml_path
