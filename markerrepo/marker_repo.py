@@ -108,7 +108,7 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
     return df
 
 
-def guided_search(repo_path=".", lists_path=None, df=None, out="metadata"):
+def guided_search(repo_path=".", lists_path=None, df=None, out="metadata", exact=False, case_sensitive=False):
     """
     An interactive function that guides the user through the process of searching the DataFrame.
 
@@ -124,6 +124,10 @@ def guided_search(repo_path=".", lists_path=None, df=None, out="metadata"):
     out : str, default "metadata"
         Determines the output of the function. If 'metadata', the function returns the filtered DataFrame. If
         'marker_list', the function returns a combined list of markers.
+    exact : bool, default False
+        If True, the search will look for exact matches. If False, the search will look for substrings.
+    case_sensitive : bool, default False
+        If True, the search will be case-sensitive. If False, the search will be case-insensitive.
 
     Returns
     -------
@@ -177,43 +181,53 @@ def guided_search(repo_path=".", lists_path=None, df=None, out="metadata"):
                 print("Invalid column identifier. Please try again.")
                 continue
 
-            unique_entries = input("Do you want to see all unique entries in this column? (yes/no) ")
-            if unique_entries.lower() == 'yes':
-                if df_copy[col_to_search].dtype == 'object':
-                    unique_values = df_copy[col_to_search].explode().unique()
-                    print("Unique entries:")
-                    for val in unique_values:
-                        print(val)
+            while True:
+                unique_entries = input("Do you want to see all unique entries in this column? (yes/no) ")
+                if unique_entries.lower() in ['yes', 'no']:
+                    if unique_entries.lower() == 'yes':
+                        if df_copy[col_to_search].dtype == 'object':
+                            unique_values = df_copy[col_to_search].explode().unique()
+                            print("Unique entries:")
+                            for val in unique_values:
+                                print(val)
+                        else:
+                            print(df_copy[col_to_search].unique())
+                        break
+                    else:
+                        break
                 else:
-                    print(df_copy[col_to_search].unique())
+                    print("Please answer with 'yes' or 'no'.")
 
         search_terms = input("Enter search terms (separated by commas, '-' for negative search): ")
         search_terms = [term.strip() for term in search_terms.split(",")]
 
-        exact = input("Perform an exact search? (yes/no): ")
-        exact = exact.lower() == 'yes'
-
-        case_sensitive = input("Consider case sensitivity? (yes/no): ")
-        case_sensitive = case_sensitive.lower() == 'yes'
-
         df_copy = search_df(df_copy, search_terms, col_to_search=col_to_search, case_sensitive=case_sensitive, exact=exact)
         print(f"Number of results: {len(df_copy)}")
 
-        see_results = input("Do you want to see the results? (yes/no): ")
-        if see_results.lower() == 'yes':
-            display(df_copy)
+        while True:
+            see_results = input("Do you want to see the results? (yes/no): ")
+            if see_results.lower() == 'yes':
+                display(df_copy)
+                break
+            elif see_results.lower() == 'no':
+                break
+            else:
+                print("Please answer with 'yes' or 'no'.")
 
-        continue_search = input("Do you want to continue searching? (yes/no): ")
-        if continue_search.lower() != 'yes':
-            break
-    
-    if out == "marker_list":
-        if repo_path is None:
-            raise ValueError("repo_path must be provided when out='marker_list'")
-        uids = [int(idx) for idx in df_copy.index]
-        return combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
+        while True:
+            continue_search = input("Do you want to continue searching? (yes/no): ")
+            if continue_search.lower() in ['yes', 'no']:
+                if continue_search.lower() == 'no':
+                    if out == "marker_list":
+                        if repo_path is None:
+                            raise ValueError("repo_path must be provided when out='marker_list'")
+                        uids = [int(idx) for idx in df_copy.index]
+                        return combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
 
-    return df_copy
+                    return df_copy
+                break
+            else:
+                print("Please answer with 'yes' or 'no'.")
 
 
 def get_db(repo_path=".", lists_path=None, parallel=True):
