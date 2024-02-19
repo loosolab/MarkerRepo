@@ -999,10 +999,12 @@ def create_yaml_list(list_path, list_name=None, organism=None, marker_type=None,
         raise FileNotFoundError(f"The specified marker list path '{list_path}' does not exist.")
 
     if not list_name:
-        list_name = list_path.split('/')[-1].split('.')[0]
+        list_name = input("Please enter the name of the marker list: ")
 
     if not organism:
         organism = select(key="organism")
+    else:
+        organism = update_organism(organism, repo_path)
 
     if not marker_type:
         marker_type = select(key="marker_type")

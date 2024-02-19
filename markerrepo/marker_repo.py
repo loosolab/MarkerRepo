@@ -68,7 +68,6 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
     for col, terms in column_specific_terms.items():
         try:
             if col not in df.columns:
-                # Warnung ausgeben und Spalte überspringen
                 print(f"Warning: The specified column '{col}' does not exist in the DataFrame. Skipping this column.")
                 continue
 
