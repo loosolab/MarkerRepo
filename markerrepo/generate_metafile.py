@@ -31,7 +31,7 @@ class WhitelistCompleter:
 
 # ---------------------------------GENERATE-------------------------------------
 
-def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_type, repo_path="."):
+def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_type, repo_path=".", output_path=None):
     """
     This function is used to generate metadata by calling functions to compute
     user input. It writes the metadata into a yaml file.
@@ -50,8 +50,10 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
         The organism of the marker list.
     marker_type : str
         The type of the marker list (genes or regions)
-    path : str, default "./lists"    
-
+    repo_path : str, default "."
+        The path to the MarkerRepo.
+    output_path : str, default "./lists"    
+        The path to the output directory.
     Returns
     --------
     pd.DataFrame :
@@ -63,6 +65,14 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
 
     file_name = f'{name}_{input_id}.yaml'
 
+    # read in structure file
+    key_yaml = read_in_yaml(f"{repo_path}/keys.yaml", marker_list=False)
+
+    if not output_path:
+        output_path = f"{repo_path}"
+    else:
+        repo_path = output_path
+
     # test if list already exists
     if os.path.exists(
             os.path.join(repo_path, file_name)) or os.path.exists(
@@ -72,9 +82,6 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
                               f'\nDo you want to overwrite the file?')
         if not overwrite:
             sys.exit(f'Program terminated.')
-
-    # read in structure file
-    key_yaml = read_in_yaml(f"{repo_path}/keys.yaml", marker_list=False)
 
     # create metadata dictionary and fill it with the given organism and marker type
     org_dict = {'organism_name': organism.split()[0], 'taxonomy_id': organism.split()[1]}
@@ -128,7 +135,11 @@ def generate_file(input_id, name, mandatory_mode, marker_list, organism, marker_
     print(f'\n\n')
     print(f'{"".center(size, "-")}\n')
 
-    list_path = os.path.join(f"{repo_path}/lists", file_name)
+    if not output_path:
+        list_path = os.path.join(f"{repo_path}/lists", file_name)
+    else:
+        list_path = os.path.join(output_path, file_name)
+        
     list_path = os.path.abspath(list_path)
 
     save_as_yaml(result_dict, list_path)
