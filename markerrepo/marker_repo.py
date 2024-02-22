@@ -968,7 +968,7 @@ def transform_marker_list(LIST_PATH, info_col, marker_col, MARKER_TYPE, ORGANISM
     marker_col : int
         The column number in the list that contains markers.
     MARKER_TYPE : str
-        The type of markers, e.g., "Genes".
+        The type of markers, e.g., "Genes" or "Genomic regions".
     ORGANISM : str
         The organism name to be used for fetching the gene dictionary.
 
@@ -978,12 +978,12 @@ def transform_marker_list(LIST_PATH, info_col, marker_col, MARKER_TYPE, ORGANISM
         A list of dictionaries, each containing a marker name and its corresponding markers.
     """
 
-    markers = get_list(LIST_PATH, info_col=info_col, marker_col=marker_col).drop_duplicates()
-    markers['Marker'] = markers['Marker'].str.upper()
+    markers = get_list(LIST_PATH, info_col=info_col, marker_col=marker_col, marker_type=MARKER_TYPE).drop_duplicates()
     print("All markers of provided list:")
     display(markers)
 
     if MARKER_TYPE == "Genes":
+        markers['Marker'] = markers['Marker'].str.upper()
         gene_dict = get_gene_dict(ORGANISM)
         markers_removed = markers[~markers['Marker'].isin(gene_dict.keys())]
         print("Removed markers:")
@@ -995,8 +995,11 @@ def transform_marker_list(LIST_PATH, info_col, marker_col, MARKER_TYPE, ORGANISM
         display(markers_extended)
 
         marker_dict = dataframe_to_dict(markers_extended)
-    else:
+    elif MARKER_TYPE == "Genomic regions":
+        # genomic regions support
         marker_dict = dataframe_to_dict(markers)
+    else:
+        raise ValueError(f"Unsupported marker type: {MARKER_TYPE}")
     
     marker_list = []
     for name in marker_dict.keys():
