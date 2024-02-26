@@ -840,6 +840,7 @@ def update_adata_with_markers(adata, list_name, df, ignore_overwrite=False):
             new_list = set(df.index.astype(str).tolist())
             combined_list = list(existing_list.union(new_list))
             adata.uns["MarkerRepo"]["marker_lists"][list_name] = combined_list
+            break
         elif response == 'L':
             print("No changes made.")
             break
