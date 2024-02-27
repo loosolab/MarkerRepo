@@ -217,7 +217,7 @@ def get_list(path, info_col=1, marker_col=0, marker_type="Genes"):
             df = pd.read_csv(path, sep='\t', names=[headers[0]])
             df[headers[1]] = info_col
 
-    if marker_type == "Genomic regions":
+    elif marker_type == "Genomic regions":
         rows = []
 
         with open(path, 'r') as file:
@@ -225,11 +225,13 @@ def get_list(path, info_col=1, marker_col=0, marker_type="Genes"):
                 parts = line.strip().split('\t')
                 # Assuming the format is CHR START STOP INFO
                 if info_col == 1 and marker_col == 0:
-                    marker = '\t'.join(parts[:-1]) 
+                    # marker = f"{parts[0]}:{parts[1]}-{parts[2]}"
+                    marker = parts[0]
                     info = parts[-1]
                 # Assuming the format is INFO CHR START STOP
                 elif info_col == 0 and marker_col == 1:
-                    marker = '\t'.join(parts[1:]) 
+                    # marker = f"{parts[1]}:{parts[2]}-{parts[3]}"
+                    marker = parts[1]
                     info = parts[0]
                 else:
                     raise ValueError("Invalid column configuration. Please set info_col and marker_col correctly.")

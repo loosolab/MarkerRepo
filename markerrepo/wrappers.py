@@ -14,6 +14,8 @@ import io
 import logging
 import warnings
 import inspect
+import numpy as np
+import episcanpy as epi
 
 try:
     from sctoolbox.tools import celltype_annotation
@@ -257,7 +259,7 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=
 def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", 
                    rank_genes_column=None, clustering_column=None, reference_obs=None, keep_all=False, 
                    verbose=False, show_ct_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False,
-                   celltype_column_name=None):
+                   celltype_column_name=None, omic="RNA"):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. 
 
@@ -296,6 +298,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         If True, the function will not ask for confirmation before overwriting existing files.
     celltype_column_name : str, default None
         The name of the selected cell type annotation column. If None, all annotation columns will be kept.
+    omic : str, default "RNA"
+        The omic type of the AnnData object. E.g. "RNA", "ATAC"
     """
 
     if not marker_repo and not SCSA:
@@ -324,7 +328,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         raise ValueError(f"Reference annotation column '{reference_obs}' not found in adata.obs.")
     
     if not rank_genes_column:
-        rank_genes_column = rank_genes(adata, clustering_column, show_plots=show_plots, verbose=verbose)
+        rank_genes_column = rank_feature_groups(adata, clustering_column, show_plots=show_plots, verbose=verbose, omic=omic)
 
     annotation_columns = [] if reference_obs is None else [reference_obs]        
 
@@ -412,9 +416,9 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         adata.obs.drop(columns=columns_to_remove, inplace=True)
 
 
-def rank_genes(adata, clustering_column=None, show_plots=False, verbose=False):
+def rank_feature_groups(adata, clustering_column=None, show_plots=False, verbose=False, n=None, omic="RNA"):
     """
-    Rank genes for each cluster in the given AnnData object.
+    Rank features for each cluster in the given AnnData object.
 
     Parameters
     ----------
@@ -426,31 +430,42 @@ def rank_genes(adata, clustering_column=None, show_plots=False, verbose=False):
         If True, the function will show the plots of the ranking.
     verbose : bool, default False
         If True, the function will print additional information.
+    n : int, default None
+        The number of features that appear in the returned table. If None, all features will be returned.
 
     Returns
     -------
     str :
-        The name of the column in the .uns table which contains the rank genes scores.
+        The name of the column in the .uns table which contains the features and scores.
     """
+
+    if not n:
+        # Use 10 percent of the features of the adata
+        n = int(adata.n_vars * 0.1)
+
+    adata.uns['omic'] = omic
 
     if not clustering_column:
         clustering_column = select(whitelist=list(adata.obs.columns), heading="clustering column")
     
     sc.tl.dendrogram(adata, groupby=clustering_column)
 
-    if 'log1p' in adata.uns and 'base' in adata.uns['log1p']:
-        adata.uns['log1p']['base'] = None
-    rank_genes_column = f'rank_genes_groups_{clustering_column}'
+    if 'log1p' in adata.uns:
+        adata.uns['log1p']['base'] = np.e
+    else:
+        adata.uns['log1p'] = {'base': np.e}
+            
+    rank_genes_column = f'rank_feat_groups_{clustering_column}'
     if verbose:
-        print(f'Ranking genes groups for clusters using obs column {clustering_column}')
-        sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test')
+        print(f'Ranking feature groups for clusters using obs column {clustering_column}')
+        epi.tl.rank_features(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test', n_features=n, omic=omic)
         if show_plots:
-            sc.pl.rank_genes_groups_matrixplot(adata, standard_scale='var', n_genes=10, key=rank_genes_column, show=True)
+            epi.pl.rank_feat_groups_matrixplot(adata, n_features=10, key=rank_genes_column, show=True)
     else:
         with suppress_output():
-            sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test')
+            epi.tl.rank_features(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test', n_features=n, omic=omic)
             if show_plots:
-                sc.pl.rank_genes_groups_matrixplot(adata, standard_scale='var', n_genes=10, key=rank_genes_column, show=True)
+                epi.pl.rank_feat_groups_matrixplot(adata, n_features=10, key=rank_genes_column, show=True)
 
     return rank_genes_column
 
@@ -1026,3 +1041,47 @@ def create_yaml_list(list_path, list_name=None, organism=None, marker_type=None,
     yaml_path = generate_file(UID, list_name, False, marker_list, organism, marker_type, repo_path=repo_path, output_path=output_path)
 
     return yaml_path
+
+
+def export_markers_from_anndata(adata, n=50, rank_genes_column='rank_genes_groups', file_name='ranked_markers', omic="RNA"):
+    """
+    Export the top n marker genes per cluster from an anndata object's ranked genes groups.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The anndata object containing the ranked genes.
+    n : int, default: 50
+        The number of top genes per cluster to export.
+    rank_genes_column : str, default: 'rank_genes_groups'
+        The key/column name where the ranked genes are stored in the anndata object.
+    file_name : str, default: 'ranked_markers'
+        The file name to save the exported marker list.
+    omic : str, default: "RNA"
+        The omic type of the anndata object.
+
+    Returns
+    -------
+    str :
+        The path where the marker list is saved.
+    """
+
+    if not rank_genes_column in adata.uns.keys() or not rank_genes_column:
+        rank_genes_column = rank_feature_groups(adata, show_plots=True, omic=omic)
+
+    df = sc.get.rank_genes_groups_df(adata, group=None, key=rank_genes_column)
+    df_sorted = df.sort_values(by=['group', 'scores'], ascending=[True, False])
+    df_sliced = df_sorted.groupby('group').head(n)
+
+    marker_gene_df = df_sliced[['names', 'group']]
+
+    # Display the top row of each unique group
+    top_rows = df_sliced.groupby('group').first()
+    top_rows.rename(columns={"names": "Marker gene", "scores": "Score"}, inplace=True)
+    top_rows.index.name = "Cell type"
+    top_rows_subset = top_rows[["Marker gene", "Score"]]
+    display(top_rows_subset)
+
+    path = export_marker_list(marker_gene_df, file_name=file_name)
+
+    return path
