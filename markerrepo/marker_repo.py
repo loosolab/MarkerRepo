@@ -13,9 +13,10 @@ import math
 import re
 import time
 import random
+import warnings
 
 
-def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path=".", lists_path=None, column_specific_terms=None):
+def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path=".", lists_path=None, column_specific_terms=None, suffix=None):
     """
     This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
     the function either returns the filtered DataFrame or a combined list of markers.
@@ -44,6 +45,8 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
         If none, the lists folder of the repo_path is used.
     column_specific_terms : dict, default None
         A dictionary with column names as keys and lists of search terms as values. If provided, 'col_to_search' and 'search_terms' are ignored.
+    suffix : str, default None
+        The key of the metadata section whose value should be appended to the marker names.
 
     Returns
     -------
@@ -101,14 +104,14 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
         if repo_path is None:
             raise ValueError("repo_path must be provided when out='marker_list'")
         uids = [int(idx) for idx in df.index]
-        return combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
+        return combine_lists(uids, repo_path=repo_path, lists_path=lists_path, suffix=suffix)
     
     df.set_index("ID", inplace=True)
 
     return df
 
 
-def guided_search(repo_path=".", lists_path=None, df=None, out="metadata", exact=False, case_sensitive=False):
+def guided_search(repo_path=".", lists_path=None, df=None, out="metadata", exact=False, case_sensitive=False, suffix=None):
     """
     An interactive function that guides the user through the process of searching the DataFrame.
 
@@ -128,6 +131,8 @@ def guided_search(repo_path=".", lists_path=None, df=None, out="metadata", exact
         If True, the search will look for exact matches. If False, the search will look for substrings.
     case_sensitive : bool, default False
         If True, the search will be case-sensitive. If False, the search will be case-insensitive.
+    suffix : str, default None
+        The key of the metadata section whose value should be appended to the marker names.
 
     Returns
     -------
@@ -201,7 +206,7 @@ def guided_search(repo_path=".", lists_path=None, df=None, out="metadata", exact
         search_terms = input("Enter search terms (separated by commas, '-' for negative search): ")
         search_terms = [term.strip() for term in search_terms.split(",")]
 
-        df_copy = search_df(df_copy, search_terms, col_to_search=col_to_search, case_sensitive=case_sensitive, exact=exact)
+        df_copy = search_df(df_copy, search_terms, col_to_search=col_to_search, case_sensitive=case_sensitive, exact=exact, suffix=suffix)
         print(f"Number of results: {len(df_copy)}")
 
         while True:
@@ -222,7 +227,7 @@ def guided_search(repo_path=".", lists_path=None, df=None, out="metadata", exact
                         if repo_path is None:
                             raise ValueError("repo_path must be provided when out='marker_list'")
                         uids = [int(idx) for idx in df_copy.index]
-                        return combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
+                        return combine_lists(uids, repo_path=repo_path, lists_path=lists_path, suffix=suffix)
 
                     return df_copy
                 break
@@ -334,18 +339,45 @@ def combine_dfs(repo_path=".", lists_path=None, parallel=True, preprocessed=Fals
     return df_combined
 
 
-def get_marker_list(file_path):
+def find_leaf_keys(dictionary, prefix=''):
     """
-    Reads a YAML file containing a section named "marker_list". The "marker_list" section consists of a list,
-    where each element contains the keys "name" and "markers". The key "name" contains a string, and the key
-    "markers" contains a list of strings. The function returns a DataFrame with two columns: "Marker" and "Info".
-    The "Marker" column contains all elements of the "markers" key values, and the "Info" column contains the
-    corresponding "name" key values.
+    Find all leaf keys in a nested dictionary.
+    
+    Parameters
+    ----------
+    dictionary : dict
+        The dictionary to search through.
+    prefix : str
+        The prefix for the keys, used for nested dictionaries.
+        
+    Returns
+    -------
+    dict
+        A dictionary with leaf keys (including their path if nested) and their values.
+    """
+
+    leaves = {}
+    for key, value in dictionary.items():
+        full_key = f"{prefix}.{key}" if prefix else key
+        if isinstance(value, dict):
+            leaves.update(find_leaf_keys(value, full_key))
+        else:
+            leaves[full_key] = value
+
+    return leaves
+
+
+def get_marker_list(file_path, suffix=None):
+    """
+    Reads a YAML file containing a "marker_list" section and optionally appends a leaf key value from the metadata section to the "Info" column. 
+    Warns if the suffix is provided but not a leaf key in the metadata.
 
     Parameters
     ----------
     file_path : str
         The path to the input YAML file.
+    suffix : str, optional
+        The leaf key of the metadata section whose value should be appended to the "name".
 
     Returns
     -------
@@ -355,12 +387,22 @@ def get_marker_list(file_path):
 
     with open(file_path, 'r') as file:
         yaml_data = yaml.safe_load(file)
-
+    
+    
+    metadata_suffix = ""
+    if suffix:
+        # Find all leaf keys in metadata
+        leaf_keys = find_leaf_keys(yaml_data.get('metadata', {}))
+        if suffix in leaf_keys:
+            metadata_suffix = "_" + str(leaf_keys[suffix])
+        else:
+            warnings.warn(f"Suffix '{suffix}' not found as a leaf key in metadata.", UserWarning)
+    
     marker_list = yaml_data['marker_list']
-
+    
     marker_data = []
     for item in marker_list:
-        name = item['name']
+        name = item['name'] + metadata_suffix
         markers = item['markers']
         for marker in markers:
             marker_data.append({"Marker": marker, "Info": name})
@@ -368,7 +410,6 @@ def get_marker_list(file_path):
     df = pd.DataFrame(marker_data)
 
     return df
-
 
 def export_marker_list(df, path="./exported_lists", file_name=None, header=False, marker_id=None):
     """
@@ -461,7 +502,7 @@ def get_uid_paths(uids, repo_path=".", lists_path=None):
     return matching_files
 
 
-def combine_lists(uids, repo_path=".", lists_path=None):
+def combine_lists(uids, repo_path=".", lists_path=None, suffix=None):
     """
     Combine multiple lists to one custom list.
 
@@ -474,6 +515,8 @@ def combine_lists(uids, repo_path=".", lists_path=None):
     lists_path : str, default None
         The path of the folder which contains the marker lists (YAML files).
         If None, the lists folder of the repo_path is used.
+    suffix : str, default None
+        The key of the metadata section whose value should be appended to the marker names.
 
     Returns
     --------
@@ -484,7 +527,7 @@ def combine_lists(uids, repo_path=".", lists_path=None):
     # Read lists which are going to be combined
     dfs = []
     for file in get_uid_paths(uids, repo_path=repo_path, lists_path=lists_path):
-        dfs.append(get_marker_list(file))
+        dfs.append(get_marker_list(file, suffix=suffix))
 
     if not dfs:
         print("No lists found.")
@@ -815,7 +858,7 @@ def get_valid_filename(prompt="Enter file name or path: "):
         return file_name
 
 
-def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", lists_path=None, case_sensitive=False, exact=False, order=["Info", "Marker"]):
+def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", lists_path=None, case_sensitive=False, exact=False, order=["Info", "Marker"], suffix=None):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
 
@@ -837,6 +880,8 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", lists_pat
         If True, the function will search for exact matches of the keywords. If False, the function will search for the keywords as substrings.
     order : list of str, default ["Info", "Marker"]
         The order of the columns in the resulting DataFrame.
+    suffix : str, default None
+        The key of the metadata section whose value should be appended to the marker names.
         
     Returns
     --------
@@ -846,7 +891,7 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", lists_pat
 
     if keywords:
         db = combine_dfs(repo_path=repo_path, lists_path=lists_path)
-        df = search_df(db, keywords, case_sensitive=case_sensitive, exact=exact)
+        df = search_df(db, keywords, case_sensitive=case_sensitive, exact=exact, suffix=suffix)
         if df.empty:
             raise Exception(
                         f"No search results available!")
@@ -859,7 +904,7 @@ def get_selected_lists(keywords=None, metadata_df=None, repo_path=".", lists_pat
 
     # Get UIDs and combine lists
     uids = [int(idx) for idx in df.index]
-    combined_df = combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
+    combined_df = combine_lists(uids, repo_path=repo_path, lists_path=lists_path, suffix=suffix)
 
     # Drop duplicates, keep one marker only, rearrange column order
     markers_filtered = combined_df.drop_duplicates()
@@ -968,7 +1013,7 @@ def transform_marker_list(LIST_PATH, info_col, marker_col, MARKER_TYPE, ORGANISM
     marker_col : int
         The column number in the list that contains markers.
     MARKER_TYPE : str
-        The type of markers, e.g., "Genes".
+        The type of markers, e.g., "Genes" or "Genomic regions".
     ORGANISM : str
         The organism name to be used for fetching the gene dictionary.
 
@@ -978,12 +1023,12 @@ def transform_marker_list(LIST_PATH, info_col, marker_col, MARKER_TYPE, ORGANISM
         A list of dictionaries, each containing a marker name and its corresponding markers.
     """
 
-    markers = get_list(LIST_PATH, info_col=info_col, marker_col=marker_col).drop_duplicates()
-    markers['Marker'] = markers['Marker'].str.upper()
+    markers = get_list(LIST_PATH, info_col=info_col, marker_col=marker_col, marker_type=MARKER_TYPE).drop_duplicates()
     print("All markers of provided list:")
     display(markers)
 
     if MARKER_TYPE == "Genes":
+        markers['Marker'] = markers['Marker'].str.upper()
         gene_dict = get_gene_dict(ORGANISM)
         markers_removed = markers[~markers['Marker'].isin(gene_dict.keys())]
         print("Removed markers:")
@@ -995,8 +1040,11 @@ def transform_marker_list(LIST_PATH, info_col, marker_col, MARKER_TYPE, ORGANISM
         display(markers_extended)
 
         marker_dict = dataframe_to_dict(markers_extended)
-    else:
+    elif MARKER_TYPE == "Genomic regions":
+        # genomic regions support
         marker_dict = dataframe_to_dict(markers)
+    else:
+        raise ValueError(f"Unsupported marker type: {MARKER_TYPE}")
     
     marker_list = []
     for name in marker_dict.keys():
