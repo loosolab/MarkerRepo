@@ -360,6 +360,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
             column_added = f"{scsa_obs}_{name}_{clustering_column}"
             annotation_columns.append(column_added)
             plot_columns.append(column_added)
+            original_var_index = adata.var.index.copy()
+            adata.var.index = adata.var.index.map(lambda x: x.upper())
 
             # Execute SCSA annotation
             if verbose:
@@ -385,6 +387,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
                         pvalue=0.05, 
                         user_db=reformat_marker_list(marker_list), 
                         celltype_column="cell_name")
+                    
+            adata.var.index = original_var_index
 
         # Show plots
         if show_plots:
