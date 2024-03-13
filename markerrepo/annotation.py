@@ -452,41 +452,6 @@ def parse_region(region):
     start, stop = map(int, positions.split('-'))
 
     return chrom, start, stop
-
-def regions_overlap(region1, region2, upstream_offset=1000, downstream_offset=1000):
-    """
-    Check if two genomic regions overlap, considering upstream and downstream offsets.
-
-    Parameters
-    ----------
-    region1 : str
-        A string representing the first genomic region.
-    region2 : str
-        A string representing the second genomic region.
-    upstream_offset : int, default 1000
-        The number of base pairs to consider upstream of the start position.
-    downstream_offset : int, default 1000
-        The number of base pairs to consider downstream of the stop position.
-
-    Returns
-    -------
-    bool :
-        True if the regions overlap, False otherwise.
-    """
-
-    chrom1, start1, stop1 = parse_region(region1)
-    chrom2, start2, stop2 = parse_region(region2)
-    
-    # Apply offsets
-    start1 -= upstream_offset
-    stop1 += downstream_offset
-    start2 -= upstream_offset
-    stop2 += downstream_offset
-
-    if not chrom1 == chrom2:
-        return False
-    else:
-        return max(start1, start2) <= min(stop1, stop2)
     
 
 def determine_marker_type(cell_marker_dict):
