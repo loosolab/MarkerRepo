@@ -396,7 +396,7 @@ def get_marker_list(file_path, suffix=None):
         if suffix in leaf_keys:
             metadata_suffix = "_" + str(leaf_keys[suffix])
         else:
-            warnings.warn(f"Suffix '{suffix}' not found as a leaf key in metadata.", UserWarning)
+            warnings.warn(f"Suffix '{suffix}' not found as a leaf key in metadata. File: {file_path}", UserWarning)
     
     marker_list = yaml_data['marker_list']
     

@@ -5,6 +5,7 @@ import pandas as pd
 import scanpy as sc
 from IPython.display import display
 from .marker_repo import read_whitelist, combine_dfs
+from intervaltree import IntervalTree
 
 
 def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4, verbose=False, ignore_overwrite=False):
@@ -514,7 +515,48 @@ def determine_marker_type(cell_marker_dict):
         return "gene"
 
 
-def calc_ranks(cell_marker_dict, cluster_gene_ranks, min_hits=4, verbose=True):
+def build_interval_trees_by_chromosome(cell_marker_dict, upstream_offset=0, downstream_offset=0):
+    """
+    Builds interval trees for genomic markers of each cell type, organized by chromosome.
+    Markers are optionally expanded upstream and downstream to include nearby regions potentially 
+    relevant to the cell type.
+
+    Parameters
+    ----------
+    cell_marker_dict : dict
+        A dictionary representing the cell marker database. Keys are cell types, and values are dictionaries
+        with feature names (e.g., genomic regions in "chrom:start-stop" format) as keys and ubiquitousness scores
+        as values.
+    upstream_offset : int, default 0
+        The number of base pairs to extend each marker region upstream.
+    downstream_offset : int, default 0
+        The number of base pairs to extend each marker region downstream.
+
+    Returns
+    -------
+    dict
+        A nested dictionary where the first level keys are cell types, and the second level keys are chromosome
+        identifiers (e.g., 'chr1', 'chr2', ...). Each entry at the second level is an IntervalTree object containing
+        the expanded genomic regions as intervals.
+    """
+
+    cell_type_trees = {}
+
+    for cell_type, markers in cell_marker_dict.items():
+        trees_by_chromosome = {}
+        for marker in markers:
+            chrom, start, stop = parse_region(marker)
+            start -= upstream_offset
+            stop += downstream_offset
+            if chrom not in trees_by_chromosome:
+                trees_by_chromosome[chrom] = IntervalTree()
+            trees_by_chromosome[chrom].addi(start, stop, marker)
+        cell_type_trees[cell_type] = trees_by_chromosome
+
+    return cell_type_trees
+
+
+def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True):
     """
     Calculate cell type annotation scores for each cluster based on differential gene scores and cell type marker genes.
 
@@ -522,11 +564,11 @@ def calc_ranks(cell_marker_dict, cluster_gene_ranks, min_hits=4, verbose=True):
     ----------
     cell_marker_dict : dict
         A dictionary representing the cell marker database. Keys are cell types, and values are dictionaries
-        with gene names as keys and ubiquitousness scores as values.
-    cluster_gene_ranks : dict
-        A dictionary containing ranked gene scores for each gene in each cluster.
+        with feature names as keys (e.g. regions or genes) and ubiquitousness scores as values.
+    cluster_feature_ranks : dict
+        A dictionary containing ranked feature scores for each gene or region in each cluster.
     min_hits : int, default 4
-        The minimum number of marker genes required to consider a cell type for annotation in a cluster.
+        The minimum number of matches required to consider a cell type for annotation in a cluster.
     verbose : bool, default True
         If True, prints additional information about the gene overlap between the database and input data.
 
@@ -538,37 +580,47 @@ def calc_ranks(cell_marker_dict, cluster_gene_ranks, min_hits=4, verbose=True):
     """
 
     annotation_scores = {}
-    input_genes = set()
+    input_features = set()
     matched_genes = set()
 
     # Determine if we are dealing with genes or genomic regions
     marker_type = determine_marker_type(cell_marker_dict)
 
     # Initialize cluster keys in annotation scores dictionary
-    for cluster in cluster_gene_ranks:
+    for cluster in cluster_feature_ranks:
         annotation_scores[cluster] = {}
 
     # Calculate scores for each cell type and cluster based on marker type
     # Genomic regions are checked for overlap
     if marker_type == "region":
+        # Create intervall tree for each cell type to speed up overlap checks
+        cell_type_trees = build_interval_trees_by_chromosome(cell_marker_dict)
+
         for cell_type, markers in cell_marker_dict.items():
             num_markers = len(markers)
 
-            for cluster, genes in cluster_gene_ranks.items():
+            for cluster, regions in cluster_feature_ranks.items():
                 match_count = 0
                 rank_scores = []
                 ubiquity_scores = []
-
-                for gene, rank_score in genes.items():
-                    input_genes.add(gene)
-
-                    for marker, ubiquity_score in markers.items():
-                        if regions_overlap(marker, gene):
-                            matched_genes.add(gene)
-                            weighted_score = rank_score * ubiquity_score
-                            rank_scores.append(weighted_score)
-                            ubiquity_scores.append(ubiquity_score)
-                            match_count += 1
+                
+                for region, rank_score in regions.items():
+                    input_features.add(region)
+                    chrom, start, stop = parse_region(region)
+                    
+                    if chrom in cell_type_trees[cell_type]:  
+                        tree = cell_type_trees[cell_type][chrom]
+                        overlaps = tree[start:stop]
+                        
+                        for interval in overlaps:
+                            marker = interval.data
+                            if marker in markers: 
+                                ubiquity_score = markers[marker]
+                                matched_genes.add(region)
+                                weighted_score = rank_score * ubiquity_score
+                                rank_scores.append(weighted_score)
+                                ubiquity_scores.append(ubiquity_score)
+                                match_count += 1
 
                 if match_count >= min_hits:
                     avg_ubiquity_score = round(statistics.mean(ubiquity_scores))
@@ -580,13 +632,13 @@ def calc_ranks(cell_marker_dict, cluster_gene_ranks, min_hits=4, verbose=True):
         for cell_type, markers in cell_marker_dict.items():
             num_markers = len(markers)
 
-            for cluster, genes in cluster_gene_ranks.items():
+            for cluster, genes in cluster_feature_ranks.items():
                 match_count = 0
                 rank_scores = []
                 ubiquity_scores = []
 
                 for gene, rank_score in genes.items():
-                    input_genes.add(gene)
+                    input_features.add(gene)
 
                     for marker, ubiquity_score in markers.items():
                         if gene == marker:
@@ -604,12 +656,12 @@ def calc_ranks(cell_marker_dict, cluster_gene_ranks, min_hits=4, verbose=True):
     # Print summary if verbose is True
     if verbose:
         db_gene_count = len(set.union(*[set(markers.keys()) for markers in cell_marker_dict.values()]))
-        input_gene_count = len(input_genes)
+        input_gene_count = len(input_features)
         matched_gene_count = len(matched_genes)
         overlap_percentage = round(matched_gene_count / db_gene_count * 100, 2) if db_gene_count else 0
         print(f"The database contains {db_gene_count} different markers. "
-              f"The input data contains {input_gene_count} different markers. "
-              f"The markers of the input data overlap with {matched_gene_count} markers in total, {overlap_percentage}%.")
+              f"The input data contains {input_gene_count} different {marker_type}s. "
+              f"The {marker_type}s of the input data overlap with {matched_gene_count} markers in total, {overlap_percentage}%.")
 
     # Sort cell types by score and match count/total marker genes
     for cluster in annotation_scores:
