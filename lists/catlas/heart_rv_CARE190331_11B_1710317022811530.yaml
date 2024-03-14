@@ -12,6 +12,7 @@ metadata:
   tags:
     list_type: Cell type annotation
     tissue: heart
+  reference_genome: hg38
 marker_list:
 - name: CD8-positive, alpha-beta T cell
   markers:

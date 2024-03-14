@@ -12,6 +12,7 @@ metadata:
   tags:
     list_type: Cell type annotation
     tissue: cerebrum
+  reference_genome: hg38
 marker_list:
 - name: astrocyte
   markers:

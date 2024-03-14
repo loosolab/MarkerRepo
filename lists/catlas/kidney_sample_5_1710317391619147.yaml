@@ -12,6 +12,7 @@ metadata:
   tags:
     list_type: Cell type annotation
     tissue: kidney
+  reference_genome: hg38
 marker_list:
 - name: endothelial cell
   markers:
