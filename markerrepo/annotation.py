@@ -6,6 +6,7 @@ import scanpy as sc
 from IPython.display import display
 from .marker_repo import read_whitelist, combine_dfs
 from intervaltree import IntervalTree
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4, verbose=False, ignore_overwrite=False):
@@ -430,28 +431,6 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
         panglao_rank_dict[ct] = rank_dict
 
     return panglao_rank_dict
-
-
-def parse_region(region):
-    """
-    Parse a genomic region string into components.
-
-    Parameters
-    ----------
-    region : str
-        A string representing a genomic region in the format "chrom:start-stop".
-    
-    Returns
-    -------
-    tuple :
-        A tuple containing the chromosome, start position, and stop position.
-    """
-
-    chrom, positions = region.split(':')
-    chrom = chrom.lower()
-    start, stop = map(int, positions.split('-'))
-
-    return chrom, start, stop
     
 
 def determine_marker_type(cell_marker_dict):
@@ -480,7 +459,29 @@ def determine_marker_type(cell_marker_dict):
         return "gene"
 
 
-def build_interval_trees_by_chromosome(cell_marker_dict, upstream_offset=0, downstream_offset=0):
+def parse_region(region):
+    """
+    Parse a genomic region string into components.
+
+    Parameters
+    ----------
+    region : str
+        A string representing a genomic region in the format "chrom:start-stop".
+    
+    Returns
+    -------
+    tuple :
+        A tuple containing the chromosome, start position, and stop position.
+    """
+
+    chrom, positions = region.split(':')
+    chrom = chrom.lower()
+    start, stop = map(int, positions.split('-'))
+
+    return chrom, start, stop
+
+
+def build_cell_type_trees(cell_marker_dict, upstream_offset=0, downstream_offset=0):
     """
     Builds interval trees for genomic markers of each cell type, organized by chromosome.
     Markers are optionally expanded upstream and downstream to include nearby regions potentially 
@@ -521,6 +522,69 @@ def build_interval_trees_by_chromosome(cell_marker_dict, upstream_offset=0, down
     return cell_type_trees
 
 
+def calc_region_overlap_and_score(cell_type, markers, cluster, regions, cell_type_trees, min_hits):
+    """
+    Calculates the overlap between specified regions and cell type-specific markers, scoring each overlap
+    based on marker ubiquity and region rank. 
+
+    Parameters
+    ----------
+    cell_type : str
+        The cell type for which to calculate overlaps and scores.
+    markers : dict
+        A dictionary where keys are genomic region identifiers ("chrom:start-stop") associated with the
+        specified cell type and values are ubiquity scores for each marker.
+    cluster : str
+        Identifier for the cluster or genomic region set being evaluated.
+    regions : dict
+        A dictionary where keys are genomic region identifiers in "chrom:start-stop" format and values are
+        rank scores of each region.
+    cell_type_trees : dict
+        A nested dictionary where the first level keys are cell types and the second level keys are chromosome
+        identifiers (e.g., 'chr1', 'chr2', ...). Each entry at the second level is an IntervalTree object
+        containing genomic regions as intervals.
+    min_hits : int
+        The minimum number of overlaps between the specified regions and the cell type-specific markers
+        required to consider the region set relevant to the cell type.
+
+    Returns
+    -------
+    tuple or None
+        A tuple containing the cluster identifier, cell type, total score, match count (number of
+        overlaps found), total number of markers evaluated, and average ubiquity score of overlapping markers
+        if the number of overlaps is equal to or greater than min_hits; otherwise, None.
+    """
+
+    num_markers = len(markers)
+    match_count = 0
+    rank_scores = []
+    ubiquity_scores = []
+
+    for region, rank_score in regions.items():
+        chrom, start, stop = parse_region(region)
+        
+        if chrom in cell_type_trees[cell_type]:  
+            tree = cell_type_trees[cell_type][chrom]
+            overlaps = tree[start:stop]
+            
+            for interval in overlaps:
+                marker = interval.data
+                if marker in markers: 
+                    ubiquity_score = markers[marker]
+                    weighted_score = rank_score * ubiquity_score
+                    rank_scores.append(weighted_score)
+                    ubiquity_scores.append(ubiquity_score)
+                    match_count += 1
+
+    if match_count >= min_hits:
+        avg_ubiquity_score = round(statistics.mean(ubiquity_scores), 2)
+        total_score = round(sum(rank_scores) / math.sqrt(num_markers), 2)
+
+        return (cluster, cell_type, total_score, match_count, num_markers, avg_ubiquity_score)
+    
+    return None
+
+
 def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True):
     """
     Calculate cell type annotation scores for each cluster based on differential gene scores and cell type marker genes.
@@ -558,38 +622,21 @@ def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True
     # Calculate scores for each cell type and cluster based on marker type
     # Genomic regions are checked for overlap
     if marker_type == "region":
-        # Create intervall tree for each cell type to speed up overlap checks
-        cell_type_trees = build_interval_trees_by_chromosome(cell_marker_dict)
+        cell_type_trees = build_cell_type_trees(cell_marker_dict)
+        tasks = []
 
-        for cell_type, markers in cell_marker_dict.items():
-            num_markers = len(markers)
+        with ThreadPoolExecutor() as executor:
+            for cell_type, markers in cell_marker_dict.items():
+                for cluster, regions in cluster_feature_ranks.items():
+                    tasks.append(executor.submit(calc_region_overlap_and_score, cell_type, markers, cluster, regions, cell_type_trees, min_hits))
 
-            for cluster, regions in cluster_feature_ranks.items():
-                match_count = 0
-                rank_scores = []
-                ubiquity_scores = []
-                
-                for region, rank_score in regions.items():
-                    input_features.add(region)
-                    chrom, start, stop = parse_region(region)
-                    
-                    if chrom in cell_type_trees[cell_type]:  
-                        tree = cell_type_trees[cell_type][chrom]
-                        overlaps = tree[start:stop]
+            for future in as_completed(tasks):
+                result = future.result()
+                if result:
+                    cluster, cell_type, total_score, match_count, num_markers, avg_ubiquity_score = result
+                    if cluster not in annotation_scores:
+                        annotation_scores[cluster] = {}
                         
-                        for interval in overlaps:
-                            marker = interval.data
-                            if marker in markers: 
-                                ubiquity_score = markers[marker]
-                                matched_genes.add(region)
-                                weighted_score = rank_score * ubiquity_score
-                                rank_scores.append(weighted_score)
-                                ubiquity_scores.append(ubiquity_score)
-                                match_count += 1
-
-                if match_count >= min_hits:
-                    avg_ubiquity_score = round(statistics.mean(ubiquity_scores))
-                    total_score = round(sum(rank_scores) / math.sqrt(num_markers))
                     annotation_scores[cluster][cell_type.rstrip()] = [total_score, match_count, num_markers, avg_ubiquity_score]
     
     # Genes are checked for exact matches
@@ -614,8 +661,8 @@ def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True
                             match_count += 1
 
                 if match_count >= min_hits:
-                    avg_ubiquity_score = round(statistics.mean(ubiquity_scores))
-                    total_score = round(sum(rank_scores) / math.sqrt(num_markers))
+                    avg_ubiquity_score = round(statistics.mean(ubiquity_scores), 2)
+                    total_score = round(sum(rank_scores) / math.sqrt(num_markers), 2)
                     annotation_scores[cluster][cell_type.rstrip()] = [total_score, match_count, num_markers, avg_ubiquity_score]
 
     # Print summary if verbose is True
