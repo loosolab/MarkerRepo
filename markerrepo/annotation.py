@@ -9,7 +9,9 @@ from intervaltree import IntervalTree
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
-def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, header=False, min_hits=4, verbose=False, ignore_overwrite=False):
+def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_path=None, cluster_column=None, 
+             rank_genes_column=None, sample="sample", ct_column="cell_types", tissue="all", species="Hs", inplace=True, 
+             header=False, min_hits=4, verbose=False, ignore_overwrite=False, upstream_offset=0, downstream_offset=0):
     """
     This function calculates potential cell types per cluster and adds them to the obs table of the anndata object.
 
@@ -52,6 +54,10 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         Whether to print additional information.
     ignore_overwrite : bool, default False
         Whether to ignore the overwrite warning.
+    upstream_offset : int, default 0
+        The number of base pairs to extend each marker region upstream.
+    downstream_offset : int, default 0
+        The number of base pairs to extend each marker region downstream.
 
     Returns
     --------
@@ -131,7 +137,8 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                 print("Starting cell type annotation.")
                 print(output_path, ct_path, cluster_column)
             perform_cell_type_annotation(
-                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header, min_hits=min_hits, verbose=verbose)
+                f"{ct_path}/", db_path, f"{cluster_path}/", tissue, species=species, header=header, min_hits=min_hits, 
+                verbose=verbose, upstream_offset=upstream_offset, downstream_offset=downstream_offset)
 
             # Add information to the adata object
             if verbose:
@@ -559,9 +566,12 @@ def calc_region_overlap_and_score(cell_type, markers, cluster, regions, cell_typ
     match_count = 0
     rank_scores = []
     ubiquity_scores = []
+    input_features = set()
+    matched_features = set()
 
     for region, rank_score in regions.items():
         chrom, start, stop = parse_region(region)
+        input_features.add(region)
         
         if chrom in cell_type_trees[cell_type]:  
             tree = cell_type_trees[cell_type][chrom]
@@ -570,6 +580,7 @@ def calc_region_overlap_and_score(cell_type, markers, cluster, regions, cell_typ
             for interval in overlaps:
                 marker = interval.data
                 if marker in markers: 
+                    matched_features.add(marker)
                     ubiquity_score = markers[marker]
                     weighted_score = rank_score * ubiquity_score
                     rank_scores.append(weighted_score)
@@ -580,12 +591,12 @@ def calc_region_overlap_and_score(cell_type, markers, cluster, regions, cell_typ
         avg_ubiquity_score = round(statistics.mean(ubiquity_scores), 2)
         total_score = round(sum(rank_scores) / math.sqrt(num_markers), 2)
 
-        return (cluster, cell_type, total_score, match_count, num_markers, avg_ubiquity_score)
+        return (input_features, matched_features, cluster, cell_type, total_score, match_count, num_markers, avg_ubiquity_score)
     
-    return None
+    return (input_features, matched_features)
 
 
-def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True):
+def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True, upstream_offset=0, downstream_offset=0):
     """
     Calculate cell type annotation scores for each cluster based on differential gene scores and cell type marker genes.
 
@@ -600,6 +611,10 @@ def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True
         The minimum number of matches required to consider a cell type for annotation in a cluster.
     verbose : bool, default True
         If True, prints additional information about the gene overlap between the database and input data.
+    upstream_offset : int, default 0
+        The number of base pairs to extend each marker region upstream.
+    downstream_offset : int, default 0
+        The number of base pairs to extend each marker region downstream.
 
     Returns
     -------
@@ -610,7 +625,7 @@ def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True
 
     annotation_scores = {}
     input_features = set()
-    matched_genes = set()
+    matched_features = set()
 
     # Determine if we are dealing with genes or genomic regions
     marker_type = determine_marker_type(cell_marker_dict)
@@ -622,7 +637,7 @@ def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True
     # Calculate scores for each cell type and cluster based on marker type
     # Genomic regions are checked for overlap
     if marker_type == "region":
-        cell_type_trees = build_cell_type_trees(cell_marker_dict)
+        cell_type_trees = build_cell_type_trees(cell_marker_dict, upstream_offset=upstream_offset, downstream_offset=downstream_offset)
         tasks = []
 
         with ThreadPoolExecutor() as executor:
@@ -633,11 +648,14 @@ def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True
             for future in as_completed(tasks):
                 result = future.result()
                 if result:
-                    cluster, cell_type, total_score, match_count, num_markers, avg_ubiquity_score = result
-                    if cluster not in annotation_scores:
-                        annotation_scores[cluster] = {}
-                        
-                    annotation_scores[cluster][cell_type.rstrip()] = [total_score, match_count, num_markers, avg_ubiquity_score]
+                    if len(result) > 2:
+                        input_features_temp, matched_features_temp, cluster, cell_type, total_score, match_count, num_markers, avg_ubiquity_score = result
+                        annotation_scores[cluster][cell_type.rstrip()] = [total_score, match_count, num_markers, avg_ubiquity_score]
+                    elif len(result) == 2:
+                        input_features_temp, matched_features_temp = result
+                    
+                    input_features.update(input_features_temp)
+                    matched_features.update(matched_features_temp)
     
     # Genes are checked for exact matches
     elif marker_type == "gene":
@@ -654,7 +672,7 @@ def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True
 
                     for marker, ubiquity_score in markers.items():
                         if gene == marker:
-                            matched_genes.add(gene)
+                            matched_features.add(gene)
                             weighted_score = rank_score * ubiquity_score
                             rank_scores.append(weighted_score)
                             ubiquity_scores.append(ubiquity_score)
@@ -669,7 +687,7 @@ def calc_ranks(cell_marker_dict, cluster_feature_ranks, min_hits=4, verbose=True
     if verbose:
         db_gene_count = len(set.union(*[set(markers.keys()) for markers in cell_marker_dict.values()]))
         input_gene_count = len(input_features)
-        matched_gene_count = len(matched_genes)
+        matched_gene_count = len(matched_features)
         overlap_percentage = round(matched_gene_count / db_gene_count * 100, 2) if db_gene_count else 0
         print(f"The database contains {db_gene_count} different markers. "
               f"The input data contains {input_gene_count} different {marker_type}s. "
@@ -780,7 +798,7 @@ def get_annotated_clusters(cluster_path, show_duplicates=False):
     return annotated_clusters
 
 
-def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False, min_hits=4, verbose=True):
+def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", species="Hs", header=False, min_hits=4, verbose=True, upstream_offset=0, downstream_offset=0):
     """
     Performs cell type identification, generate cell type assignment table
     and create ranks folder with files for further investigation (one per cluster).
@@ -804,13 +822,21 @@ def perform_cell_type_annotation(output, db_path, cluster_path, tissue="all", sp
         Minimum number of hits required to consider a cell type for annotation.
     verbose : bool, default True
         Whether to print additional information.
+    upstream_offset : int, default 0
+        The number of base pairs to extend each marker region upstream.
+    downstream_offset : int, default 0
+        The number of base pairs to extend each marker region downstream.
     """
 
     opath = output + "/ranks/"
     if not os.path.exists(opath):
         os.makedirs(opath)
 
-    ct_dict = get_cell_types(cluster_path, db_path, tissue, species=species, header=header, min_hits=min_hits, verbose=verbose)
+    db_dict = parse_marker_database(db_path, tissue=tissue, species=species, header=header)
+    annotated_clusters = get_annotated_clusters(cluster_path=cluster_path)
+
+    ct_dict = calc_ranks(db_dict, annotated_clusters, min_hits=min_hits, verbose=verbose, upstream_offset=upstream_offset, downstream_offset=downstream_offset)
+
     write_annotation(ct_dict, output)
 
 
