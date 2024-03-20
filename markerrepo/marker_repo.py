@@ -16,7 +16,7 @@ import random
 import warnings
 
 
-def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path=".", lists_path=None, column_specific_terms=None, suffix=None):
+def search_df(df, search_terms=None, col_to_search=None, case_sensitive=False, exact=False, out="metadata", repo_path=".", lists_path=None, column_specific_terms=None, suffix=None):
     """
     This function filters a given DataFrame based on the provided keywords. Depending on the 'out' parameter,
     the function either returns the filtered DataFrame or a combined list of markers.
@@ -25,7 +25,7 @@ def search_df(df, search_terms, col_to_search=None, case_sensitive=False, exact=
     ----------
     df : pd.DataFrame
         The input DataFrame to be filtered.
-    search_terms : list of str
+    search_terms : list of str, default None
         Search terms to use for the search. Terms can be prefixed with '+' to denote that they must be included,
         or with '-' to denote that they must not be included. Terms without a prefix will include rows that contain them,
         but will not exclude rows that do not.

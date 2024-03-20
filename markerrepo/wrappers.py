@@ -47,7 +47,7 @@ def suppress_output():
 
 def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="two_column", path=".", file_name=None, ensembl=False, 
                         col_to_search=None, search_terms=None, force_homology=False, show_lists=True,
-                        column_specific_terms=None, adata=None, suffix=None):
+                        column_specific_terms=None, adata=None, suffix=None, marker_type="Genes"):
     """
     Creates marker lists for a given organism.
 
@@ -82,6 +82,8 @@ def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="tw
         If provided, the function will add the marker list IDs to the .uns table of the AnnData object.
     suffix : str, default None
         The key of the metadata section whose value should be appended to the marker names.
+    marker_type : str, default "Genes"
+        The type of the marker lists. Currently there are two options available: "Genes" and "Genomic regions"
         
     Note:
     ----
@@ -113,10 +115,12 @@ def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="tw
     custom_file_name = False if file_name else True
 
     while True:
+        if not marker_type:
+            marker_type = select(key="marker_type")
+        df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), column_specific_terms={"Marker type":marker_type}, suffix=suffix)
+
         if organism:  
-            df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), col_to_search="Organism name", search_terms=[f"+{organism.split(' ')[0]}"], suffix=suffix)
-        else:
-            df = combine_dfs(repo_path=repo_path, lists_path=lists_path)
+            df = search_df(df=df, column_specific_terms={"Organism name":f"+{organism.split(' ')[0]}"}, suffix=suffix)
 
         if df.empty or force_homology:
             if not force_homology:
@@ -163,7 +167,7 @@ def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="tw
 
 def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=None, organism=None, style='two_column', path='.', file_name=None, ensembl=False, 
                                  col_to_search=None, search_terms=None, force_homology=False, show_lists=True, 
-                                 column_specific_terms=None, adata=None, suffix=None):
+                                 column_specific_terms=None, adata=None, suffix=None, marker_type="Genes"):
     """
     Executes the 'create_marker_lists' function for multiple sets of parameters.
 
@@ -206,6 +210,8 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=
         Default AnnData object for all 'create_marker_lists' calls.
     suffix : str, default None
         Default suffix for all 'create_marker_lists' calls.
+    marker_type : str, default "Genes"
+        Default marker type for all 'create_marker_lists' calls.
 
     Note:
     ----
@@ -243,7 +249,8 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=
             'adata': adata,
             'repo_path': repo_path,
             'lists_path': lists_path,
-            'suffix': suffix
+            'suffix': suffix,
+            'marker_type': marker_type
         }
 
         # Update these defaults with values from the current dictionary
