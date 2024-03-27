@@ -201,7 +201,7 @@ def modify_ct(adata=None, annotation_dir=None, clustering_column="leiden_0.1", c
     modify = True
     while modify:
         cluster = int(input("Enter the number of the cluster you'd like to modify: "))
-        df = pd.read_csv(f'{annotation_dir}/ranked/output/{clustering_column}/ranks/cluster_{cluster}', sep='\t', names=["Cell type", "Score", "Hits", "Number of marker genes", "Mean of UI"])
+        df = pd.read_csv(f'{annotation_dir}/ranked/output/{clustering_column}/ranks/cluster_{cluster}', sep='\t', names=["Cell type", "Score", "Hits", "Number of marker features", "Mean of UI"])
         display(df.head(10))
         new_ct = int(input("Please choose another cell type by picking a number of the corresponding index column: "))
         adata.obs[f'{cell_type_column}_mod'] = adata.obs[f'{cell_type_column}_mod'].cat.rename_categories({df.iat[0, 0]: df.iat[new_ct, 0]})
@@ -292,7 +292,7 @@ def show_tables(annotation_dir=None, n=5, clustering_column="leiden_0.1", show_d
     for file in files:
         cluster = file.split("_")[1]
         ct_column = f"Cluster {cluster}"
-        df = pd.read_csv(f'{path}/{file}', sep='\t', names=[ct_column, "Score", "Hits", "Number of marker genes", "Mean of UI"])
+        df = pd.read_csv(f'{path}/{file}', sep='\t', names=[ct_column, "Score", "Hits", "Number of marker features", "Mean of UI"])
 
         if show_diff:
             # Calculate and add both normal and scaled diffs to the DataFrame if show_diff is True
