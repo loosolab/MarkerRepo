@@ -121,7 +121,7 @@ metadata:
           value: null
           whitelist: True
           input_type: select
-        genotype:
+        genetic_background:
           mandatory: False
           display_name: 'Genotype'
           list: False
