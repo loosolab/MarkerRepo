@@ -142,7 +142,7 @@ def read_whitelist(key, marker_list=False, repo_path="."):
 
     try:
         whitelist = read_in_yaml(
-            os.path.join(repo_path, 'metadata_whitelists', 'whitelists', key), marker_list=marker_list)
+            os.path.join(repo_path, 'FRED_whitelists', 'whitelists', key), marker_list=marker_list)
     except (AttributeError, FileNotFoundError):
         whitelist = None
         
