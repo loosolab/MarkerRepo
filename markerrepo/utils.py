@@ -24,7 +24,7 @@ def get_whitelists(repo_path=".", update=True, silent_skip=False):
     if not silent_skip:
         print('Initiating whitelist fetching...')
 
-    repo_full_path = os.path.join(repo_path, "metadata_whitelists")
+    repo_full_path = os.path.join(repo_path, "FRED_whitelists")
 
     # Check if path exists
     if os.path.exists(repo_full_path):
@@ -42,7 +42,7 @@ def get_whitelists(repo_path=".", update=True, silent_skip=False):
     else:
         # Clone the repository if it doesn't exist
         print("Directory does not exist. Cloning the whitelist repository...")
-        git.Repo.clone_from('https://gitlab.gwdg.de/loosolab/software/metadata_whitelists.git', repo_full_path)
+        git.Repo.clone_from('https://github.com/loosolab/FRED_whitelists.git', repo_full_path)
         print("Repository cloned.")
 
     if not silent_skip:
@@ -142,7 +142,7 @@ def read_whitelist(key, marker_list=False, repo_path="."):
 
     try:
         whitelist = read_in_yaml(
-            os.path.join(repo_path, 'metadata_whitelists', 'whitelists', key), marker_list=marker_list)
+            os.path.join(repo_path, 'FRED_whitelists', 'whitelists', key), marker_list=marker_list)
     except (AttributeError, FileNotFoundError):
         whitelist = None
         
