@@ -419,10 +419,10 @@ def export_marker_list(df, path="./exported_lists", file_name=None, header=False
         export_path = os.path.join(path, f"{file_name}_{timestamp}")
 
     # Export the marker list
-    df.to_csv(export_path, sep="\t", index=False, header=header)
+    df.to_csv(f"{export_path}.csv", sep="\t", index=False, header=header)
     print(f"Marker list saved: {os.path.abspath(export_path)}")
     
-    return os.path.abspath(export_path)
+    return f"{os.path.abspath(export_path)}.csv"
 
 
 def get_uid_paths(uids, repo_path=".", lists_path=None):
