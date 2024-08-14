@@ -251,7 +251,7 @@ def get_db(repo_path=".", lists_path=None, parallel=True):
     """
 
     if not lists_path:
-        lists_path = f"{repo_path}/lists"
+        lists_path = os.path.join(repo_path, "lists")
 
     # Check if the provided repository path exists
     if not os.path.exists(lists_path):
@@ -449,7 +449,7 @@ def get_uid_paths(uids, repo_path=".", lists_path=None):
     matching_files = []
 
     if not lists_path:
-        lists_path = f"{repo_path}/lists"
+        lists_path = os.path.join(repo_path, "lists")
 
     for root, _, files in os.walk(f"{lists_path}"):
         for file in files:
