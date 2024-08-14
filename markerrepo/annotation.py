@@ -85,7 +85,7 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         ct_path = os.path.join(output_path, "ranked/output", cluster_column)
 
         if not ignore_overwrite and os.path.exists(ct_path):
-            print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overritten.")
+            print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overwritten.")
             go_on = False
 
             if not go_on:
