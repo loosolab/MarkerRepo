@@ -81,11 +81,11 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         adata = adata.copy()
 
     if output_path and db_path:
-        cluster_path = f"{output_path}/ranked/clusters/{cluster_column}"
-        ct_path = f"{output_path}/ranked/output/{cluster_column}"
+        cluster_path = os.path.join(output_path, "ranked/clusters", cluster_column)
+        ct_path = os.path.join(output_path, "ranked/output", cluster_column)
 
         if not ignore_overwrite and os.path.exists(ct_path):
-            print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overritten.")
+            print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overwritten.")
             go_on = False
 
             if not go_on:
@@ -376,7 +376,7 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
                 spec = ''
                 if ct not in panglao_dict.keys():
                     panglao_dict[ct] = []
-                panglao_dict[ct].append((us, gene_symb.strip()))
+                panglao_dict[ct].append((us, gene_symb.strip().upper()))
             elif len(line_split) == 3:  # three-column file
                 gene_symb, ct, ub_i = line_split
                 us = float(ub_i)
