@@ -253,7 +253,7 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=
 def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", 
                    rank_genes_column=None, clustering_column=None, reference_obs=None, keep_all=False, 
                    verbose=False, show_ct_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False,
-                   celltype_column_name=None, output_path="./annotation"):
+                   celltype_column_name=None, output_path="./annotation", min_hits=4):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. 
 
@@ -292,6 +292,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         If True, the function will not ask for confirmation before overwriting existing files.
     celltype_column_name : str, default None
         The name of the selected cell type annotation column. If None, all annotation columns will be kept.
+    min_hits : int, default 4
+        The minimum number of marker genes required to consider a cell type for annotation in a cluster.
     """
 
     if not marker_repo and not SCSA:
@@ -341,7 +343,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
             # Execute Marker Repo annotation
             annot_ct(adata, output_path=annotation_dir, db_path=marker_list,
                            cluster_column=clustering_column, rank_genes_column=rank_genes_column, 
-                           ct_column=ct_column, verbose=verbose, ignore_overwrite=ignore_overwrite)
+                           ct_column=ct_column, verbose=verbose, ignore_overwrite=ignore_overwrite, min_hits=min_hits)
 
             # Show tables and alternative cell types of each cluster
             if show_ct_tables:
