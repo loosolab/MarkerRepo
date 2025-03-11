@@ -1,0 +1,81 @@
+metadata:
+  id: '1741686211609066'
+  list_name: zebrafish_cranial_neural_crest_150dpf
+  organism:
+    organism_name: zebrafish
+    taxonomy_id: '7955'
+  marker_type: Genes
+  submitter:
+    name: Schultheis, Hendrik
+    email: hendrik.schultheis@mpi-bn.mpg.de
+  source: https://doi.org/10.1038/s41467-021-27594-w
+  tags:
+    list_type:
+    - Cell type annotation
+    life_stage: adult
+    tissue:
+    - cranial neural crest
+    age:
+    - 150 dpf
+marker_list:
+- name: Dermal fibroblast
+  markers:
+  - PAH ENSDARG00000020143
+  - HPDB ENSDARG00000044935
+- name: Stroma
+  markers:
+  - CXCL12A ENSDARG00000037116
+  - CCL25B ENSDARG00000070873
+- name: Teeth
+  markers:
+  - SPOCK3 ENSDARG00000070266
+  - LHX8A ENSDARG00000002330
+  - POSTNA ENSDARG00000043806
+- name: Perivascular
+  markers:
+  - ACTA2 ENSDARG00000045180
+  - TAGLN ENSDARG00000045408
+  - MYH11A ENSDARG00000009782
+- name: Tunica media
+  markers:
+  - GATA3 ENSDARG00000016526
+  - LUM ENSDARG00000045580
+- name: Gill stroma
+  markers:
+  - GATA3 ENSDARG00000016526
+  - CXCL12A ENSDARG00000037116
+- name: Gill progenitor
+  markers:
+  - GATA3 ENSDARG00000016526
+  - FGF10B ENSDARG00000100475
+- name: Pillar
+  markers:
+  - GATA3 ENSDARG00000016526
+  - NCAM3 ENSDARG00000089586
+- name: Cycling cells
+  markers:
+  - MCM2 ENSDARG00000102798
+  - MCM4 ENSDARG00000040041
+- name: Periosteum/tendon/ligament
+  markers:
+  - POSTNB ENSDARG00000104267
+  - SCXA ENSDARG00000035695
+  - THBS4A ENSDARG00000102777
+- name: Smooth muscle
+  markers:
+  - ALDH1A2 ENSDARG00000053493
+  - THBS4B ENSDARG00000020072
+- name: Bone
+  markers:
+  - BGLAP ENSDARG00000058414
+  - IFITM5 ENSDARG00000105153
+- name: Hyaline cartilage
+  markers:
+  - COL2A1A ENSDARG00000069093
+  - ACANA ENSDARG00000035891
+  - UCMAB ENSDARG00000005485
+- name: Gill cartilage
+  markers:
+  - UCMAA ENSDARG00000027799
+  - COL2A1A ENSDARG00000069093
+  - ACANA ENSDARG00000035891
