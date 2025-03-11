@@ -1,0 +1,25 @@
+metadata:
+  id: '1741687334852231'
+  list_name: zebrafish_non_cranial_neural_crest
+  organism:
+    organism_name: zebrafish
+    taxonomy_id: '7955'
+  marker_type: Genes
+  submitter:
+    name: Schultheis, Hendrik
+    email: hendrik.schultheis@mpi-bn.mpg.de
+  source: https://doi.org/10.1038/s41467-021-27594-w
+  tags:
+    list_type:
+    - Cell type annotation
+    tissue:
+    - cranial neural crest
+    info:
+    - non cranial neural crest
+marker_list:
+- name: Blood
+  markers:
+  - HBBE2 ENSDARG00000045143
+- name: Epithelia
+  markers:
+  - EPCAM ENSDARG00000040534
