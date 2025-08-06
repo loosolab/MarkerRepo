@@ -773,7 +773,7 @@ def compare_cell_types(adata, column, obs_columns):
     columns_to_keep = [column] + obs_columns  # Include the grouping column and additional columns from obs_columns
     
     filtered_obs_df = obs_df[columns_to_keep]
-    grouped_obs_df = filtered_obs_df.groupby(column).agg('first')
+    grouped_obs_df = filtered_obs_df.groupby(column, observed=True).agg('first')
     
     return grouped_obs_df
 
