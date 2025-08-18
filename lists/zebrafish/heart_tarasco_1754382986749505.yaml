@@ -10,10 +10,10 @@ metadata:
     email: yousef.alayoubi@mpi-bn.mpg.de
   source: Marco Tarasco
   tags:
-  list_type:
-  - Cell type annotation
-  tissue:
-  - heart
+    list_type:
+    - Cell type annotation
+    tissue:
+    - heart
 marker_list:
 - name: Endocardium
   markers:
