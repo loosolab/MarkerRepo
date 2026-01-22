@@ -1,0 +1,49 @@
+metadata:
+  id: '1741686472783907'
+  list_name: zebrafish_cranial_neural_crest_1.5dpf
+  organism:
+    organism_name: zebrafish
+    taxonomy_id: '7955'
+  marker_type: Genes
+  submitter:
+    name: Schultheis, Hendrik
+    email: hendrik.schultheis@mpi-bn.mpg.de
+  source: https://doi.org/10.1038/s41467-021-27594-w
+  tags:
+    list_type:
+    - Cell type annotation
+    life_stage: embryo
+    tissue:
+    - cranial neural crest
+    age:
+    - 1.5 dpf
+marker_list:
+- name: Blood
+  markers:
+  - HBBE2 ENSDARG00000045143
+- name: Cycling cells
+  markers:
+  - MCM2 ENSDARG00000102798
+  - MCM4 ENSDARG00000040041
+- name: Glia
+  markers:
+  - ZWI ENSDARG00000101826
+- name: Mesenchyme
+  markers:
+  - ALX4A ENSDARG00000088332
+  - MSX1B ENSDARG00000008886
+  - PRRX1B ENSDARG00000042027
+- name: Neuronal
+  markers:
+  - NEUROD1 ENSDARG00000019566
+  - NEUROD2 ENSDARG00000016854
+  - NEUROD4 ENSDARG00000003469
+  - NEUROD6A ENSDARG00000040008
+  - NEUROD6B ENSDARG00000020794
+- name: Otic cells
+  markers:
+  - ATOH1A ENSDARG00000055294
+- name: Pigment
+  markers:
+  - MITFA ENSDARG00000003732
+  - TFEC ENSDARG00000098745

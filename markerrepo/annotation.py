@@ -89,11 +89,11 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
         adata = adata.copy()
 
     if output_path and db_path:
-        cluster_path = f"{output_path}/ranked/clusters/{cluster_column}"
-        ct_path = f"{output_path}/ranked/output/{cluster_column}"
+        cluster_path = os.path.join(output_path, "ranked/clusters", cluster_column)
+        ct_path = os.path.join(output_path, "ranked/output", cluster_column)
 
         if not ignore_overwrite and os.path.exists(ct_path):
-            print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overritten.")
+            print(f"Warning: The path {ct_path}/ already exists!\nAll annotation files will be overwritten.")
             go_on = False
 
             if not go_on:
@@ -161,7 +161,7 @@ def annot_ct(genes_adata, adata=None, output_path=".", db_path=None, cluster_pat
                 print("Output folder: " + output_path, "\nDB file: " + db_path, "\nCluster folder: " + cluster_path,
                       "\nTissue: " + tissue)
             perform_cell_type_annotation(
-                f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header, verbose=verbose)
+                f"{output_path}/ranked/output/{cluster_column}/", db_path, cluster_path, tissue, header=header, min_hits=min_hits, verbose=verbose)
             if verbose:
                 print(f"Cell type annotation of output path {ct_path}/ finished.")
 
@@ -385,7 +385,7 @@ def parse_marker_database(file_path, tissue="all", species=None, header=False):
                 spec = ''
                 if ct not in panglao_dict.keys():
                     panglao_dict[ct] = []
-                panglao_dict[ct].append((us, gene_symb.strip()))
+                panglao_dict[ct].append((us, gene_symb.strip().upper()))
             elif len(line_split) == 3:  # three-column file
                 gene_symb, ct, ub_i = line_split
                 us = float(ub_i)
@@ -936,14 +936,15 @@ def compare_cell_types(adata, column, obs_columns):
     columns_to_keep = [column] + obs_columns  # Include the grouping column and additional columns from obs_columns
     
     filtered_obs_df = obs_df[columns_to_keep]
-    grouped_obs_df = filtered_obs_df.groupby(column).agg('first')
+    grouped_obs_df = filtered_obs_df.groupby(column, observed=True).agg('first')
     
     return grouped_obs_df
 
 
-def reformat_marker_list(input_path, suffix="_SCSA"):
+def reformat_marker_list(input_path, suffix="_SCSA", upper=True):
     """
     Reformat a TSV marker list for compatibility with SCSA.
+    Expects first column to be markers and second column to be cell types.
 
     Parameters
     ----------
@@ -951,6 +952,8 @@ def reformat_marker_list(input_path, suffix="_SCSA"):
         Path to the input TSV marker list.
     suffix : str, "_SCSA"
         Suffix to append to output file name.
+    upper : bool, default True
+        Convert the values in the marker to uppercase.
 
     Returns
     -------
@@ -962,6 +965,9 @@ def reformat_marker_list(input_path, suffix="_SCSA"):
     df = df.iloc[:, :2]
     df.columns = ["marker", "cell_name"]
     output_path = f"{input_path}{suffix}"
+    if upper:
+        df["marker"] = df["marker"].str.upper()
+
     df.to_csv(output_path, index=False, sep='\t')
 
     return output_path

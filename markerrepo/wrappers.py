@@ -9,6 +9,7 @@ import scanpy as sc
 from IPython.display import display
 import os
 import sys
+from pathlib import Path
 import contextlib
 import io
 import logging
@@ -266,7 +267,7 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=
 def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", 
                    rank_genes_column=None, clustering_column=None, reference_obs=None, keep_all=False, 
                    verbose=False, show_ct_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False,
-                   celltype_column_name=None, omic=None, upstream_offset=0, downstream_offset=0):
+                   celltype_column_name=None, omic=None, upstream_offset=0, downstream_offset=0, output_path="./annotation", min_hits=4):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. 
 
@@ -310,7 +311,11 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
     upstream_offset : int, default 0
         The number of base pairs to extend each marker region upstream.
     downstream_offset : int, default 0
-        The number of base pairs to extend each marker region downstream.    
+        The number of base pairs to extend each marker region downstream.
+    output_path : str, default "./annotation"
+        Annotation output path.
+    min_hits : int, default 4
+        The minimum number of marker genes required to consider a cell type for annotation in a cluster.
     """
 
     if not marker_repo and not SCSA:
@@ -351,8 +356,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
             sc.pl.umap(adata, color=clustering_column, wspace=0.5, cmap=None)
 
     for marker_list in marker_lists:
-        name = marker_list.split('/')[-1]
-        annotation_dir = f"./annotation/{name}"
+        name = Path(marker_list).stem
+        annotation_dir = os.path.join(output_path, name)
         plot_columns = [] if reference_obs is None else [reference_obs]
 
         if marker_repo:
@@ -364,7 +369,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
             annot_ct(adata, output_path=annotation_dir, db_path=marker_list,
                            cluster_column=clustering_column, rank_genes_column=rank_genes_column, 
                            ct_column=ct_column, verbose=verbose, ignore_overwrite=ignore_overwrite,
-                           upstream_offset=upstream_offset, downstream_offset=downstream_offset)
+                           upstream_offset=upstream_offset, downstream_offset=downstream_offset, min_hits=min_hits)
 
             # Show tables and alternative cell types of each cluster
             if show_ct_tables:
@@ -414,9 +419,10 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
 
     # Compare annotations
+    compare_df = compare_cell_types(adata, clustering_column, annotation_columns)
     if show_comparison:
         print("Comparison of cell type annotations:")
-        display(compare_cell_types(adata, clustering_column, annotation_columns))
+        display(compare_df)
 
     # Select cell type annotation
     if celltype_column_name:
@@ -433,6 +439,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
 
         columns_to_remove = [col for col in annotation_columns if col not in columns_to_keep]
         adata.obs.drop(columns=columns_to_remove, inplace=True)
+    
+    return compare_df
 
 
 def rank_feature_groups(adata, clustering_column=None, show_plots=False, verbose=False, n=None, omic="RNA"):

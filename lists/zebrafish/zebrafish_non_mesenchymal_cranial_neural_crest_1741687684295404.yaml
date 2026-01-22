@@ -1,0 +1,37 @@
+metadata:
+  id: '1741687684295404'
+  list_name: zebrafish_non_mesenchymal_cranial_neural_crest
+  organism:
+    organism_name: zebrafish
+    taxonomy_id: '7955'
+  marker_type: Genes
+  submitter:
+    name: Schultheis, Hendrik
+    email: hendrik.schultheis@mpi-bn.mpg.de
+  source: https://doi.org/10.1038/s41467-021-27594-w
+  tags:
+    list_type:
+    - Cell type annotation
+    tissue:
+    - cranial neural crest
+    info:
+    - non-mesenchymal cranial neural crest derivatives
+marker_list:
+- name: Glia
+  markers:
+  - ZWI ENSDARG00000101826
+- name: Neuronal
+  markers:
+  - STMN1B ENSDARG00000033655
+- name: Otic cells
+  markers:
+  - ATOH1A ENSDARG00000055294
+- name: Melanocytes
+  markers:
+  - MITFA ENSDARG00000003732
+- name: Iridophores
+  markers:
+  - TFEC ENSDARG00000098745
+- name: Xanthophore
+  markers:
+  - AOX5 ENSDARG00000071475

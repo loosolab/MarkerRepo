@@ -256,7 +256,7 @@ def get_db(repo_path=".", lists_path=None, parallel=True):
     """
 
     if not lists_path:
-        lists_path = f"{repo_path}/lists"
+        lists_path = os.path.join(repo_path, "lists")
 
     # Check if the provided repository path exists
     if not os.path.exists(lists_path):
@@ -460,10 +460,10 @@ def export_marker_list(df, path="./exported_lists", file_name=None, header=False
         export_path = os.path.join(path, f"{file_name}_{timestamp}")
 
     # Export the marker list
-    df.to_csv(export_path, sep="\t", index=False, header=header)
+    df.to_csv(f"{export_path}.csv", sep="\t", index=False, header=header)
     print(f"Marker list saved: {os.path.abspath(export_path)}")
     
-    return os.path.abspath(export_path)
+    return f"{os.path.abspath(export_path)}.csv"
 
 
 def get_uid_paths(uids, repo_path=".", lists_path=None):
@@ -490,7 +490,7 @@ def get_uid_paths(uids, repo_path=".", lists_path=None):
     matching_files = []
 
     if not lists_path:
-        lists_path = f"{repo_path}/lists"
+        lists_path = os.path.join(repo_path, "lists")
 
     for root, _, files in os.walk(f"{lists_path}"):
         for file in files:
