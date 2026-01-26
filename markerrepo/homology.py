@@ -696,7 +696,7 @@ def get_transfer_counts(df, source_column='Marker', target_column='Transferred M
     return gene_counts_df
 
 
-def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, repo_path=".", lists_path=None):
+def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, repo_path=".", lists_path=None, suffix=None):
     """
     Prepares the transfer of marker genes from a source organism to a target organism 
     by querying and fetching all necessary data.
@@ -716,6 +716,8 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
     lists_path : str, default None
         The path of the folder which contains the marker lists (YAML files).
         If none, the lists folder of the repo_path is used.
+    suffix : str, default None
+        The key of the metadata section whose value should be appended to the marker names.
 
     Returns
     -------
@@ -762,7 +764,7 @@ def prepare_gene_transfer(search_terms=None, case_sensitive=False, exact=False, 
         print("\nGenerate marker DataFrame based on the given search terms: ")
         for search_term in search_terms:
             print(search_term)
-        source_df = search_df(combine_dfs(repo_path=repo_path, lists_path=lists_path), search_terms, case_sensitive=case_sensitive, exact=exact, out="marker_list", repo_path=repo_path)
+        source_df = search_df(combine_dfs(repo_path=repo_path, lists_path=lists_path), search_terms, case_sensitive=case_sensitive, exact=exact, out="marker_list", repo_path=repo_path, suffix=suffix)
     else:
         print("\nSelect the marker lists to be transferred to the target organism:")
         source_df = guided_search(repo_path=repo_path, lists_path=lists_path, out="marker_list")

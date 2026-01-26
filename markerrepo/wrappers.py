@@ -15,6 +15,8 @@ import io
 import logging
 import warnings
 import inspect
+import numpy as np
+import episcanpy as epi
 
 try:
     from sctoolbox.tools import celltype_annotation
@@ -46,7 +48,7 @@ def suppress_output():
 
 def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="two_column", path=".", file_name=None, ensembl=False, 
                         col_to_search=None, search_terms=None, force_homology=False, show_lists=True,
-                        column_specific_terms=None, adata=None):
+                        column_specific_terms=None, adata=None, suffix=None, marker_type="Genes"):
     """
     Creates marker lists for a given organism.
 
@@ -79,7 +81,11 @@ def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="tw
         A dictionary with column names as keys and lists of search terms as values. If provided, 'col_to_search' and 'search_terms' are ignored.
     adata : AnnData, default None
         If provided, the function will add the marker list IDs to the .uns table of the AnnData object.
-
+    suffix : str, default None
+        The key of the metadata section whose value should be appended to the marker names.
+    marker_type : str, default "Genes"
+        The type of the marker lists. Currently there are two options available: "Genes" and "Genomic regions"
+        
     Note:
     ----
     It is recommended to use 'column_specific_terms' instead of 'col_to_search' and 'search_terms'.
@@ -110,10 +116,12 @@ def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="tw
     custom_file_name = False if file_name else True
 
     while True:
+        if not marker_type:
+            marker_type = select(key="marker_type")
+        df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), column_specific_terms={"Marker type":marker_type}, suffix=suffix)
+
         if organism:  
-            df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), col_to_search="Organism name", search_terms=[f"+{organism.split(' ')[0]}"])
-        else:
-            df = combine_dfs(repo_path=repo_path, lists_path=lists_path)
+            df = search_df(df=df, column_specific_terms={"Organism name":f"+{organism.split(' ')[0]}"}, suffix=suffix)
 
         if df.empty or force_homology:
             if not force_homology:
@@ -122,9 +130,9 @@ def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="tw
 
             source_df = None
             if search_terms or column_specific_terms:
-                source_df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms)
+                source_df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms, suffix=suffix)
             paths.extend(transfer_markers(target_org=organism, source_df=source_df, repo_path=repo_path, lists_path=lists_path, target_counts=1, 
-                          weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name, ensemble=ensembl))
+                          weight_markers=weighted, export_suffix="annotation", ui=ui, custom_file_name=custom_file_name, ensemble=ensembl, suffix=suffix))
         else:
             if organism:
                 print(f"Found {len(df)} marker lists for the given organism {organism.split(' ')[0]}.")
@@ -132,18 +140,18 @@ def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="tw
                 if show_lists:
                     display(df)
             if search_terms or column_specific_terms:
-                df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms)
+                df = search_df(df=df, col_to_search=col_to_search, search_terms=search_terms, column_specific_terms=column_specific_terms, suffix=suffix)
                 print(f"Found {len(df)} marker lists for the given search terms.")
                 
                 if show_lists:
                     display(df)
-                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, lists_path=lists_path, order=["Marker", "Info"])
-                paths.append(convert_markers(style=style, repo_path=repo_path, lists_path=lists_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl))
+                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, lists_path=lists_path, order=["Marker", "Info"], suffix=suffix)
+                paths.append(convert_markers(style=style, repo_path=repo_path, lists_path=lists_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl, suffix=suffix))
             else:
                 print(f"Please specify the marker lists you want to use for the annotation.")
                 df = guided_search(repo_path=repo_path, lists_path=lists_path, df=df, out="metadata")
-                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, lists_path=lists_path, order=["Marker", "Info"])
-                paths.append(convert_markers(style=style, repo_path=repo_path, lists_path=lists_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl))
+                df_combined = get_selected_lists(metadata_df=df, repo_path=repo_path, lists_path=lists_path, order=["Marker", "Info"], suffix=suffix)
+                paths.append(convert_markers(style=style, repo_path=repo_path, lists_path=lists_path, df=df_combined, path=path, file_name=file_name, ensembl=ensembl, suffix=suffix))
 
         if adata and file_name:
             update_adata_with_markers(adata, file_name, df)
@@ -160,7 +168,7 @@ def create_marker_lists(organism=None, repo_path=".", lists_path=None, style="tw
 
 def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=None, organism=None, style='two_column', path='.', file_name=None, ensembl=False, 
                                  col_to_search=None, search_terms=None, force_homology=False, show_lists=True, 
-                                 column_specific_terms=None, adata=None):
+                                 column_specific_terms=None, adata=None, suffix=None, marker_type="Genes"):
     """
     Executes the 'create_marker_lists' function for multiple sets of parameters.
 
@@ -201,6 +209,10 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=
         Default column specific terms for all 'create_marker_lists' calls.
     adata : AnnData, default None
         Default AnnData object for all 'create_marker_lists' calls.
+    suffix : str, default None
+        Default suffix for all 'create_marker_lists' calls.
+    marker_type : str, default "Genes"
+        Default marker type for all 'create_marker_lists' calls.
 
     Note:
     ----
@@ -237,7 +249,9 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=
             'column_specific_terms': column_specific_terms,
             'adata': adata,
             'repo_path': repo_path,
-            'lists_path': lists_path
+            'lists_path': lists_path,
+            'suffix': suffix,
+            'marker_type': marker_type
         }
 
         # Update these defaults with values from the current dictionary
@@ -253,7 +267,7 @@ def create_multiple_marker_lists(cml_parameters=[{}], repo_path=".", lists_path=
 def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs="mr", scsa_obs="scsa", 
                    rank_genes_column=None, clustering_column=None, reference_obs=None, keep_all=False, 
                    verbose=False, show_ct_tables=False, show_plots=False, show_comparison=False, ignore_overwrite=False,
-                   celltype_column_name=None, output_path="./annotation", min_hits=4):
+                   celltype_column_name=None, omic=None, upstream_offset=0, downstream_offset=0, output_path="./annotation", min_hits=4):
     """
     Performs annotations on single cell data and allows the user to choose between different annotation methods. 
 
@@ -292,6 +306,14 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         If True, the function will not ask for confirmation before overwriting existing files.
     celltype_column_name : str, default None
         The name of the selected cell type annotation column. If None, all annotation columns will be kept.
+    omic : str, default None
+        The omic type of the AnnData object. E.g. "RNA", "ATAC"
+    upstream_offset : int, default 0
+        The number of base pairs to extend each marker region upstream.
+    downstream_offset : int, default 0
+        The number of base pairs to extend each marker region downstream.
+    output_path : str, default "./annotation"
+        Annotation output path.
     min_hits : int, default 4
         The minimum number of marker genes required to consider a cell type for annotation in a cluster.
     """
@@ -312,6 +334,9 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
     if not clustering_column:
         clustering_column = select(whitelist=list(adata.obs.columns), heading="clustering column")
 
+    if not omic:
+        omic = select(whitelist=["RNA", "ATAC"], heading="omic type")
+
     if clustering_column not in adata.obs:
         raise ValueError(f"Clustering column '{clustering_column}' not found in adata.obs.")
 
@@ -322,7 +347,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
         raise ValueError(f"Reference annotation column '{reference_obs}' not found in adata.obs.")
     
     if not rank_genes_column:
-        rank_genes_column = rank_genes(adata, clustering_column, show_plots=show_plots, verbose=verbose)
+        rank_genes_column = rank_feature_groups(adata, clustering_column, show_plots=show_plots, verbose=verbose, omic=omic)
 
     annotation_columns = [] if reference_obs is None else [reference_obs]        
 
@@ -343,7 +368,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
             # Execute Marker Repo annotation
             annot_ct(adata, output_path=annotation_dir, db_path=marker_list,
                            cluster_column=clustering_column, rank_genes_column=rank_genes_column, 
-                           ct_column=ct_column, verbose=verbose, ignore_overwrite=ignore_overwrite, min_hits=min_hits)
+                           ct_column=ct_column, verbose=verbose, ignore_overwrite=ignore_overwrite,
+                           upstream_offset=upstream_offset, downstream_offset=downstream_offset, min_hits=min_hits)
 
             # Show tables and alternative cell types of each cluster
             if show_ct_tables:
@@ -354,6 +380,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
             column_added = f"{scsa_obs}_{name}_{clustering_column}"
             annotation_columns.append(column_added)
             plot_columns.append(column_added)
+            original_var_index = adata.var.index.copy()
+            adata.var.index = adata.var.index.map(lambda x: x.upper())
 
             # Execute SCSA annotation
             if verbose:
@@ -379,6 +407,8 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
                         pvalue=0.05, 
                         user_db=reformat_marker_list(marker_list), 
                         celltype_column="cell_name")
+                    
+            adata.var.index = original_var_index
 
         # Show plots
         if show_plots:
@@ -413,9 +443,9 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
     return compare_df
 
 
-def rank_genes(adata, clustering_column=None, show_plots=False, verbose=False):
+def rank_feature_groups(adata, clustering_column=None, show_plots=False, verbose=False, n=None, omic="RNA"):
     """
-    Rank genes for each cluster in the given AnnData object.
+    Rank features for each cluster in the given AnnData object.
 
     Parameters
     ----------
@@ -427,36 +457,47 @@ def rank_genes(adata, clustering_column=None, show_plots=False, verbose=False):
         If True, the function will show the plots of the ranking.
     verbose : bool, default False
         If True, the function will print additional information.
+    n : int, default None
+        The number of features that appear in the returned table. If None, all features will be returned.
 
     Returns
     -------
     str :
-        The name of the column in the .uns table which contains the rank genes scores.
+        The name of the column in the .uns table which contains the features and scores.
     """
+
+    if not n:
+        # Use 10 percent of the features of the adata
+        n = int(adata.n_vars * 0.1)
+
+    adata.uns['omic'] = omic
 
     if not clustering_column:
         clustering_column = select(whitelist=list(adata.obs.columns), heading="clustering column")
     
     sc.tl.dendrogram(adata, groupby=clustering_column)
 
-    if 'log1p' in adata.uns and 'base' in adata.uns['log1p']:
-        adata.uns['log1p']['base'] = None
-    rank_genes_column = f'rank_genes_groups_{clustering_column}'
+    if 'log1p' in adata.uns:
+        adata.uns['log1p']['base'] = np.e
+    else:
+        adata.uns['log1p'] = {'base': np.e}
+            
+    rank_genes_column = f'rank_feat_groups_{clustering_column}'
     if verbose:
-        print(f'Ranking genes groups for clusters using obs column {clustering_column}')
-        sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test')
+        print(f'Ranking feature groups for clusters using obs column {clustering_column}')
+        epi.tl.rank_features(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test', n_features=n, omic=omic)
         if show_plots:
-            sc.pl.rank_genes_groups_matrixplot(adata, standard_scale='var', n_genes=10, key=rank_genes_column, show=True)
+            epi.pl.rank_feat_groups_matrixplot(adata, n_features=10, key=rank_genes_column, show=True)
     else:
         with suppress_output():
-            sc.tl.rank_genes_groups(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test')
+            epi.tl.rank_features(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test', n_features=n, omic=omic)
             if show_plots:
-                sc.pl.rank_genes_groups_matrixplot(adata, standard_scale='var', n_genes=10, key=rank_genes_column, show=True)
+                epi.pl.rank_feat_groups_matrixplot(adata, n_features=10, key=rank_genes_column, show=True)
 
     return rank_genes_column
 
 
-def convert_markers(repo_path=".", lists_path=None, keywords=None, df=None, path="exported_lists", file_name=None, case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False):
+def convert_markers(repo_path=".", lists_path=None, keywords=None, df=None, path="exported_lists", file_name=None, case_sensitive=False, exact=False, style="two_column", organism="Hs", tissue="all", gs=False, ensembl=False, suffix=None):
     """
     Searches the database for given keywords and combines the found marker lists into a new DataFrame.
     Optionally, it can export the DataFrame to a file.
@@ -492,6 +533,8 @@ def convert_markers(repo_path=".", lists_path=None, keywords=None, df=None, path
         If true, guided search is enabled and the resulting DataFrame will be used.
     ensembl : bool, default False
         If True, the Ensembl IDs will be used instead of the gene symbols.
+    suffix : str, default None
+        The key of the metadata section whose value should be appended to the marker names.
 
     Returns
     --------
@@ -504,9 +547,9 @@ def convert_markers(repo_path=".", lists_path=None, keywords=None, df=None, path
         raise FileNotFoundError(f"The specified repository path '{repo_path}' does not exist.")
 
     if gs:
-        marker_list = guided_search(repo_path=repo_path, lists_path=lists_path, out="marker_list")
+        marker_list = guided_search(repo_path=repo_path, lists_path=lists_path, out="marker_list", suffix=suffix)
     elif repo_path and keywords:
-        marker_list = get_selected_lists(keywords, repo_path=repo_path, lists_path=lists_path, case_sensitive=case_sensitive, exact=exact)
+        marker_list = get_selected_lists(keywords, repo_path=repo_path, lists_path=lists_path, case_sensitive=case_sensitive, exact=exact, suffix=suffix)
     elif df is not None:
         marker_list = df
     else:
@@ -523,14 +566,14 @@ def convert_markers(repo_path=".", lists_path=None, keywords=None, df=None, path
             print("Preparing two column style marker list...")
         case "score":
             print("Preparing score style marker list...")
-            marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
+            marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list, suffix=suffix)
         case "ui":
             print("Preparing ui style marker list...")
-            marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
+            marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list, suffix=suffix)
             marker_list = update_scores(marker_list, repo_path=repo_path)
         case "panglao":
             print("Preparing panglao style marker list...")
-            marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list)
+            marker_list = compare_marker_lists(repo_path=repo_path, marker_df=marker_list, suffix=suffix)
             marker_list = update_scores(marker_list, repo_path=repo_path)
             marker_list = transform_list_to_panglao(df=marker_list, organism=organism, tissue=tissue)
         case _:
@@ -579,7 +622,7 @@ def transform_list_to_panglao(df, organism="Hs", tissue="all"):
     return df
 
 
-def transfer_markers(target_org=None, source_df=None, repo_path=".", lists_path=None, target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False, filter_transferred=True, verbose=False):
+def transfer_markers(target_org=None, source_df=None, repo_path=".", lists_path=None, target_counts=1, weight_markers=False, export_suffix=None, ui=False, custom_file_name=False, ensemble=False, filter_transferred=True, verbose=False, suffix=None, biomart_target=None, homologene_target=None):
     """
     Performs all steps of transferring marker genes from source organism(s)
     to one target organism.
@@ -613,6 +656,8 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", lists_path=
         If True, filter all marker lists which have already been transferred.
     verbose : bool, default False
         If True, the function will print additional information.
+    suffix : str, default None
+        The key of the metadata section whose value should be appended to the marker names.
 
     Returns
     -------
@@ -652,7 +697,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", lists_path=
         print("Select lists of source markers.")
         if filter_transferred:
             # Select only lists which were not transferred before
-            df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), col_to_search="tags_transferred", search_terms=[f"nan"])
+            df = search_df(df=combine_dfs(repo_path=repo_path, lists_path=lists_path), col_to_search="tags_transferred", search_terms=[f"nan"], suffix=suffix)
             source_df = guided_search(df=df, out="metadata", repo_path=repo_path, lists_path=lists_path)
     
     unique_organisms = source_df[['Organism name', 'Taxonomy ID']].drop_duplicates()
@@ -683,7 +728,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", lists_path=
             hg_db = download_homologene_data(repo_path=repo_path)
 
             uids = source_df.loc[source_df['Organism name'] == source_organism].index.tolist()
-            source_marker_list = combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
+            source_marker_list = combine_lists(uids, repo_path=repo_path, lists_path=lists_path, suffix=suffix)
             print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
             display(source_marker_list)
 
@@ -749,7 +794,7 @@ def transfer_markers(target_org=None, source_df=None, repo_path=".", lists_path=
             biomart_db = fetch_homologs(source_organism_bm, target_organism_bm).dropna()
 
             uids = source_df.loc[source_df['Organism name'] == source_organism].index.tolist()
-            source_marker_list = combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
+            source_marker_list = combine_lists(uids, repo_path=repo_path, lists_path=lists_path, suffix=suffix)
             print(f"\nDataFrame of the markers of the source organism ({source_organism}) to be transferred to the target organism ({target_organism}):")
             display(source_marker_list)
 
@@ -1023,3 +1068,47 @@ def create_yaml_list(list_path, list_name=None, organism=None, marker_type=None,
     yaml_path = generate_file(UID, list_name, False, marker_list, organism, marker_type, repo_path=repo_path, output_path=output_path)
 
     return yaml_path
+
+
+def export_markers_from_anndata(adata, n=50, rank_genes_column='rank_genes_groups', file_name='ranked_markers', omic="RNA"):
+    """
+    Export the top n marker genes per cluster from an anndata object's ranked genes groups.
+
+    Parameters
+    ----------
+    adata : anndata.AnnData
+        The anndata object containing the ranked genes.
+    n : int, default: 50
+        The number of top genes per cluster to export.
+    rank_genes_column : str, default: 'rank_genes_groups'
+        The key/column name where the ranked genes are stored in the anndata object.
+    file_name : str, default: 'ranked_markers'
+        The file name to save the exported marker list.
+    omic : str, default: "RNA"
+        The omic type of the anndata object.
+
+    Returns
+    -------
+    str :
+        The path where the marker list is saved.
+    """
+
+    if not rank_genes_column in adata.uns.keys() or not rank_genes_column:
+        rank_genes_column = rank_feature_groups(adata, show_plots=True, omic=omic)
+
+    df = sc.get.rank_genes_groups_df(adata, group=None, key=rank_genes_column)
+    df_sorted = df.sort_values(by=['group', 'scores'], ascending=[True, False])
+    df_sliced = df_sorted.groupby('group').head(n)
+
+    marker_gene_df = df_sliced[['names', 'group']]
+
+    # Display the top row of each unique group
+    top_rows = df_sliced.groupby('group').first()
+    top_rows.rename(columns={"names": "Marker gene", "scores": "Score"}, inplace=True)
+    top_rows.index.name = "Cell type"
+    top_rows_subset = top_rows[["Marker gene", "Score"]]
+    display(top_rows_subset)
+
+    path = export_marker_list(marker_gene_df, file_name=file_name)
+
+    return path

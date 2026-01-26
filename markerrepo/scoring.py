@@ -5,7 +5,7 @@ from .marker_repo import combine_dfs, combine_lists, search_df
 from sklearn.preprocessing import MinMaxScaler
 
 
-def compare_marker_lists(repo_path=".", lists_path=None, keywords=None, marker_df=None, case_sensitive=False, exact=False):
+def compare_marker_lists(repo_path=".", lists_path=None, keywords=None, marker_df=None, case_sensitive=False, exact=False, suffix=None):
     """
     This function compares and scores markers from selected marker lists using Ubiquitousness Index.
     A score of '0' signifies that the marker is the most specific within this selection, 
@@ -27,6 +27,8 @@ def compare_marker_lists(repo_path=".", lists_path=None, keywords=None, marker_d
         If True, the search will be case-sensitive. If False, the search will be case-insensitive.
     exact : bool, default: False
         If True, the search will look for exact matches. If False, the search will look for substrings.
+    suffix : str, default None
+        The key of the metadata section whose value should be appended to the marker names.
 
     Returns
     --------
@@ -37,9 +39,9 @@ def compare_marker_lists(repo_path=".", lists_path=None, keywords=None, marker_d
     if marker_df is not None:
         df = marker_df
     else:
-        df = search_df(combine_dfs(repo_path=repo_path, lists_path=lists_path), keywords, case_sensitive=case_sensitive, exact=exact)
+        df = search_df(combine_dfs(repo_path=repo_path, lists_path=lists_path), keywords, case_sensitive=case_sensitive, exact=exact, suffix=suffix)
         uids = [int(idx) for idx in df.index]
-        df = combine_lists(uids, repo_path=repo_path, lists_path=lists_path)
+        df = combine_lists(uids, repo_path=repo_path, lists_path=lists_path, suffix=suffix)
 
     df = df.drop_duplicates()
 

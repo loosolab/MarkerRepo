@@ -180,7 +180,7 @@ def split_marker_elements(marker_list):
     return new_marker_list
 
 
-def get_list(path, info_col=1, marker_col=0):
+def get_list(path, info_col=1, marker_col=0, marker_type="Genes"):
     """
     Reads the marker lists and converts it to a DataFrame using the information
     of info_col and marker_col.
@@ -193,6 +193,8 @@ def get_list(path, info_col=1, marker_col=0):
         The column which contains additional information like cell type or phase.
     marker_col: int, default 0
         The column which contains the marker (gene or genomic region).
+    marker_type : str, default "Genes"
+        The type of the marker ("Genes" or "Genomic regions").
 
     Returns
     --------
@@ -200,19 +202,46 @@ def get_list(path, info_col=1, marker_col=0):
         DataFrame containing the list
     """
 
-    # Detect the number of columns
-    with open(path, 'r') as f:
-        line = f.readline()
-        num_columns = len(line.split('\t'))
+    if marker_type == "Genes":
+        # Detect the number of columns
+        with open(path, 'r') as f:
+            line = f.readline()
+            num_columns = len(line.split('\t'))
 
-    headers = ["Marker", "Info"]
-    if type(info_col) == int and num_columns > 2:
-        df = pd.read_csv(path, sep='\t', usecols=[marker_col, info_col], names=headers)
-    elif type(info_col) == int and num_columns <= 2:
-        df = pd.read_csv(path, sep='\t', names=headers)
+        headers = ["Marker", "Info"]
+        if type(info_col) == int and num_columns > 2:
+            df = pd.read_csv(path, sep='\t', usecols=[marker_col, info_col], names=headers)
+        elif type(info_col) == int and num_columns <= 2:
+            df = pd.read_csv(path, sep='\t', names=headers)
+        else:
+            df = pd.read_csv(path, sep='\t', names=[headers[0]])
+            df[headers[1]] = info_col
+
+    elif marker_type == "Genomic regions":
+        rows = []
+
+        with open(path, 'r') as file:
+            for line in file:
+                parts = line.strip().split('\t')
+                # Assuming the format is CHR START STOP INFO
+                if info_col == 1 and marker_col == 0:
+                    # marker = f"{parts[0]}:{parts[1]}-{parts[2]}"
+                    marker = parts[0]
+                    info = parts[-1]
+                # Assuming the format is INFO CHR START STOP
+                elif info_col == 0 and marker_col == 1:
+                    # marker = f"{parts[1]}:{parts[2]}-{parts[3]}"
+                    marker = parts[1]
+                    info = parts[0]
+                else:
+                    raise ValueError("Invalid column configuration. Please set info_col and marker_col correctly.")
+                
+                rows.append({"Marker": marker, "Info": info}) 
+        
+        df = pd.DataFrame(rows, columns=["Marker", "Info"]) 
+
     else:
-        df = pd.read_csv(path, sep='\t', names=[headers[0]])
-        df[headers[1]] = info_col
+        raise ValueError(f"Invalid marker type '{marker_type}'. Please choose 'Genes' or 'Genomic regions'.")
 
     return df
 
