@@ -1,7 +1,15 @@
 stages:
   - test_id
-#  - pytest
+  - build
+  - publish
 
+
+# ############################################################################################################################################################
+# ##################################################################### test_id ##############################################################################
+# ############################################################################################################################################################
+
+# checks if the command-line tool is functional?
+# TODO check this and potentially rework
 check uid:
   image: python:3.9
   stage: test_id
@@ -11,12 +19,55 @@ check uid:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_REF_NAME =~ /^.*_[0-9]+$/'
 
-# run pytest:
-#   image: python:3.9
-#   stage: pytest
-#   script:
-#     - pip install -r requirements.txt
-#     - pip install pytest
-#     - pytest tests/
-#   rules:
-#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+# ############################################################################################################################################################
+# ###################################################################### build ###############################################################################
+# ############################################################################################################################################################
+
+# Build a new python package whenever there is a change on the main branch.
+
+# Build the python wheel and push it to the Gitlab package registry
+# Note: will fail if the version is already in the package registry
+build-package:
+  stage: build
+  image: python:latest
+  variables:
+    TWINE_USERNAME: gitlab-ci-token  # used for authentication to the Gitlab package registry
+    TWINE_PASSWORD: $CI_JOB_TOKEN
+  before_script:
+    - pip install build twine
+  script:
+    # build the package and upload to the GitLab package registry
+    - python -m build --sdist --wheel  # build the package
+    - python -m twine upload --verbose --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*  # upload the package to the GitLab package registry
+  artifacts:
+    paths:
+      - dist/*
+#  rules:  # TODO commented for testing
+#    - if: $CI_COMMIT_BRANCH == "main"  # always and only run for commits to main
+#      allow_failure: false
+
+
+# ############################################################################################################################################################
+# ########################################################################## Publish #########################################################################
+# ############################################################################################################################################################
+
+# Publish the package that was build in the build stage to PyPI.
+PyPI:
+  stage: publish
+  image: python:latest
+  needs:
+    - job: build-package
+      artifacts: true
+  variables:
+    TWINE_USERNAME: __token__  # used for authentication to PyPI
+    TWINE_PASSWORD: $PYPI_API_TOKEN
+  before_script:
+    - pip install build twine
+  script:
+    - ls -lah dist/  # to check if the package is there
+    - python -m twine upload --verbose --repository pypi dist/*  # upload the package to PyPI
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"  # always and only run for commits to main
+      allow_failure: false
+
