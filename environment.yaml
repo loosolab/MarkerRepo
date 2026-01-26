@@ -17,6 +17,5 @@ dependencies:
     - gitpython
     - pybiomart
     - scanpy
-    - episcanpy
     - intervaltree
     - .
