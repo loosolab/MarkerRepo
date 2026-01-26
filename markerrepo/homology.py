@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import urllib.request
-from pybiomart import Server
+from apybiomart import Server
 from .marker_repo import get_gene_dict
 from .marker_repo import combine_dfs, get_gene_dict, guided_search, search_df, select, update_markers
 from .plotting import plot_gene_counts

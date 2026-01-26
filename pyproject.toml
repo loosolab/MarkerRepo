@@ -15,7 +15,7 @@ dependencies = [
     "ipykernel",
     "GitPython",
     "scikit-learn",
-    "pybiomart",
+    "apybiomart",
     "scanpy",
     "intervaltree"
 ]
