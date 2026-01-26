@@ -43,9 +43,9 @@ build-package:
   artifacts:
     paths:
       - dist/*
-#  rules:  # TODO commented for testing
-#    - if: $CI_COMMIT_BRANCH == "main"  # always and only run for commits to main
-#      allow_failure: false
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"  # always and only run for commits to main
+      allow_failure: false
 
 
 # ############################################################################################################################################################
