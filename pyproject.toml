@@ -16,7 +16,9 @@ dependencies = [
     "GitPython",
     "scikit-learn",
     "pybiomart",
-    "scanpy"
+    "scanpy",
+    "intervaltree",
+    "episcanpy"
 ]
 authors = [
     { name = "Micha-Frederick Kessler" },
