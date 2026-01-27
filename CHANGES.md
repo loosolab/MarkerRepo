@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 (26-01-2026)
+- remove episcanpy, tabulate (both abandonded) and ipykernel
+- replace pybiomart with apybiomart
+
 ## 0.1.2 (26-01-2026)
 - first PyPI release
 - switch to `pyroject.toml`
