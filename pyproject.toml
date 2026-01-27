@@ -12,7 +12,6 @@ dependencies = [
     "seaborn",
     "pyyaml",
     "tabulate",
-    "ipykernel",
     "GitPython",
     "scikit-learn",
     "apybiomart",
