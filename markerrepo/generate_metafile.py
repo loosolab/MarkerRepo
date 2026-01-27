@@ -1118,6 +1118,9 @@ def print_option_list(options, desc):
     if desc:
         table["description"] = desc
 
+    # index starts at 1
+    table.index = [f"{i+1}:" for i in range(len(table))]
+
     print(table.to_string(index=True, header=False, max_rows=None, max_cols=None))
 
 
