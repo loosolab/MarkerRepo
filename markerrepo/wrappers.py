@@ -16,7 +16,6 @@ import logging
 import warnings
 import inspect
 import numpy as np
-import episcanpy as epi
 
 try:
     from sctoolbox.tools import celltype_annotation
@@ -443,7 +442,7 @@ def run_annotation(adata, marker_repo=True, SCSA=True, marker_lists=None, mr_obs
     return compare_df
 
 
-def rank_feature_groups(adata, clustering_column=None, show_plots=False, verbose=False, n=None, omic="RNA"):
+def rank_feature_groups(adata, clustering_column=None, show_plots=False, verbose=False, n=0.1, omic="RNA"):
     """
     Rank features for each cluster in the given AnnData object.
 
@@ -457,8 +456,11 @@ def rank_feature_groups(adata, clustering_column=None, show_plots=False, verbose
         If True, the function will show the plots of the ranking.
     verbose : bool, default False
         If True, the function will print additional information.
-    n : int, default None
-        The number of features that appear in the returned table. If None, all features will be returned.
+    n : int | float, default None
+        The number of features that appear in the returned table.
+        - If None, all features will be returned.
+        - Values 0-1 are treated as a proportion e.g. 0.1 = 10%
+        - Values >1 are the number of features e.g. 1000 to show the thousand features.
 
     Returns
     -------
@@ -466,33 +468,64 @@ def rank_feature_groups(adata, clustering_column=None, show_plots=False, verbose
         The name of the column in the .uns table which contains the features and scores.
     """
 
-    if not n:
-        # Use 10 percent of the features of the adata
-        n = int(adata.n_vars * 0.1)
+    if n is not None and n < 1:
+        # Use a proportion of the features of the adata
+        n = int(adata.n_vars * n)
+    elif n is not None and n >= 1:
+        # use this specific number of features
+        n = int(n)
+    else:
+        # use all feature
+        n = int(adata.n_vars)
 
-    adata.uns['omic'] = omic
-
+    # select the clustering column if not given
     if not clustering_column:
         clustering_column = select(whitelist=list(adata.obs.columns), heading="clustering column")
-    
+
     sc.tl.dendrogram(adata, groupby=clustering_column)
 
     if 'log1p' in adata.uns:
         adata.uns['log1p']['base'] = np.e
     else:
         adata.uns['log1p'] = {'base': np.e}
-            
+
+    # rank the features
+    # this part is loosely adapted from epiScanpy
+    if omic == "methylation":
+        kwargs = {
+            #"method": "t-test",
+            "rankby_abs": True,
+        }
+    else:
+        # ATAC or RNA
+        kwargs = {
+            #"method": "t-test_overstim_var",
+            "rankby_abs": False,
+        }
+
     rank_genes_column = f'rank_feat_groups_{clustering_column}'
+
+    # add the rest of the parameter
+    kwargs |= {
+        "adata": adata,
+        "groupby": clustering_column,
+        "use_raw": False,
+        "key_added": rank_genes_column,
+        "method": "t-test",
+        "n_features": n,
+        "copy": False
+    }
+
     if verbose:
         print(f'Ranking feature groups for clusters using obs column {clustering_column}')
-        epi.tl.rank_features(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test', n_features=n, omic=omic)
+        sc.tl.rank_features(**kwargs)
         if show_plots:
-            epi.pl.rank_feat_groups_matrixplot(adata, n_features=10, key=rank_genes_column, show=True)
+            sc.pl.rank_genes_groups_matrixplot(adata, n_genes=10, key=rank_genes_column, show=True)
     else:
         with suppress_output():
-            epi.tl.rank_features(adata, groupby=f'{clustering_column}', use_raw=False, key_added=rank_genes_column, method='t-test', n_features=n, omic=omic)
+            sc.tl.rank_features(**kwargs)
             if show_plots:
-                epi.pl.rank_feat_groups_matrixplot(adata, n_features=10, key=rank_genes_column, show=True)
+                sc.pl.rank_genes_groups_matrixplot(adata, n_genes=10, key=rank_genes_column, show=True)
 
     return rank_genes_column
 
