@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.1.3 (26-01-2026)
-- remove episcanpy (the package seems abandonded)
+- remove episcanpy, tabulate (both abandonded) and ipykernel
 - replace pybiomart with apybiomart
 
 ## 0.1.2 (26-01-2026)
