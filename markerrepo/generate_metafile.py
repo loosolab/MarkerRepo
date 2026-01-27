@@ -3,6 +3,7 @@
 
 import sys
 from tabulate import tabulate
+import pandas as pd
 from .utils import read_in_yaml, save_as_yaml, find_keys, get_whitelist
 import datetime
 import os
@@ -1111,18 +1112,13 @@ def print_option_list(options, desc):
     :param options: the whitelist values
     :param desc: a description to be printed
     """
+    table = pd.DataFrame({"whitelist": options})
+
+    # add description
     if desc:
-        data = [[f'{i + 1}:', f'{options[i]}', desc[i]] for i in
-                range(len(options))]
-        print(tabulate(data, tablefmt='plain',
-                       maxcolwidths=[size * 1 / 8,
-                                     size * 3 / 8,
-                                     size * 4 / 8]))
-    else:
-        data = [[f'{i + 1}:', f'{options[i]}'] for i in range(len(options))]
-        print(tabulate(data, tablefmt='plain',
-                       maxcolwidths=[size * 1 / 8,
-                                     size * 7 / 8]))
+        table["description"] = desc
+
+    print(table.to_string(index=True, header=False, max_rows=None, max_cols=None))
 
 
 def parse_input_list(options, terminable):
