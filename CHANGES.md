@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.1.4 (28-01-2026)
-- fix apybiomart import
+- fix apybiomart
 - set lower version bounds for dependencies
 - add missing ipython dependency
 
