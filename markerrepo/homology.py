@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import urllib.request
-from apybiomart import Server
+from apybiomart import query, find_datasets
 from .marker_repo import get_gene_dict
 from .marker_repo import combine_dfs, get_gene_dict, guided_search, search_df, select, update_markers
 from .plotting import plot_gene_counts
@@ -354,16 +354,21 @@ def fetch_homologs(source_organism, target_organism):
         DataFrame containing homologous genes.
     """
 
-    # Initialize BioMart server
-    server = Server(host='http://www.ensembl.org')
+    # Define dataset and attributes
+    dataset = f"{source_organism}_gene_ensembl"
+    target_homolog_attribute = f"{target_organism}_homolog_ensembl_gene"
 
-    # Define source and target datasets
-    source_dataset = server.marts['ENSEMBL_MART_ENSEMBL'].datasets[source_organism + '_gene_ensembl']
-    target_homolog_attribute = target_organism + '_homolog_ensembl_gene'
+    attributes = [
+        "ensembl_gene_id",
+        target_homolog_attribute,
+    ]
 
     # Query BioMart database
-    attributes = ['ensembl_gene_id', target_homolog_attribute]
-    data = source_dataset.query(attributes=attributes)
+    data = query(
+        dataset=dataset,
+        attributes=attributes,
+        host="http://www.ensembl.org",
+    )
 
     return data
 
@@ -510,22 +515,46 @@ def transfer_ui_to_homologs(target_organism="human", repo_path=".", biomart_targ
 
 def create_dataset_dict():
     """
-    Creates a dictionary mapping the display names of the datasets to their actual names.
+    Creates a dictionary mapping the display names of the datasets
+    to their organism prefixes (e.g. 'hsapiens').
 
     Returns
-    --------
-    dict :
-        A dictionary with display names as keys and actual dataset names as values.
+    -------
+    dict
+        Keys: display names
+        Values: dataset prefixes
     """
-
-    # Get the available datasets from the Biomart server
-    server = Server(host='http://www.ensembl.org')
-    datasets = server.marts['ENSEMBL_MART_ENSEMBL'].datasets
+    from apybiomart.classes import _Server
+    import requests
 
     dataset_dict = {}
 
-    for name, dataset in datasets.items():
-        dataset_dict[dataset.display_name] = name.split("_")[0]
+    # patch apybiomart no internet connection
+    # https://github.com/robertopreste/apybiomart/issues/131
+    def _check_connection() -> bool:
+        """Check for a functioning internet connection.
+
+        Returns:
+            bool
+        """
+        url = "https://example.org/"
+        timeout = 5
+        try:
+            _ = requests.get(url, timeout=timeout)
+            return True
+        except requests.exceptions.RequestException:
+            pass
+        return False
+    
+    _Server._check_connection = _check_connection
+
+    # Fetch available datasets from Ensembl BioMart
+    ds = find_datasets()
+
+    for _, row in ds.iterrows():
+        display_name = row["Dataset_name"]
+        dataset_name = row["Dataset_ID"]  # e.g. 'hsapiens_gene_ensembl'
+        dataset_dict[display_name] = dataset_name.split("_")[0]
 
     return dataset_dict
 

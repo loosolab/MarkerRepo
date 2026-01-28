@@ -4,18 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "markerrepo"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
-    "pandas",
+    # add lower version bounds to speed up installation process
+    "pandas>=1.5.3",
     "numpy",
-    "matplotlib",
-    "seaborn",
-    "pyyaml",
+    "matplotlib>=3.7.1",
+    "seaborn>=0.12.2",
+    "pyyaml>=6.0",
     "GitPython",
-    "scikit-learn",
+    "scikit-learn>=1.2.2",
     "apybiomart",
     "scanpy",
-    "intervaltree"
+    "intervaltree",
+    "ipython",
+    "requests"  # needed to patch apybiomarts 'find_datasets'
 ]
 authors = [
     { name = "Micha-Frederick Kessler" },
