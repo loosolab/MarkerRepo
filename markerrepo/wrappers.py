@@ -518,12 +518,12 @@ def rank_feature_groups(adata, clustering_column=None, show_plots=False, verbose
 
     if verbose:
         print(f'Ranking feature groups for clusters using obs column {clustering_column}')
-        sc.tl.rank_features(**kwargs)
+        sc.tl.rank_genes_groups(**kwargs)
         if show_plots:
             sc.pl.rank_genes_groups_matrixplot(adata, n_genes=10, key=rank_genes_column, show=True)
     else:
         with suppress_output():
-            sc.tl.rank_features(**kwargs)
+            sc.tl.rank_genes_groups(**kwargs)
             if show_plots:
                 sc.pl.rank_genes_groups_matrixplot(adata, n_genes=10, key=rank_genes_column, show=True)
 
