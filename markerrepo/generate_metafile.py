@@ -2,7 +2,6 @@
 # https://gitlab.gwdg.de/loosolab/software/metadata-organizer
 
 import sys
-from tabulate import tabulate
 import pandas as pd
 from .utils import read_in_yaml, save_as_yaml, find_keys, get_whitelist
 import datetime
