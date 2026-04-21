@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "markerrepo"
+version = "0.1.5"
+dependencies = [
+    # add lower version bounds to speed up installation process
+    "pandas>=1.5.3",
+    "numpy",
+    "matplotlib>=3.7.1",
+    "seaborn>=0.12.2",
+    "pyyaml>=6.0",
+    "GitPython",
+    "scikit-learn>=1.2.2",
+    "apybiomart",
+    "scanpy",
+    "intervaltree",
+    "ipython",
+    "requests"  # needed to patch apybiomarts 'find_datasets'
+]
+authors = [
+    { name = "Micha-Frederick Kessler" },
+    { name = "Mario Looso" }
+]
+maintainers = [
+    { name = "Hendrik Schultheis" },
+    { name = "Yousef Alayoubi" },
+    { name = "Jasmin Walter" },
+]
+description = "A tool for marker list management and annotation in the single cell context."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["annotation", "database", "single cell", "sc", "SC-Framework", "cell type", "scanpy", "marker"]
+
+[project.urls]
+Repository = "https://gitlab.gwdg.de/loosolab/software/annotate_by_marker_and_features"
+
+[tool.setuptools.packages.find]
+include = ["markerrepo"]
