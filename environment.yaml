@@ -1,7 +1,4 @@
 name: marker-repo
-channels:
-  - defaults
-  - conda-forge
 dependencies:
   - python>=3.11.3
   - pandas>=1.5.3
