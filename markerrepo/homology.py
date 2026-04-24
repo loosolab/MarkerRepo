@@ -367,7 +367,7 @@ def fetch_homologs(source_organism, target_organism):
     data = query(
         dataset=dataset,
         attributes=attributes,
-        host="http://www.ensembl.org",
+        filters={},
     )
 
     return data
@@ -531,6 +531,7 @@ def create_dataset_dict():
 
     # patch apybiomart no internet connection
     # https://github.com/robertopreste/apybiomart/issues/131
+    @staticmethod
     def _check_connection() -> bool:
         """Check for a functioning internet connection.
 

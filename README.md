@@ -1,174 +1,109 @@
-# MarkerRepo: A Central Repository for Marker List Management and Application
+# MarkerRepo
 
-MarkerRepo is a project that integrates marker list management with cell type annotation of single cell data. The repository consists of multiple Jupyter notebooks, each focusing on a specific task such as marker list curation, cell type annotation, or marker homology.
+MarkerRepo is a curated repository and annotation toolkit for cell type marker genes in single-cell data. It combines three things:
 
-## Table of Contents
-- [Quickstart](#quickstart)
-- [Notebook Descriptions](#notebook-descriptions)
-  - [annotation.ipynb: Cell Type Annotation](#annotationipynb-cell-type-annotation)
-  - [guided_annotation.ipynb: Step-by-Step Guided Cell Type Annotation](#guided_annotationipynb-step-by-step-guided-cell-type-annotation)
-  - [homology.ipynb: Transfer Marker Genes Across Organisms Using Homology](#homologyipynb-transfer-marker-genes-across-organisms-using-homology)
-  - [scoring.ipynb: Scoring](#scoringipynb-scoring)
-  - [search_and_combine_lists.ipynb: Search and Combine Lists](#search_and_combine_listsipynb-search-and-combine-lists)
-  - [submit_lists.ipynb: Create and Upload Your Own Marker Lists](#submit_listsipynb-create-and-upload-your-own-marker-lists)
-- [Install the Conda environment and add it to Jupyter as a Kernel](#install-the-conda-environment-and-add-it-to-jupyter-as-a-kernel)
-- [Installing the MarkerRepo Package](#installing-the-markerrepo-package)
+1. **A database** of YAML marker lists with structured metadata (organism, tissue, source, tags, reference genome), searchable and combinable into custom selections.
+2. **An annotation engine** that assigns cell types to clusters by matching each cluster's differentially ranked genes against marker lists, weighting matches by both differential-expression rank and marker specificity.
+3. **Cross-organism transfer** of marker lists via BioMart (Ensembl) or HomoloGene, so lists curated for one organism can be applied to another.
 
-# Quickstart
+The package supports both **gene expression** (scRNA-seq, matched by symbol) and **genomic regions** (scATAC-seq, matched by interval overlap). Inputs are an `AnnData` object with clusters and ranked genes; outputs are cell type assignments in `adata.obs` together with per-cluster score tables.
 
-The easiest way to get started with this project is by running the Jupyter notebooks available in the `notebooks` folder. Before you can use these notebooks, make sure to follow the steps outlined below to set up your Conda environment and install necessary packages.
+## Quickstart
 
-If you haven't already, make sure to set up your Conda environment by following the steps in the [Install the Conda environment and add it to Jupyter as a Kernel](#install-the-conda-environment-and-add-it-to-jupyter-as-a-kernel) section.
+```bash
+conda env create -f environment.yaml
+conda activate marker-repo
+pip install .
+python -m ipykernel install --user --name=marker-repo
+```
 
-**Note:** If you're new to this project and want to get familiar with its core functionalities, it's recommended to start with the [`search_and_combine_lists.ipynb`](#search_and_combine_listsipynb-search-and-combine-lists) notebook.
+Open `notebooks/markerrepo.ipynb` and select the `marker-repo` kernel.
 
-## Notebook Descriptions
+## Notebook Sections
 
-This section provides an overview of the Jupyter notebooks available in the `notebooks` folder and what each notebook is designed to do.
+| Section | What it does | Prerequisite |
+|---|---|---|
+| 0. Setup & Imports | Load packages, set `repo_path` | none |
+| 1. Search & Combine Marker Lists | Search the marker database, export combined lists | none |
+| 2. Cell Type Annotation | Annotate a clustered AnnData object | `test_data/adata_annotation.h5ad` |
+| 3. Create Marker Lists (YAML) | Build YAML marker lists from a TSV file | `test_data/marker_list_blood.tsv` / `marker_list_brain.tsv` |
 
-### annotation.ipynb: Cell Type Annotation
+Each section is independently runnable.
 
-The `annotation.ipynb` notebook serves as a comprehensive tool for annotating clustered h5ad files using the Marker Repo package. 
+## How Cell Type Annotation Works
 
-The notebook guides you through the entire annotation workflow. It starts by loading essential packages and setting up your Anndata object. Next, it offers options for gene ranking if not already done, followed by marker list creation and cell type annotation.
+The core annotation routine (`markerrepo.annotation.annot_ct`) scores every candidate cell type against every cluster and assigns the top-scoring cell type to each cluster.
 
-**Key Features:**
+**Inputs per cluster.** For each cluster, the algorithm takes the ranked genes stored in `adata.uns[rank_genes_column]` — a list of genes ordered by their differential-expression score (e.g. the output of `scanpy.tl.rank_genes_groups`).
 
-- Validating your initial settings and Anndata object.
-- Ranking genes within clusters if not pre-ranked.
-- Creating customized marker lists based on organism and other filtering criteria.
-- Annotating cell types using the created marker lists.
-- Visualizing annotation results on UMAP plots.
+**Per-marker weighting.** Each marker in a cell type's list carries an optional *ubiquitousness index* `ub_i ∈ (0, 1]` describing how broadly that gene is expressed across cell types. The per-marker weight is
 
-**When to Use:**
+```
+ubiquity_weight = round(sqrt(1 / ub_i))
+```
 
-- When you have clustered h5ad files that require cell type annotation.
-- When you want to utilize customized marker lists for annotation.
+This down-weights pan-expressed genes and up-weights specific markers. Two-column marker lists without an index use a flat weight of `1.0` (`annotation.py:382–399`).
 
-### guided_annotation.ipynb: Step-by-Step Guided Cell Type Annotation
+**Score for a (cluster, cell type) pair.** For each marker in the cell type that also appears in the cluster's ranked genes:
 
-The `guided_annotation.ipynb` notebook is an interactive variant of the `annotation.ipynb` notebook. Unlike its counterpart, which is designed for a seamless, uninterrupted workflow, this notebook guides you through the annotation process step-by-step. It allows you to manually enter parameters at different stages, making it ideal for experimental setups where you may be unsure of the optimal parameters to use.
+```
+weighted_score = rank_score × ubiquity_weight
+```
 
-**When to Use:**
+These are summed across all matching markers and normalized by the square root of the cell type's marker list size, to avoid bias toward cell types with very long marker lists:
 
-- If you're in the exploratory phase and wish to experiment with different parameters.
-- If you're not yet certain about the ideal settings for annotation and want a guided, interactive process.
+```
+score = sum(weighted_score for matching markers) / sqrt(num_markers)
+```
 
-**Note:** If you already know all the parameters you want to use and prefer a notebook that can be executed in one go, it's recommended to use the `annotation.ipynb` notebook instead.
+A cell type is only considered if at least `min_hits` markers match (default 4) — this suppresses spurious assignments from single-gene coincidences (`annotation.py:661–684`).
 
-### homology.ipynb: Transfer Marker Genes Across Organisms Using Homology
+**Cell type ranking.** Within each cluster, cell types are sorted first by `score` (descending) and then by the ratio `match_count / num_markers` (descending). The second key acts as a specificity tiebreak: between two cell types with similar total scores, the one where a larger fraction of its markers matched is preferred (`annotation.py:696–699`).
 
-The `homology.ipynb` notebook enables the transfer of marker genes from a source organism to a target organism using homology-based methods. It offers two distinct approaches: one utilizing BioMart and Ensembl, and the other using the HomoloGene database. The notebook is structured to guide you through each step of the process, from selecting the appropriate method and organisms to the actual gene transfer.
+**Genomic regions (ATAC).** For region markers (e.g. `chr1:1000-2000`), the same scoring formula applies, but matches are determined by interval overlap using an `IntervalTree` rather than exact string equality. Per-marker intervals can be padded with `upstream_offset` / `downstream_offset` to extend into promoter regions (`annotation.py:491, 532`).
 
-**Key Features:**
-- Interactive selection of source markers, target organisms, and other parameters.
-- Wrapper function to streamline the gene transfer process.
-- Offers the ability to select from a range of supported organisms, each backed by either Ensembl, or HomoloGene
+**Output.** For each cluster, the top-ranked cell type is written to `annotation.txt`, and the full ranking table (`cell_type, score, hits, num_markers, mean_ubiquity`) is written to `ranks/cluster_{id}`. The top assignment is then added to `adata.obs`.
 
-**When to Use:**
+## Marker List Database
 
-- When you need to transfer marker genes from one organism to another, especially 
-- when no marker lists are available for the organism you are analyzing, and you need a reliable method for generating them.
+Each marker list is a YAML file under `lists/` with two sections:
 
-### scoring.ipynb: Scoring
+- **`metadata`** — id (UID), name, organism + taxonomy ID, marker type (`Genes` / `Genomic regions`), submitter, source, tags (tissue, disease, life stage, etc.), and reference genome (for regions). The allowed fields and whitelists are defined in `keys.yaml`.
+- **`marker_list`** — a list of cell types, each with a `name` and an array of markers. Markers may carry an Ensembl ID (`"SYMBOL ENSEMBL_ID"`) so that downstream steps can resolve either identifier.
 
-The `scoring.ipynb` notebook allows for the weighting of individual markers using various functions. It enables the scoring of markers based on ubiquitousness index. 
+The database is loaded in parallel via `ProcessPoolExecutor` (`parsing.py`) and flattened into pandas DataFrames for searching. Key APIs:
 
-**Key Features:**
-- Enables comparison and scoring of markers from selected lists.
-- Export functionality for scored marker lists.
+- `guided_search(repo_path)` — interactive column-by-column search with `+`/`-` include/exclude prefixes
+- `search_df(df, keywords)` — programmatic search with the same semantics
+- `export_marker_list(df, ..., marker_id="symbol"|"ensembl")` — export a selection
 
-**When to Use:**
-- When you need to prioritize or weight marker genes for your analyses.
-- When you are working with marker lists from multiple sources and need to generate a unified, weighted list.
+**Export formats:**
 
-### search_and_combine_lists.ipynb: Search and Combine Lists
+| Format | Columns | Use case |
+|---|---|---|
+| `two_column` | marker, cell type | Custom annotation, SCSA input |
+| `score` | marker, cell type, score | Scored output where `score` is each marker's prevalence across the selected lists (0 = most specific, 1 = most common), min-max scaled (`scoring.py:compare_marker_lists`) |
+| `ui` | marker, cell type, score | Same shape as `score`, but values come from the PanGlaO ubiquitousness index directly — transferred via homology for non-human/mouse organisms (`scoring.py:update_scores`) |
+| `panglao` | PanGlaO six-column format | Direct drop-in for tools that expect the PanGlaO schema |
 
-The `search_and_combine_lists.ipynb` notebook provides a guide for searching and combining marker lists from the marker repository. It covers the process from selection to export, with wrapper functions streamlining the steps for various output formats and needs.
+## Cross-Organism Transfer
 
-**Key Features:**
-- Guided Search to compile a selection of marker lists based on metadata or other criteria.
-- Combining and formatting selected lists into a unified DataFrame.
-- Export options for different formats such as "two_column" or "score".
-- Wrapper functions to automate the entire process for custom requirements.
+`markerrepo.homology.prepare_gene_transfer` transfers marker lists between organisms using one of two backends:
 
-**When to Use:**
-- To familiarize yourself with the core functionalities of the Marker Repo.
-- When you need a tailored marker list, assembled from multiple sources or based on specific criteria.
-- When you require custom formatting styles for your marker lists.
+- **BioMart / Ensembl** — online query via `apybiomart`; broader organism coverage
+- **HomoloGene** — offline lookup against a local `homologene.data` file; faster, smaller organism set
 
-### submit_lists.ipynb: Create and Upload Your Own Marker Lists
+Use this when marker lists exist for one organism (e.g. human) but you need them for another (e.g. zebrafish), or let `create_marker_lists(..., force_homology=True)` invoke it automatically when no lists are available for the target organism.
 
-The `submit_lists.ipynb` notebook is designed to allow you to upload your own marker lists to the repository. This notebook takes you through every step, from entering metadata about your list to actually submitting it. It even supports validation and curation using whitelists, ensuring that your list is both accurate and useful.
+## Contributing Marker Lists
 
-**Key Features:**
-- Step-by-step guide to entering metadata for your marker list.
-- Utilizes whitelists for marker validation and curation.
-- Allows for the automated entry of markers, which can be in the form of genes or genomic regions.
-- Final validation step before publishing, ensuring that your list adheres to the repository's format and standards.
+To create and submit your own marker lists, see `dev/notebooks/submit_lists.ipynb`. It walks through metadata entry, whitelist-based validation, and submission.
 
-**When to Use:**
-- When you have developed a unique marker list and wish to share it with the broader scientific community.
-- When you want to ensure the quality and reliability of your marker list through guided validation steps.
-- For a seamless process of contributing to the repository, making your work easily accessible and usable by others.
+## Additional Notebooks
 
-# Install the Conda environment and add it to Jupyter as a Kernel
+The `dev/` directory contains notebooks for less common workflows:
 
-Follow these steps to install the Conda environment and add it to Jupyter as a Kernel.
-
-## Step 1: Install the Conda environment
-
-1. Open your terminal
-2. Navigate to the `environment.yaml` file in the repository
-3. Run one of the following commands:
-
-`conda env create -f environment.yaml`
-
-
-`mamba env create -f environment.yaml`
-
-This command creates a new Conda environment named `marker-repo` as described in the `environment.yaml` file.
-
-## Step 2: Activate the Conda environment
-
-You need to activate the environment before using it or adding it as a Kernel to Jupyter. To do this, run:
-
-`conda activate marker-repo`
-
-
-## Step 3: Add the environment to Jupyter as a Kernel
-
-Add `marker-repo` as a Kernel in Jupyter by running:
-
-`python -m ipykernel install --user --name=marker-repo`
-
-
-After this step, `marker-repo` should appear as an available option when choosing a Kernel in Jupyter.
-
-## Step 4: Deactivate the Conda environment
-
-Once you are done, you can deactivate the `marker-repo` environment by running:
-
-`conda deactivate`
-
-That's it! You have successfully created a Conda environment, activated it, and added it as a Kernel in Jupyter. Select the `marker-repo` Kernel in the provided notebooks and begin working on your project.
-
-# Installing the MarkerRepo Package
-
-The MarkerRepo package allows you to use the functionalities of MarkerRepo in external environments. Follow these steps to install the package:
-
-## Step 1: Activate the Conda environment
-
-Before installing the package, make sure to activate the Conda environment where you want the package installed. Run:
-
-`conda activate your-env`
-
-## Step 2: Install the MarkerRepo package
-
-With the Conda environment activated, navigate to the root directory of the MarkerRepo package and run:
-
-`pip install .`
-
-This command installs the MarkerRepo package into your `your-env` Conda environment.
-
-Now you can import and use the MarkerRepo package in any Python script or notebook running in the `your-env` Conda environment.
+- `dev/notebooks/guided_annotation.ipynb` — interactive step-by-step annotation
+- `dev/notebooks/scoring.ipynb` — marker ubiquitousness scoring
+- `dev/notebooks/homology.ipynb` — step-by-step cross-organism transfer via BioMart or HomoloGene
+- `dev/examples/` — example analyses on published datasets
