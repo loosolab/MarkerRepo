@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "markerrepo"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
     # add lower version bounds to speed up installation process
     "pandas>=1.5.3",

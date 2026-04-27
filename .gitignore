@@ -4,4 +4,19 @@ build/
 markerrepo.egg-info/
 metadata_whitelists/
 lists/genes/
-notebooks/*
+notebooks/exported_lists/
+notebooks/.pybiomart.sqlite
+notebooks/**/*.csv
+notebooks/**/*.yaml
+notebooks/.ipynb_checkpoints/
+
+# IDE / editor
+.idea/
+
+# Stale whitelist clone (auto-cloned by the package on demand)
+FRED_whitelists/
+
+# Planning docs and Claude Code artefacts
+MR_PLAN.md
+CLAUDE.md
+.claude/

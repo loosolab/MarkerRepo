@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.6 (25-04-2026)
+- cleaned repository from unused files
+- consolidated core functions in new markerrepo.ipynb
+- updated README.md (new structure, more details on algorithm)
+- added test files (marker lists)
+- removed default channels from environment.yaml 
+
 ## 0.1.5 (28-01-2026)
 - fix wrong function name
 
