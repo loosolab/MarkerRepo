@@ -88,14 +88,14 @@ def search_df(df, search_terms=None, col_to_search=None, case_sensitive=False, e
 
             # Apply filtering logic for each column
             for term in must_include_terms:
-                df = df[df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
+                df = df[df[col].fillna("").astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
 
             if positive_terms:
-                positive_mask = pd.concat([df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags))) for term in positive_terms], axis=1).any(axis=1)
+                positive_mask = pd.concat([df[col].fillna("").astype(str).apply(lambda x: bool(re.search(term, x, flags=flags))) for term in positive_terms], axis=1).any(axis=1)
                 df = df[positive_mask]
 
             for term in negative_terms:
-                df = df[~df[col].astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
+                df = df[~df[col].fillna("").astype(str).apply(lambda x: bool(re.search(term, x, flags=flags)))]
 
         except Exception as e:
             print(f"An error occurred for column '{col}': {str(e)}")
