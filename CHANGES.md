@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.7 (16-11-2026)
+- fix list term search broken for pandas>=3
+
 ## 0.1.6 (25-04-2026)
 - cleaned repository from unused files
 - consolidated core functions in new markerrepo.ipynb
