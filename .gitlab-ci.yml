@@ -29,7 +29,7 @@ check uid:
 
 # is the package installable and importable?
 test import:
-  image: python:latest
+  image: python:3.13
   inherit:
       default: false # do not inherit before_script
   stage: test
@@ -49,7 +49,7 @@ test import:
 # Note: will fail if the version is already in the package registry
 build-package:
   stage: build
-  image: python:latest
+  image: python:3.13
   variables:
     TWINE_USERNAME: gitlab-ci-token  # used for authentication to the Gitlab package registry
     TWINE_PASSWORD: $CI_JOB_TOKEN
@@ -74,7 +74,7 @@ build-package:
 # Publish the package that was build in the build stage to PyPI.
 PyPI:
   stage: publish
-  image: python:latest
+  image: python:3.13
   needs:
     - job: build-package
       artifacts: true
